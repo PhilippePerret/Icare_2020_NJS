@@ -1,0 +1,24 @@
+{
+  "name": "icare_2020_njs",
+  "version": "0.0.1",
+  "description": "Site de l'Atelier Icare en version node.js",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PhilippePerret/Icare_2020_NJS.git"
+  },
+  "author": "Philippe Perret <philippe.perret@yahoo.fr>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/PhilippePerret/Icare_2020_NJS/issues"
+  },
+  "homepage": "https://github.com/PhilippePerret/Icare_2020_NJS#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "pug": "^2.0.4"
+  }
+}
