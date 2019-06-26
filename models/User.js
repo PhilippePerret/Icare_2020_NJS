@@ -9,17 +9,31 @@ class User {
   static get current(){ return this._current}
   static set current(v){this._current = v}
 
-  static async existsAndIsValid(req, data, done){
+  static async existsAndIsValid(req, res, data, done) {
     // console.log("-> existsAndIsValid", data)
     let user_data = await DB.query("SELECT * FROM users WHERE mail = ?", [data.mail], 'icare_users')
     if ( user_data ){
       // console.log("Ce gugusse est ", user_data[0])
       let user = new User(user_data[0])
-      await user.setSession(req.session.id.replace(/\-/g,'').substring(0,32))
-      done(null, user)
+      if ( user.authenticatePassword(data.password) ) {
+        await user.setSession(req.session.id.replace(/\-/g,'').substring(0,32))
+        // done(null, user)
+        req.session.user_id     = user.id
+        req.session.session_id  = user.sessionId
+        req.flash('annonce', `Bienvenue à l'atelier, ${user.pseudo} !`)
+        res.redirect(`/bureau/home` /* TODO À RÉGLER EN FONCTION DES OPTIONS */)
+      } else {
+        // LE MAIL A ÉTÉ TROUVÉ, MAIS LE MOT DE PASSE NE CORRESPOND PAS
+        // done("Inconnu au bataillon", null)
+        req.flash('error', "Je ne connais aucun icarien avec ce mot de passe. Merci de ré-essayer.")
+        res.redirect('/login')
+      }
     } else {
       // console.error("Je ne connais pas ce gugusse.")
-      done("Inconnu au bataillon", null)
+      // LE MAIL N'A PAS ÉTÉ TROUVÉ
+      req.flash('error', "Je ne connais aucun icarien avec ce mail. Merci de ré-essayer.")
+      res.redirect('/login')
+      // done("Inconnu au bataillon", null)
     }
   }
   static get(user_id, cb){
@@ -37,6 +51,7 @@ class User {
   // toString(){return `username=${this.username};id=${this.id}`}
 
   get id(){return this.data.id}
+  get mail(){return this.data.mail}
   get pseudo(){return this.data.pseudo}
   get options(){return this.data.options}
   get sexe(){return this.data.sexe}
@@ -44,6 +59,8 @@ class User {
   get is_femme(){return this.sexe === 'F'}
   get sessionId(){ return this.data.session_id}
   set sessionId(v){ this.data.session_id = v}
+  get cpassword(){return this.data.cpassword}
+  get salt(){return this.data.salt}
   // ---------------------------------------------------------------------
   //  Méthodes utiles à l'identification
 
@@ -56,9 +73,10 @@ class User {
   }
 
   // On vérifie que le mot de passe soit correct
-  validPassword(password){
-    console.log("Je passe par la validation du passport.")
-    return true
+  authenticatePassword(password){
+    return require('crypto').createHash('md5')
+            .update(`${password}${this.mail}${this.salt}`)
+            .digest("hex") === this.cpassword
   }
 }
 

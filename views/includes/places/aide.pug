@@ -12,3 +12,5 @@ form(id="aide-form", method="POST")
 h3 Votre question
 if locals.question
   div= question
+if locals.section
+  div= `Vous voulez atteindre la section ${section}`

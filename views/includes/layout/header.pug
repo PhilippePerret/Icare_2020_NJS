@@ -4,7 +4,17 @@ nav#main-rubriques
   a(href="/modules") Modules d'apprentissage
   a(href="/bureau") Votre bureau
   a(href="/admin") Administration du site
-  a(href="/login") S’identifier
+  if User.current
+    a(href="/logout") Se déconnecter
+  else
+    a(href="/login") S’identifier
+    a(href="/signup") S’inscrire
+//- On indique l'utilisateur de la session
 if User.current
-  div= `Session de ${User.current.pseudo}`
+  div.session-owner= `Session de ${User.current.pseudo}`
 h1 ATELIER ICARE
+
+//- Le message flash à afficher (if any)
+if Dialog.message
+  div.flash
+    != Dialog.message
