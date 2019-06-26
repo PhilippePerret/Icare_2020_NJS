@@ -54,26 +54,10 @@ app.set('views', './views')
 app.set('view engine', 'pug')
 
 // Middleware
-app.use(async (req, res, next) => {
-  // On regarde ici si l'user est défini et est correct
-  if ( req.session.user_id ) {
-    console.log(" un user est défini = ", req.session.user_id)
-    var ret = await DB.get('icare_users.users', parseInt(req.session.user_id,10))
-    // console.log("Résultat retourné par la base : ", ret)
-    // Si l'id de session mémorisé est également à l'id de session de
-    // l'utilisateur, c'est que tout va bien. On définit l'utilisateur courant
-    console.log("Les deux sessions sont elles OK :")
-    console.log(ret.session_id, "(ret.session_id)")
-    console.log(req.session.session_id, "(req.session.session_id)")
-    if ( ret.session_id == req.session.session_id ) {
-      console.log("OK, c'est le bon user, je le prends en user courant")
-      User.current = new User(ret)
-    }
-  } else {
-    console.log("Aucun user n'est défini par req.session.user_id")
-  }
-  next()
-})
+// Reconnecter l'auteur qui s'est identifié (if any)
+// app.use((req,res,next)=>{User.reconnect(req,res,next)})
+app.use(User.reconnect)
+
 // middleware
 app.use((req, res, next)=>{
   Dialog.init()
@@ -97,17 +81,6 @@ app.use((req, res, next)=>{
 
 app.post('/login', function(req, res){
   User.existsAndIsValid(req, res, {mail:req.body._umail_, password:req.body._upassword_})
-  // User.existsAndIsValid(req, res, {mail:req.body._umail_, password:req.body._upassword_}, (err, user) => {
-  //   if ( user instanceof(User) ) {
-  //     req.session.user_id     = user.id
-  //     req.session.session_id  = user.sessionId
-  //     req.flash('annonce', `Bienvenue à l'atelier, ${user.pseudo} !`)
-  //     res.redirect(`/bureau/home` /* TODO À RÉGLER EN FONCTION DES OPTIONS */)
-  //   } else {
-  //     req.flash('error', "Je ne connais aucun icarien avec ce mail/mot de passe. Merci de ré-essayer.")
-  //     res.redirect('/login')
-  //   }
-  // })
 })
 
 
@@ -143,8 +116,14 @@ app.get('/', function (req, res) {
 .get('/bureau(/:section)?', function(req, res){
   res.render('gabarit', {place: 'bureau'})
 })
-.get('/admin', function(req, res){
-  res.render('gabarit', {place: 'admin'})
+.get('/admin(/:section)', function(req, res){
+  if ( User.current && User.current.isAdmin ){
+    res.render('gabarit', {place: 'admin', section:req.params.section})
+  } else if ( ! User.current ) {
+    res.redirect('/login')
+  } else {
+    res.render('gabarit', {place:'cul_de_sac'})
+  }
 })
 .get('/aide(/:section)?', function(req,res){
   res.render('gabarit', {place: 'aide', question: req.session.question, section: req.params.section})

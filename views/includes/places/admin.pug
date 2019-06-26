@@ -1,2 +1,18 @@
-div
-  | Bienvenue dans l'administration du site
+h1 Administration du site
+
+nav.places
+  a(href="/admin/overview") Aperçu général
+  a(href="/admin/dashboard") Tableau de bord
+  a(href="/admin/icariens") Gestion des icariens
+  a(href="/admin/modules") Gestion des modules
+
+- section = section || 'overview'
+case section
+  when 'overview'
+    include admin/overview
+  when 'dashboard'
+    include admin/dashboard
+  when 'icariens'
+    include admin/icariens
+  when 'modules'
+    include admin/modules

@@ -1,20 +1,39 @@
-nav#main-rubriques
-  a(href="/") Accueil
-  a(href="/aide") Aide
-  a(href="/modules") Modules d'apprentissage
-  a(href="/bureau") Votre bureau
-  a(href="/admin") Administration du site
-  if User.current
-    a(href="/logout") Se déconnecter
+- 
+  DATA_PLACES = {
+     home: ['Accueil','/'],
+     aide: ['Aide', '/aide'],
+     modules: ['Modules d’apprentissage', '/modules'],
+     bureau: ['Votre bureau', '/bureau'],
+     admin: ['Administration', '/admin/overview']
+  }
+mixin mainLink(place_id)
+  - [name, route] = DATA_PLACES[place_id]
+  if place == place_id
+    a(href=route).selected= name
   else
-    a(href="/login") S’identifier
-    a(href="/signup") S’inscrire
-//- On indique l'utilisateur de la session
-if User.current
-  div.session-owner= `Session de ${User.current.pseudo}`
-h1 ATELIER ICARE
+    a(href=route)= name
+    
+section#header
+  nav#main-rubriques.places
+    +mainLink('home')
+    +mainLink('aide')
+    if User.current && User.current.isIcarien
+      +mainLink('bureau')
+    +mainLink('modules')
+    if User.current && User.current.isAdmin
+      +mainLink('admin')
 
-//- Le message flash à afficher (if any)
-if Dialog.message
-  div.flash
-    != Dialog.message
+    if User.current
+      a(href="/logout").log Se déconnecter
+    else
+      a(href="/login").log S’identifier
+      a(href="/signup").log S’inscrire
+  //- On indique l'utilisateur de la session
+  if User.current
+    div.session-owner= `Session de ${User.current.pseudo}`
+  h1 ATELIER ICARE
+
+  //- Le message flash à afficher (if any)
+  if Dialog.message
+    div.flash
+      != Dialog.message
