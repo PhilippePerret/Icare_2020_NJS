@@ -3,16 +3,21 @@ html
   include includes/layout/head
   body
     include includes/layout/header
-    if place == 'home'
-      include includes/places/home
-    else if place == 'login'
-      include includes/places/login
-    else if place == 'bureau'
-      include includes/places/bureau
-    else if place == 'admin'
+    case place
+      when 'home'
+        include includes/places/home
+      when 'login'
+        include includes/places/login
+      when 'bureau'
+        include includes/places/bureau
+    
+    if place == 'admin'
       include includes/places/admin
     else if place == 'aide'
       include includes/places/aide
     else if place == 'modules'
       include includes/places/modules
+    else if place == 'signup'
+      include includes/places/signup
+      
     include includes/layout/footer
