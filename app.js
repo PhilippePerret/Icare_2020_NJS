@@ -7,7 +7,7 @@ const cookieParser = require('cookie-parser')
 const session = require('express-session')
 
 // Mes objets et middlewares
-const DB = require('./config/mysql') // DB.connexion
+global.DB = require('./config/mysql') // DB.connexion
 
 // async function essaiDB(){
 //   var res = await DB.query("SELECT * FROM users WHERE id = ?", [1], 'icare_users')
@@ -49,9 +49,14 @@ app.use(flash())
 
 app.use('/assets', express.static(__dirname + '/lib'))
 
+global.APPPATH = __dirname
+
 // Settings
 app.set('views', './views')
 app.set('view engine', 'pug')
+
+
+global.PUG = require('pug')
 
 // Middleware
 // Reconnecter l'auteur qui s'est identifié (if any)
@@ -107,17 +112,32 @@ app.get('/', function (req, res) {
 .get('/signup', function(req,res){
   res.render('gabarit', {place:'signup'})
 })
+.post('/signup', function(req, res){
+  const Signup = require('./controllers/signup')
+  if ( Signup.isValid(req) )
+    res.render('gabarit', {place:'signup', action:'confirmation'})
+  else
+    res.redirect('/signup')
+})
 .get('/bureau/(:section)?', function(req,res){
   res.render('gabarit', {place:'bureau', messages: req.flash('info')})
 })
-.get('/modules', function(req, res){
+.get('/modules', async function(req, res){
+  global.AbsModule = require('./models/AbsModule')
+  await AbsModule.getAllModules()
   res.render('gabarit', {place: 'modules'})
+})
+.get('/absmodule/:module_id/:action', function(req,res){
+  res.render('gabarit', {place:'modules', action:req.params.action, module_id:req.params.module_id})
 })
 .get('/bureau(/:section)?', function(req, res){
   res.render('gabarit', {place: 'bureau'})
 })
-.get('/admin(/:section)', function(req, res){
+.get('/admin(/:section)', async function(req, res){
   if ( User.current && User.current.isAdmin ){
+    if ( req.params.section === 'icariens') {
+      await User.getAllIcariens()
+    }
     res.render('gabarit', {place: 'admin', section:req.params.section})
   } else if ( ! User.current ) {
     res.redirect('/login')

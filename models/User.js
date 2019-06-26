@@ -1,6 +1,6 @@
 'use strict'
 
-const DB = require('../config/mysql')
+// const DB = require('../config/mysql')
 
 
 class User {
@@ -9,9 +9,38 @@ class User {
   static get current(){ return this._current}
   static set current(v){this._current = v}
 
+  // Retourne true s'il y a un user courant et que c'est un administrateur
+  static admin(){
+    return this.current && this.current.isAdmin
+  }
+
+  // Retourne true si l'user identifié est icarien
+  // Pour utiliser `if User.icarien()` dans le code
+  static icarien(){
+    return this.current && this.current.isIcarien
+  }
+
+  /**
+    Retourne l'instance User de l'icarien d'identifiant +user_id+
+  **/
   static get(user_id, cb){
     var error
     cb(error, new User(user_id))
+  }
+
+  /**
+    retourne les icariens et seulement les icariens, sous forme d'instances
+    User
+  **/
+  static get allIcariens(){
+    return this._allicariens
+  }
+  static async getAllIcariens(){
+    var res = await DB.getAll('icare_users.users', '*', (rec) => {
+      return parseInt(rec.options.substr(16,1),10) > 1 && parseInt(rec.options.substr(0,1),10) < 1
+    })
+    this._allicariens = res.map(duser => new User(duser))
+    return this._allicariens
   }
 
   // ---------------------------------------------------------------------
@@ -40,10 +69,11 @@ class User {
   get isAdmin(){
     return this.bitOption(0) > 0
   }
-  get isIcarien() { return this.statut > 1 }
+  get isIcarien() { return this.statut > 1  }
   get isActif()   { return this.statut == 2 }
-  get isEnPause() { return this.statut == 3}
+  get isEnPause() { return this.statut == 3 }
   get isInactif() { return this.statut == 4 }
+  get isAncien()  { return this.statut == 5 }
 
   // True si l'icarien ne veut recevoir aucun mail du tout
   get noMails(){ return this.bitOption(17) === 1}
@@ -68,10 +98,28 @@ class User {
 
   // La redirection qu'il faut atteindre après l'identification
   get redirectionAfterLogin(){
-    return this.constructor.REDIRECTIONS_AFTER_LOGIN[this.bitOption(18)].route || '/'
+    return User.REDIRECTIONS_AFTER_LOGIN[this.bitOption(18)].route || '/'
   }
 
 
+  // ---------------------------------------------------------------------
+  //  Méthodes d'helper
+
+  get humanStatut(){
+    return User.HUMAN_STATUTS[this.statut].hname
+  }
+
+  /**
+    Retourne l'icarien sous forme de carte
+  **/
+  card(options) {
+    return `
+div.icare
+  div.metadata
+    span.pseudo ${this.pseudo}
+    span.mail ${this.mail}
+    `
+  }
   // ---------------------------------------------------------------------
   //  Méthodes utiles à l'identification
 
@@ -128,18 +176,6 @@ class User {
 // ---------------------------------------------------------------------
 //  CONSTANTES STATIQUES
 
-  static get REDIRECTIONS_AFTER_LOGIN(){
-    return   {
-      0: {hname:'Accueil du site',         route:'/'},
-      1: {hname:'Bureau de travail',       route:'/bureau'},
-      2: {hname:'Profil',                  route:'/bureau/profil'},
-      3: {hname:'Dernière page consultée', route:this.lastPage},
-      // - ADMINISTRATEUR -
-      7: {hname:'Aperçu Icariens',   route:'admin/overview',  admin:true},
-      8: {hname:'Console',           route:'admin/console',   admin:true},
-      9: {hname:'Tableau de bord',   route:'admin/dashboard', admin:true}
-    }
-  }
 
   /**
     Pour reconnecter l'user, if any, à chaque rechargement de page
@@ -164,4 +200,25 @@ class User {
 class Admin extends User {
 
 }
+
+User.HUMAN_STATUTS = {
+  0: {hname: "En attente de validation"}
+  , 1: {hname: "Icarien"}
+  , 2: {hname: "Actif"}
+  , 3: {hname: "En pause"}
+  , 4: {hname: "Inactif"}
+  , 5: {hname: "Ancien"}
+}
+
+User.REDIRECTIONS_AFTER_LOGIN = {
+  0: {hname:'Accueil du site',         route:'/'},
+  1: {hname:'Bureau de travail',       route:'/bureau'},
+  2: {hname:'Profil',                  route:'/bureau/profil'},
+  3: {hname:'Dernière page consultée', route:this.lastPage},
+  // - ADMINISTRATEUR -
+  7: {hname:'Aperçu Icariens',   route:'admin/overview',  admin:true},
+  8: {hname:'Console',           route:'admin/console',   admin:true},
+  9: {hname:'Tableau de bord',   route:'admin/dashboard', admin:true}
+}
+
 module.exports = User

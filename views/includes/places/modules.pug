@@ -1,2 +1,12 @@
-div Bienvenue dans la partie modules
-p Cette partie permet de se renseigner sur les modules proposés par le site.
+h1 Modules d’apprentissage proposés par l’atelier
+
+if action == 'postuler'
+  
+  if User.icarien()
+    include templates/modules/postuler_as_icarien
+  else
+    include templates/modules/postuler_as_new_icarien
+  
+else
+  
+  include templates/modules/list
