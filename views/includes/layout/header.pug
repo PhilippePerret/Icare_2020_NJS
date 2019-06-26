@@ -1,0 +1,10 @@
+nav#main-rubriques
+  a(href="/") Accueil
+  a(href="/aide") Aide
+  a(href="/modules") Modules d'apprentissage
+  a(href="/bureau") Votre bureau
+  a(href="/admin") Administration du site
+  a(href="/login") S’identifier
+if User.current
+  div= `Session de ${User.current.pseudo}`
+h1 ATELIER ICARE

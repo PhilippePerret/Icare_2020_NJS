@@ -1,0 +1,18 @@
+doctype html
+html
+  include includes/layout/head
+  body
+    include includes/layout/header
+    if place == 'home'
+      include includes/places/home
+    else if place == 'login'
+      include includes/places/login
+    else if place == 'bureau'
+      include includes/places/bureau
+    else if place == 'admin'
+      include includes/places/admin
+    else if place == 'aide'
+      include includes/places/aide
+    else if place == 'modules'
+      include includes/places/modules
+    include includes/layout/footer
