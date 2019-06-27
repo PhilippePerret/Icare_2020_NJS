@@ -83,13 +83,9 @@ app.use((req, res, next)=>{
   next()
 })
 
-// Pour les iframe-tests
+// Pour lancer FrontTests, il faut ajouter "?fronttests=1" à l'url
 app.use((req,res,done)=>{
-  if ( req.query.fortest == '1'){
-    global.for_test = true
-  } else {
-    global.for_test = false
-  }
+  global.fronttests = req.query.fronttests == '1'
   done()
 })
 
@@ -117,7 +113,7 @@ app.get('/', function (req, res) {
   res.redirect('/')
 })
 .get('/tests', function(req,res){
-  res.render('tests')
+  res.render('fronttests')
 })
 .get('/signup', function(req,res){
   res.render('gabarit', {place:'signup'})
