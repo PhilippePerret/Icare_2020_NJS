@@ -6,8 +6,10 @@ const cookieParser = require('cookie-parser')
 
 const session = require('express-session')
 
+global.glob = require('glob')
 // Mes objets et middlewares
 global.DB = require('./config/mysql') // DB.connexion
+
 
 // async function essaiDB(){
 //   var res = await DB.query("SELECT * FROM users WHERE id = ?", [1], 'icare_users')
@@ -52,7 +54,7 @@ app.use('/assets', express.static(__dirname + '/lib'))
 global.APPPATH = __dirname
 
 // Settings
-app.set('views', './views')
+app.set('views', './pages')
 app.set('view engine', 'pug')
 
 
@@ -60,7 +62,6 @@ global.PUG = require('pug')
 
 // Middleware
 // Reconnecter l'auteur qui s'est identifié (if any)
-// app.use((req,res,next)=>{User.reconnect(req,res,next)})
 app.use(User.reconnect)
 
 // middleware
@@ -83,16 +84,23 @@ app.use((req, res, next)=>{
   next()
 })
 
+// Pour les iframe-tests
+app.use((req,res,done)=>{
+  if ( req.query.fortest == '1'){
+    global.for_test = true
+  } else {
+    global.for_test = false
+  }
+  done()
+})
 
 app.post('/login', function(req, res){
   User.existsAndIsValid(req, res, {mail:req.body._umail_, password:req.body._upassword_})
 })
 
-
-
 app.get('/', function (req, res) {
   // res.send('Salut tout le monde !')
-  console.log("req.session.user_id : ", req.session.user_id)
+  // console.log("req.session.user_id : ", req.session.user_id)
   res.render('gabarit', {place: 'home'})
 })
 .get('/login', function(req,res){
@@ -111,6 +119,9 @@ app.get('/', function (req, res) {
 })
 .get('/signup', function(req,res){
   res.render('gabarit', {place:'signup'})
+})
+.get('/tests', function(req,res){
+  res.render('tests')
 })
 .post('/signup', function(req, res){
   const Signup = require('./controllers/signup')
@@ -162,6 +173,5 @@ var server = app.listen(process.env.ALWAYSDATA_HTTPD_PORT||3000, process.env.ALW
   console.log("Je quitte l'application.")
   DB.stop()
 })
-// app.listen(process.env.ALWAYSDATA_HTTPD_PORT, process.env.ALWAYSDATA_HTTPD_IP, function () {
-//   console.log('Example app started!')
-// })
+
+module.exports = server

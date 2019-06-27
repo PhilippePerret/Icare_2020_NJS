@@ -4,7 +4,8 @@
   "description": "Site de l'Atelier Icare en version node.js",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "mocha --full-trace=false ./tests/**/*.test.js --exit",
+    "--test": "MODE_TEST=true node ./app",
     "start": "nodemon app.js",
     "watch-sass": "node-sass -w --recursive --incluce-path=lib/css/_sass/ lib/css/index.sass lib/css/all.css --output-style=compressed"
   },
@@ -30,5 +31,10 @@
     "passport-local": "^1.0.0",
     "pug": "^2.0.4",
     "uuid": "^3.3.2"
+  },
+  "devDependencies": {
+    "mocha": "^6.1.4",
+    "should": "^13.2.3",
+    "supertest": "^4.0.2"
   }
 }
