@@ -10,7 +10,6 @@ global.glob = require('glob')
 // Mes objets et middlewares
 global.DB = require('./config/mysql') // DB.connexion
 
-
 // async function essaiDB(){
 //   var res = await DB.query("SELECT * FROM users WHERE id = ?", [1], 'icare_users')
 //   console.log("Essai mySql = ", res)
@@ -117,11 +116,11 @@ app.get('/', function (req, res) {
   // TODO Un message pour dire au revoir
   res.redirect('/')
 })
-.get('/signup', function(req,res){
-  res.render('gabarit', {place:'signup'})
-})
 .get('/tests', function(req,res){
   res.render('tests')
+})
+.get('/signup', function(req,res){
+  res.render('gabarit', {place:'signup'})
 })
 .post('/signup', function(req, res){
   const Signup = require('./controllers/signup')
