@@ -1,31 +1,24 @@
-if fronttests
-  iframe(id="monSite",src="http://localhost:3000",width="60%",height="700")
-  iframe(id="monTest",src="http://localhost:3000/tests",width="38%",height="700")
-else
-  doctype html
-  html
-    include includes/layout/head
-    body
-      //- if process.env.MODE_TEST
-      //-   p MODE TEST
-      include includes/layout/header
-      case place
-        when 'home'
-          include includes/places/home
-        when 'login'
-          include includes/places/login
-        when 'bureau'
-          include includes/places/bureau
-        when 'cul_de_sac'
-          include includes/places/cul_de_sac
-      
-      if place == 'admin'
+doctype html
+html
+  include includes/layout/head
+  body
+    include includes/layout/header
+    case place
+      when 'home'
+        include includes/places/home
+      when 'login'
+        include includes/places/login
+      when 'bureau'
+        include includes/places/bureau
+      when 'cul_de_sac'
+        include includes/places/cul_de_sac
+      when 'admin'
         include includes/places/admin
-      else if place == 'aide'
+      when 'aide'
         include includes/places/aide
-      else if place == 'modules'
+      when 'modules'
         include includes/places/modules
-      else if place == 'signup'
+      when 'signup'
         include includes/places/signup
-        
-      include includes/layout/footer
+      
+    include includes/layout/footer

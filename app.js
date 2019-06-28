@@ -84,10 +84,17 @@ app.use((req, res, next)=>{
 })
 
 // Pour lancer FrontTests, il faut ajouter "?fronttests=1" à l'url
-app.use((req,res,done)=>{
-  global.fronttests = req.query.fronttests == '1'
-  done()
+app.use((req,res,next)=>{
+  // const FRONTTESTS = req.query.fronttests == '1'
+  const FRONTTESTS = !!req.query.ftt
+  if ( FRONTTESTS ) {
+    res.sendFile(__dirname+'/lib/fronttests/html/frames.html')
+    // Attention, il n'y a pas de `next()` ici, donc on ne va pas plus loin
+  } else {
+    next()
+  }
 })
+
 
 app.post('/login', function(req, res){
   User.existsAndIsValid(req, res, {mail:req.body._umail_, password:req.body._upassword_})
@@ -112,8 +119,8 @@ app.get('/', function (req, res) {
   // TODO Un message pour dire au revoir
   res.redirect('/')
 })
-.get('/tests', function(req,res){
-  res.render('fronttests')
+.get('/fronttests', function(req,res){
+  res.sendFile(__dirname+'/lib/fronttests/html/fronttests.html')
 })
 .get('/signup', function(req,res){
   res.render('gabarit', {place:'signup'})
