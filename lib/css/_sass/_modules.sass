@@ -1,0 +1,38 @@
+div.absmodule
+  border: 1px solid #ccc
+  border-radius: 1em
+  padding: 1em
+  font-size: 11pt
+  display: inline-block
+  width: 680px
+  div.metadata
+    display: grid
+    grid-template-columns: 240px 60px 40px 160px auto
+    grid-template-rows: 20px auto
+    // > span
+    //   border: 1px solid #CCC
+    span.name
+      grid-column-start: 1
+      overflow: hidden
+    span.tarif
+      grid-column-start: 2
+      color: white
+      background-color: teal
+      font-family: Arial
+      text-align: center
+      padding-top: 2px
+      font-size: 9pt
+    span.id
+      grid-column-start: 3
+      font-size: 0.85em
+      text-align: center
+    span.module_id
+      grid-column-start: 4
+    span.buttons
+      grid-column-start: 5
+      grid-row-start: 1
+
+  div.descriptions
+    grid-column-start: 2
+    grid-column-end: 6
+    grid-row-start: 2

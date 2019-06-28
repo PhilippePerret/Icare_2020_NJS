@@ -1,0 +1,12 @@
+//- La liste des modules, pour les connaitre et en choisir un
+script.
+  function showModule(absmod_id, which){
+    console.log("Je veux voir le module ", absmod_id)
+    var obj = document.querySelector(`#absmodule-${absmod_id}-${which}description`)
+    if ( obj.style.display == 'block' ){ obj.style.display = 'none' }
+    else { obj.style.display = 'block' }
+  }
+  
+
+for absmodule in AbsModule.allModules
+  include absmodule_card

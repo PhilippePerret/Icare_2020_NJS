@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="fr" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>FRONT-TESTS</title>
+    <style media="screen">
+      body {
+        display:grid;
+        grid-template-columns:60% 38%;
+        grid-template-rows: 100%;
+        border:1px solid red;
+        margin:0;
+        padding:0;
+      }
+      iframe {
+        width:100%;
+      }
+      iframe#site {
+        grid-column-start:1; grid-row-start:1; height:inherit;
+      }
+      iframe#fronttests {
+        grid-column-start:2; grid-row-start:1; height:inherit;
+      }
+    </style>
+    <script type="text/javascript">
+      function SetDims(){
+        const hw = window.innerHeight - 10
+            , siteFrame = document.querySelector('#site')
+            , testFrame = document.querySelector('#fronttests')
+        siteFrame.style.height = `${hw}px`
+        testFrame.style.height = `${hw}px`
+      }
+    </script>
+  </head>
+  <body onload="SetDims()">
+    <iframe id="site" src="http://localhost:3000"></iframe>
+    <iframe id="fronttests" src="http://localhost:3000/fronttests"></iframe>
+  </body>
+</html>

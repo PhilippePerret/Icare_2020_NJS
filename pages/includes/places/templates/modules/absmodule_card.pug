@@ -1,0 +1,29 @@
+div.absmodule
+  div.metadata
+    span.name= absmodule.name
+    span.tarif= `${absmodule.tarif} €`
+    if User.admin()
+      span.module_id= absmodule.module_id
+    span.buttons
+      if User.admin()
+        a(href=`/absmodule/${absmodule.id}/edit`, class="small-tool-btn") edit
+        a(href=`/absmodule/${absmodule.id}/show`, class="small-tool-btn") show
+      a(href=`javascript:showModule(${absmodule.id},'short')`, class="small-tool-btn") détails
+      if ! User.admin()
+        a(href=`/absmodule/${absmodule.id}/postuler`, class="small-tool-btn") postuler
+  //- div.descriptions.hidden
+  div.descriptions
+    div(
+      id=`absmodule-${absmodule.id}-shortdescription`
+      ).hidden
+      != PUG.render(`${absmodule.short_description.replace(/[\n\r]/g,' ')}`)
+      div.right
+        a(href=`javascript:showModule(${absmodule.id},'long')`, class="small-tool-btn") plus de détails
+        a(href=`/absmodule/${absmodule.id}/postuler`, class="small-tool-btn") postuler
+    div(
+      id=`absmodule-${absmodule.id}-longdescription`
+      ).hidden
+      != PUG.render(`${absmodule.long_description.replace(/[\n\r]/g,' ')}`)
+      div.right
+        a(href=`/absmodule/${absmodule.id}/postuler`, class="small-tool-btn") postuler
+    

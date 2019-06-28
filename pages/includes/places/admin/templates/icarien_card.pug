@@ -1,0 +1,11 @@
+div.icarien
+  div.metadata
+    span.pseudo= icarien.pseudo
+    span.statut= icarien.humanStatut
+    span.id= `#${icarien.id}`
+    span.mail 
+      a(href=icarien.mail)= icarien.mail
+    span.buttons
+      a(href=`user/${icarien.id}/show`, class="small-tool-btn") show
+      a(href=`user/${icarien.id}/edit`, class="small-tool-btn") edit
+      a(href=`user/${icarien.id}/destroy`, class="small-tool-btn delete") sup

@@ -1,0 +1,33 @@
+div.icarien
+  border: 1px solid #ccc
+  border-radius: 1em
+  padding: 1em
+  font-size: 11pt
+  display: inline-block
+  width: 680px
+  div.metadata
+    display: grid
+    grid-template-columns: 160px 60px 40px 260px auto
+    grid-template-rows: 20px 20px
+    // > span
+    //   border: 1px solid #CCC
+    span.pseudo
+      grid-column-start: 1
+      overflow: hidden
+    span.statut
+      grid-column-start: 2
+      color: white
+      background-color: teal
+      font-family: Arial
+      text-align: center
+      padding-top: 2px
+      font-size: 9pt
+    span.id
+      grid-column-start: 3
+      font-size: 0.85em
+      text-align: center
+    span.mail
+      grid-column-start: 4
+    span.buttons
+      grid-column-start: 5
+      grid-row-start: 2

@@ -6,8 +6,9 @@ const cookieParser = require('cookie-parser')
 
 const session = require('express-session')
 
+global.glob = require('glob')
 // Mes objets et middlewares
-const DB = require('./config/mysql') // DB.connexion
+global.DB = require('./config/mysql') // DB.connexion
 
 // async function essaiDB(){
 //   var res = await DB.query("SELECT * FROM users WHERE id = ?", [1], 'icare_users')
@@ -49,31 +50,19 @@ app.use(flash())
 
 app.use('/assets', express.static(__dirname + '/lib'))
 
+global.APPPATH = __dirname
+
 // Settings
-app.set('views', './views')
+app.set('views', './pages')
 app.set('view engine', 'pug')
 
+
+global.PUG = require('pug')
+
 // Middleware
-app.use(async (req, res, next) => {
-  // On regarde ici si l'user est défini et est correct
-  if ( req.session.user_id ) {
-    console.log(" un user est défini = ", req.session.user_id)
-    var ret = await DB.get('icare_users.users', parseInt(req.session.user_id,10))
-    // console.log("Résultat retourné par la base : ", ret)
-    // Si l'id de session mémorisé est également à l'id de session de
-    // l'utilisateur, c'est que tout va bien. On définit l'utilisateur courant
-    console.log("Les deux sessions sont elles OK :")
-    console.log(ret.session_id, "(ret.session_id)")
-    console.log(req.session.session_id, "(req.session.session_id)")
-    if ( ret.session_id == req.session.session_id ) {
-      console.log("OK, c'est le bon user, je le prends en user courant")
-      User.current = new User(ret)
-    }
-  } else {
-    console.log("Aucun user n'est défini par req.session.user_id")
-  }
-  next()
-})
+// Reconnecter l'auteur qui s'est identifié (if any)
+app.use(User.reconnect)
+
 // middleware
 app.use((req, res, next)=>{
   Dialog.init()
@@ -94,27 +83,26 @@ app.use((req, res, next)=>{
   next()
 })
 
-
-app.post('/login', function(req, res){
-  User.existsAndIsValid(req, res, {mail:req.body._umail_, password:req.body._upassword_})
-  // User.existsAndIsValid(req, res, {mail:req.body._umail_, password:req.body._upassword_}, (err, user) => {
-  //   if ( user instanceof(User) ) {
-  //     req.session.user_id     = user.id
-  //     req.session.session_id  = user.sessionId
-  //     req.flash('annonce', `Bienvenue à l'atelier, ${user.pseudo} !`)
-  //     res.redirect(`/bureau/home` /* TODO À RÉGLER EN FONCTION DES OPTIONS */)
-  //   } else {
-  //     req.flash('error', "Je ne connais aucun icarien avec ce mail/mot de passe. Merci de ré-essayer.")
-  //     res.redirect('/login')
-  //   }
-  // })
+// Pour lancer FrontTests, il faut ajouter "?fronttests=1" à l'url
+app.use((req,res,next)=>{
+  // const FRONTTESTS = req.query.fronttests == '1'
+  const FRONTTESTS = !!req.query.ftt
+  if ( FRONTTESTS ) {
+    res.sendFile(__dirname+'/lib/fronttests/html/frames.html')
+    // Attention, il n'y a pas de `next()` ici, donc on ne va pas plus loin
+  } else {
+    next()
+  }
 })
 
 
+app.post('/login', function(req, res){
+  User.existsAndIsValid(req, res, {mail:req.body._umail_, password:req.body._upassword_})
+})
 
 app.get('/', function (req, res) {
   // res.send('Salut tout le monde !')
-  console.log("req.session.user_id : ", req.session.user_id)
+  // console.log("req.session.user_id : ", req.session.user_id)
   res.render('gabarit', {place: 'home'})
 })
 .get('/login', function(req,res){
@@ -131,20 +119,44 @@ app.get('/', function (req, res) {
   // TODO Un message pour dire au revoir
   res.redirect('/')
 })
+.get('/fronttests', function(req,res){
+  res.sendFile(__dirname+'/lib/fronttests/html/fronttests.html')
+})
 .get('/signup', function(req,res){
   res.render('gabarit', {place:'signup'})
+})
+.post('/signup', function(req, res){
+  const Signup = require('./controllers/signup')
+  if ( Signup.isValid(req) )
+    res.render('gabarit', {place:'signup', action:'confirmation'})
+  else
+    res.redirect('/signup')
 })
 .get('/bureau/(:section)?', function(req,res){
   res.render('gabarit', {place:'bureau', messages: req.flash('info')})
 })
-.get('/modules', function(req, res){
+.get('/modules', async function(req, res){
+  global.AbsModule = require('./models/AbsModule')
+  await AbsModule.getAllModules()
   res.render('gabarit', {place: 'modules'})
+})
+.get('/absmodule/:module_id/:action', function(req,res){
+  res.render('gabarit', {place:'modules', action:req.params.action, module_id:req.params.module_id})
 })
 .get('/bureau(/:section)?', function(req, res){
   res.render('gabarit', {place: 'bureau'})
 })
-.get('/admin', function(req, res){
-  res.render('gabarit', {place: 'admin'})
+.get('/admin(/:section)', async function(req, res){
+  if ( User.current && User.current.isAdmin ){
+    if ( req.params.section === 'icariens') {
+      await User.getAllIcariens()
+    }
+    res.render('gabarit', {place: 'admin', section:req.params.section})
+  } else if ( ! User.current ) {
+    res.redirect('/login')
+  } else {
+    res.render('gabarit', {place:'cul_de_sac'})
+  }
 })
 .get('/aide(/:section)?', function(req,res){
   res.render('gabarit', {place: 'aide', question: req.session.question, section: req.params.section})
@@ -163,6 +175,5 @@ var server = app.listen(process.env.ALWAYSDATA_HTTPD_PORT||3000, process.env.ALW
   console.log("Je quitte l'application.")
   DB.stop()
 })
-// app.listen(process.env.ALWAYSDATA_HTTPD_PORT, process.env.ALWAYSDATA_HTTPD_IP, function () {
-//   console.log('Example app started!')
-// })
+
+module.exports = server

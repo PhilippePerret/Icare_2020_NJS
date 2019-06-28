@@ -6,6 +6,46 @@ const mySqlEasier = require('mysql-easier')
 
 class MyMySql {
 
+  static async update(table, id, data){
+    if (! this.configured) this.configure()
+    if ( ! this.connexion ) {
+      this.connexion = await mySqlEasier.getConnection()
+    }
+    // if ( database ) await this.connexion.query(`USE ${database}`)
+    var retour = await this.connexion.updateById(table, id, data)
+    return retour
+  }
+
+  /**
+    Attention : ne retourne que le premier enregistrement trouvé, ce qui
+    est logique puisqu'on passe un unique ID.
+  **/
+  static async get(table, id, columns){
+    if ( undefined === columns ) columns = '*'
+    else columns = columns.join(', ')
+    var request = `SELECT ${columns} FROM ${table} WHERE id = ?`
+    var retour = await this.processQuery(request, id)
+    return retour[0]
+  }
+
+  /**
+    Retourne tous les éléments de la table, correspondant au filtre s'il
+    est défini (une méthode qui va filtrer comme map.filter )
+  **/
+  static async getAll(table, columns, filtre) {
+    if ( undefined === columns || columns == '*') columns = '*'
+    else columns = columns.join(', ')
+    var request = `SELECT ${columns} FROM ${table}`
+    var res = await this.processQuery(request)
+    if ( undefined !== filtre ) {
+      res = res.filter(filtre)
+    }
+    return res
+  }
+
+  // ---------------------------------------------------------------------
+  //  MÉTHODES FONCTIONNELLES
+
   /**
     Méthode principale pour envoyer une requête
   **/
@@ -19,32 +59,19 @@ class MyMySql {
     return retour
   }
 
-  static async update(table, id, data){
-    if (! this.configured) this.configure()
-    if ( ! this.connexion ) {
-      this.connexion = await mySqlEasier.getConnection()
-    }
-    // if ( database ) await this.connexion.query(`USE ${database}`)
-    var retour = await this.connexion.updateById(table, id, data)
-    return retour
-  }
 
   /**
-    Attention : ne retourne que le premier enregistrement trouvé, ce qui
-    est logique puisqu'on passe un ID.
+    Méthode générique invoquant une requête avec des arguments
+    et retournant le résultat tel quel.
   **/
-  static async get(table, id, columns){
+  static async processQuery(request, params){
     if (! this.configured) this.configure()
     if ( ! this.connexion ) {
       this.connexion = await mySqlEasier.getConnection()
     }
-    if ( undefined === columns ) columns = '*'
-    else columns = columns.join(', ')
-    var request = `SELECT ${columns} FROM ${table} WHERE id = ?`
-    var retour = await this.connexion.query(request, id)
-    return retour[0]
+    var retour = await this.connexion.query(request, params)
+    return retour
   }
-
 
   // static async query(request, params, database){
   //   if (! this.configured) this.configure()

@@ -10,14 +10,15 @@ html
         include includes/places/login
       when 'bureau'
         include includes/places/bureau
-    
-    if place == 'admin'
-      include includes/places/admin
-    else if place == 'aide'
-      include includes/places/aide
-    else if place == 'modules'
-      include includes/places/modules
-    else if place == 'signup'
-      include includes/places/signup
+      when 'cul_de_sac'
+        include includes/places/cul_de_sac
+      when 'admin'
+        include includes/places/admin
+      when 'aide'
+        include includes/places/aide
+      when 'modules'
+        include includes/places/modules
+      when 'signup'
+        include includes/places/signup
       
     include includes/layout/footer
