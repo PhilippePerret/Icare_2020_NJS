@@ -83,17 +83,8 @@ app.use((req, res, next)=>{
   next()
 })
 
-// Pour lancer FrontTests, il faut ajouter "?fronttests=1" à l'url
-app.use((req,res,next)=>{
-  // const FRONTTESTS = req.query.fronttests == '1'
-  const FRONTTESTS = !!req.query.ftt
-  if ( FRONTTESTS ) {
-    res.sendFile(__dirname+'/lib/fronttests/html/frames.html')
-    // Attention, il n'y a pas de `next()` ici, donc on ne va pas plus loin
-  } else {
-    next()
-  }
-})
+const FrontTests = require('./lib/fronttests/lib/middleware')
+app.use(FrontTests)
 
 
 app.post('/login', function(req, res){
