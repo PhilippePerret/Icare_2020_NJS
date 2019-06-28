@@ -84,7 +84,7 @@ app.use((req, res, next)=>{
 })
 
 const FrontTests = require('./lib/fronttests/lib/middleware')
-app.use(FrontTests)
+app.use('/ftt(/:action)?', FrontTests)
 
 
 app.post('/login', function(req, res){

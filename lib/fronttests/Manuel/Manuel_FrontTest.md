@@ -26,7 +26,7 @@ Pour installer FrontTests, il suffit :
     ```javascript
 
     const FrontTests = require('./lib/fronttests/lib/middleware')
-    app.use(FrontTests)
+    app.use('/ftt(/:action)?', FrontTests)
 
     ```
 
@@ -36,11 +36,15 @@ Pour installer FrontTests, il suffit :
 
 ### Lancement des tests {#load_tests_panel}
 
-Pour lancer les tests, on n'utilise aucune console, on tape simplement l'adresse de son site en ajoutant le query-string `ftt=1` ou `ftt=true` :
+Pour lancer les tests, on n'utilise aucune console, on tape simplement l'adresse de son site en ajoutant le query-string `/ftt` :
 
 ```
-http://localhost:3000?ftt=true
+http://localhost:3000/ftt
 
 ```
 
 La fenêtre s'ouvre alors en deux parties, avec à gauche le site lui-même et à droite la section *FrontTests* qui permet de lancer les tests et tout le tintouin.
+
+> Noter que pour le moment, il faut impérativement utiliser l'adresse `localhost:3000` pour lancer l'application et les front-tests.
+
+Pour forcer l'actualisation de la liste des tests, il faut utiliser l'adresse `http://localhost:3000/ftt/update`.
