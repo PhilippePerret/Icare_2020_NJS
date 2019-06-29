@@ -36,9 +36,9 @@ input#fronttests-test-filename {
   overflow:auto;
   /* border:1px solid red; */
 }
-#console .warning, #console .failure {color:#E90000;}
-#console .notice,  #console .success {color:#00DD00;} //vert
-#console .blue {color:#127AFF;}
+#console #console-messages .warning, #console .failure {color:#E90000;}
+#console #console-messages .notice,  #console .success {color:#00DD00;}
+#console #console-messages .blue {color:#127AFF!important;}
 #console .mini {font-size:0.85em;}
 #console .discret {font-size:0.85em;opacity:0.5;}
 

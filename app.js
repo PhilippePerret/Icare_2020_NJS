@@ -3,6 +3,12 @@ const flash = require('connect-flash');
 const app = express()
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
+const uuidv4       = require('uuid/v4');
+
+// Pour l'upload de fichier
+const multer = require('multer')
+// const upload = multer({ storage: multer.memoryStorage() })
+const upload = multer({ dest: 'uploads/' })
 
 const session = require('express-session')
 
@@ -45,6 +51,11 @@ app.use(session({
 app.use(bodyParser.urlencoded({ extended: false }))
 // parse application/json
 app.use(bodyParser.json())
+
+// J'essaie ça pour pouvoir récupérer les valeurs postées dans le middleware
+// de FrontTests
+app.use(express.urlencoded({ extended: false }))
+
 app.use(cookieParser('ATELIERICARECOOKIES'))
 app.use(flash())
 
@@ -84,8 +95,7 @@ app.use((req, res, next)=>{
 })
 
 const FrontTests = require('./lib/fronttests/lib/middleware')
-app.use('/ftt(/:action)?', FrontTests)
-
+app.use('/ftt(/:action)?', FrontTests.run)
 
 app.post('/login', function(req, res){
   User.existsAndIsValid(req, res, {mail:req.body._umail_, password:req.body._upassword_})
@@ -114,10 +124,13 @@ app.get('/', function (req, res) {
   res.sendFile(__dirname+'/lib/fronttests/html/fronttests.html')
 })
 .get('/signup', function(req,res){
-  res.render('gabarit', {place:'signup'})
+  var token = uuidv4()
+  req.session.form_token = token
+  res.render('gabarit', {place:'signup', token:token })
 })
-.post('/signup', function(req, res){
-  const Signup = require('./controllers/signup')
+.post('/signup', upload.any(), function(req, res){
+  FrontTests.checkFields(req)
+  const Signup = require('./controllers/user/signup')
   if ( Signup.isValid(req) )
     res.render('gabarit', {place:'signup', action:'confirmation'})
   else

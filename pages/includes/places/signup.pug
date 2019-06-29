@@ -1,8 +1,27 @@
 h1 Candidater à l’atelier Icare
 
-form(method="POST",id="new-user-form")
-  input(type="text",name="_upseudo_", placeholder="Votre pseudo")
-  input(type="text",name="_umail_", placeholder="Votre mail")
-  input(type="password",name="_upassword_",placeholder="Votre mot de passe")
-  input(type="password",name="_upassword_confirmation_",placeholder="mot de passe à nouveau")
-  input(type="submit",value="Candidater")
+form(method="POST",id="new_user_form",enctype="multipart/form-data")
+  input(type="hidden",name="token",value=`${token}`)
+  div.row
+    label Votre pseudo
+    input(type="text",name="upseudo", placeholder="Votre pseudo")
+  div.row
+    label Votre mail
+    input(type="text",name="umail", placeholder="Votre mail")
+  div.row
+    label Confirmez votre mail
+    input(type="text",name="umail_confirmation", placeholder="confirmation du mail")
+  div.row
+    label Mot de passe
+    input(type="password",name="upassword",placeholder="Votre mot de passe")
+  div.row
+    label Confirmez votre mot de passe
+    input(type="password",name="upassword_confirmation",placeholder="confirmation mot de passe")
+  div.row
+    label Document de présentation
+    input(type="file",name="upresentation",id="upresentation")
+  div.row
+    label Lettre de motivation
+    input(type="file",name="umotivation",id="umotivation")
+  div.buttons
+    input(type="submit",value="Poser sa candidature")
