@@ -50,12 +50,14 @@ class MyMySql {
     Méthode principale pour envoyer une requête
   **/
   static async query(request, params, database){
+    console.log("-> DB.query", request, params)
     if (! this.configured) this.configure()
     if ( ! this.connexion ) {
       this.connexion = await mySqlEasier.getConnection()
     }
     if ( database ) await this.connexion.query(`USE ${database}`)
     var retour = await this.connexion.query(request, params)
+    console.log("<- DB.query", request, params)
     return retour
   }
 

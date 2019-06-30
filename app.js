@@ -128,10 +128,10 @@ app.get('/', function (req, res) {
   req.session.form_token = token
   res.render('gabarit', {place:'signup', token:token })
 })
-.post('/signup', upload.any(), function(req, res){
+.post('/signup', upload.any(), async function(req, res){
   FrontTests.checkFields(req)
   const Signup = require('./controllers/user/signup')
-  if ( Signup.isValid(req) )
+  if ( await Signup.isValid(req) )
     res.render('gabarit', {place:'signup', action:'confirmation'})
   else
     res.redirect('/signup')

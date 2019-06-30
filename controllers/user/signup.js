@@ -9,23 +9,28 @@ class Signup {
 
   // Appelée, par la méthode post de la route, elle retourne true si
   // l'inscription est conforme. Sinon, elle affiche les messages d'erreur.
-  static isValid(req){
+  static async isValid(req){
     /**
       |
       |--- Ici on vérifie les différents points
       |
     **/
-    try {
-      Validate.token(req.session.token, req.body.token)
-      console.log("tokens ok")
-      Validate.pseudo(req.body.upseudo)
-      console.log(`pseudo "${req.body.upseudo}" ok`)
-      Validate.mail(req.body.umail)
-      console.log(`mail "${req.body.umail}" ok`)
-    } catch (e) {
-      req.flash('error', `Votre candidature n'est pas valide :<br/>${e.message}`)
+    var errs, errors = []
+    errs = Validate.token(req.session.form_token, req.body.token)
+    if ( errs ) errors.push(...errs)
+    errs = await Validate.pseudo(req.body.upseudo)
+    if ( errs ) errors.push(...errs)
+    errs = await Validate.mail(req.body.umail, req.body.umail_confirmation)
+    if ( errs ) errors.push(...errs)
+
+    // console.log("Liste totale des erreurs à la fin du check : ", errors, errors.length)
+    if ( errors.length ) {
+      var errors_msgs = errors.map(err => err.error).join('<br/>')
+      req.flash('error', `Votre candidature n'est pas valide :<br/>${errors_msgs}`)
+      // console.log("ERRORS : ", errors_msgs)
       return false
     }
+    // Sinon on continue
 
     /**
       |

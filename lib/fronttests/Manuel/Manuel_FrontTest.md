@@ -1,10 +1,12 @@
 # Manuel d'utilisation des tests FrontTests
 
+Dernier numéro de note : 0001
+
 * [Introduction, présentation](#introduction_presentation)
 * [Installation](#setup_fronttests_for_a_site)
   * [Chargement du middleware](#setting_the_middleware)
   * [Lancement des tests (chargement du panneau FrontTests)](#load_tests_panel)
-
+* [Manipulation des formulaires](#deal_with_forms)
 
 ## Introduction, présentation {#introduction_presentation}
 
@@ -48,3 +50,21 @@ La fenêtre s'ouvre alors en deux parties, avec à gauche le site lui-même et �
 > Noter que pour le moment, il faut impérativement utiliser l'adresse `localhost:3000` pour lancer l'application et les front-tests.
 
 Pour forcer l'actualisation de la liste des tests, il faut utiliser l'adresse `http://localhost:3000/ftt/update`.
+
+
+---------------------------------------------------------------------
+
+
+# Manipulation des formulaires {#deal_with_forms}
+
+#### [NOTE 0001]
+
+On utilise la même variable `form` par exemple, dans les feuilles de tests. Par exemple :
+
+```javascript
+
+let form = Form.new('#monFormulaire')
+
+```
+
+Le problème est que la page est rechargée et que le formulaire initial n'est plus le même. C'est la raison pour laquelle on initialise toujours `_domobj` afin que l'élément DOM soit toujours recherché dans la page courante.
