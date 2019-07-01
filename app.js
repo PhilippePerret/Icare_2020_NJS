@@ -126,15 +126,17 @@ app.get('/', function (req, res) {
 .get('/signup', function(req,res){
   var token = uuidv4()
   req.session.form_token = token
-  res.render('gabarit', {place:'signup', token:token })
+  res.render('gabarit', {place:'signup', token:token})
 })
 .post('/signup', upload.any(), async function(req, res){
   FrontTests.checkFields(req)
   const Signup = require('./controllers/user/signup')
-  if ( await Signup.isValid(req) )
+  if ( await Signup.isValid(req, res) )
     res.render('gabarit', {place:'signup', action:'confirmation'})
   else
-    res.redirect('/signup')
+    Dialog.error(req.flash('error'))
+    res.render('gabarit', {place:'signup'})
+    // res.redirect('/signup')
 })
 .get('/bureau/(:section)?', function(req,res){
   res.render('gabarit', {place:'bureau', messages: req.flash('info')})

@@ -6,6 +6,9 @@ Dernier numéro de note : 0001
 * [Installation](#setup_fronttests_for_a_site)
   * [Chargement du middleware](#setting_the_middleware)
   * [Lancement des tests (chargement du panneau FrontTests)](#load_tests_panel)
+* [Tests sur le DOM et les DOM elements](#tester_le_dom)
+  * [Test des DOM Elements](#tests_on_dom_elements)
+    * [Programmer une nouvelle assertion](#new_assertion_for_dom_element)
 * [Manipulation des formulaires](#deal_with_forms)
 
 ## Introduction, présentation {#introduction_presentation}
@@ -51,11 +54,87 @@ La fenêtre s'ouvre alors en deux parties, avec à gauche le site lui-même et �
 
 Pour forcer l'actualisation de la liste des tests, il faut utiliser l'adresse `http://localhost:3000/ftt/update`.
 
+---------------------------------------------------------------------
+
+## Tests sur le DOM et les DOM elements {#tester_le_dom}
+
+Les tests du DOM se font avec la classe `Dom`. Par exemple :
+
+```javascript
+
+Dom.hasText("Le texte qu'on doit trouver dans la page.")
+
+```
+
+### Test des DOM Elements {#tests_on_dom_elements}
+
+
+Les tests des éléments DOM se font principalement avec l'objet :
+
+```javascript
+
+Dom.element("#monDiv")
+
+```
+
+Par exemple :
+
+```javascript
+
+Dom.element('#monDiv').hasClass(['uneclass','autrecss'])
+
+```
+
+Voir dans le fichier de toutes les expectations et assertions les méthodes de test utilisables.
+
+### Programmer une nouvelle assertion {#new_assertion_for_dom_element}
+
+Si l'on veut par exemple utiliser une nouvelle assertion qui serait `seTrouveAvant(selector)` qui s'utiliserait de cette façon :
+
+```javascript
+
+Dom.element('#monDiv').seTrouveAvant('#autreDiv')
+
+```
+
+On programmerait dans le dossier `support/app` la nouvelle assertion avec :
+
+```javascript
+
+Objet.assign(DomElement.prototype,{
+  // Renseigner la méthode avec la syntaxe ci-dessous pour produire les fichiers
+  // de toutes les expectations et assertions.
+  /*  
+    @method Dom.element(selector).seTrouveAvant(expected, options)
+    @description Produit un succès si l'élément +selector+ se trouve avant l'élément +expected+
+    @provided
+      :expected {String} Sélecteur de l'élément de référence
+      :options {Options} Les [options classiques des assertions](#options_assertions)
+    @usage Dom.element('#MonDiv').not.seTrouveAvant('#autreDiv')
+   */
+  seTrouveAvant(selector, options){
+    var pass = /* on estime si l'élément se trouve avant */
+    new Assertion(
+    pass
+  , this.positive
+  , {
+      pos_success: `${this.sujet} se trouve bien avant ${selector}`
+    , neg_success: `${this.sujet} ne se trouve pas avant ${selector}`
+    , pos_failure: `${this.sujet} devrait se trouvant avant ${selector}`
+    , neg_failure: `${this.sujet} ne devrait pas se trouvant avant ${selector}`
+    }
+  ).evaluate(options)
+
+  }
+})
+
+```
+
 
 ---------------------------------------------------------------------
 
 
-# Manipulation des formulaires {#deal_with_forms}
+## Manipulation des formulaires {#deal_with_forms}
 
 #### [NOTE 0001]
 

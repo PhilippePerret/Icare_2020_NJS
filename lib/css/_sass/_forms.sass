@@ -1,0 +1,29 @@
+input[type="text"], input[type="password"], textarea, select, select option
+  font-family: inherit
+  font-size: inherit
+  font-style: inherit
+
+form
+  div.row
+    border: 1px solid transparent
+    padding: 4px
+    margin-top: 4px
+    &.fieldError
+      border: 1px solid red
+      &, & *
+        background-color: #FFCCCC
+
+    > label
+      display: block
+      width: 90%
+
+    > input[type="text"], input[type="password"], textarea
+      width: 90%
+
+  > div.buttons
+    text-align: right
+    margin-top: 1em
+    input[type="submit"]
+      border: 1px solid
+      border-radius: 8px
+      padding: 2px 8px

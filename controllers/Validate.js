@@ -1,8 +1,14 @@
 'use strict'
 /**
   Module de validation
+
+  Class Validator
+  Class PropValidator - validateur de propriété
+  Class Validate
+
 **/
 function raise(msg){throw new Error(msg)}
+
 
 class Validate {
 

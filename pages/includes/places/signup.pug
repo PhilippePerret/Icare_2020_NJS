@@ -1,27 +1,49 @@
-h1 Candidater à l’atelier Icare
+h1 Poser sa candidature à l’atelier Icare
+  
+- const vdt = locals.validator
+
 
 form(method="POST",id="new_user_form",enctype="multipart/form-data")
-  input(type="hidden",name="token",value=`${token}`)
-  div.row
+  input(type="hidden" name="token" value=`${token}`)
+    
+    
+  div.row(id="div-row-pseudo" class=vdt && vdt.getClass('pseudo'))
     label Votre pseudo
-    input(type="text",name="upseudo", placeholder="Votre pseudo")
-  div.row
+    input(
+      type="text" name="pseudo" placeholder="Votre pseudo" 
+      value=vdt && vdt.getValue('pseudo') 
+      
+      )
+
+  div.row(id="div-row-mail" class=vdt&&vdt.getClass('mail'))
     label Votre mail
-    input(type="text",name="umail", placeholder="Votre mail")
-  div.row
+    input(type="text" name="mail" placeholder="Votre mail"
+      value=vdt&&vdt.getValue('mail')
+      )
+
+  div.row(class=vdt&&vdt.getClass('mail_confirmation'))
     label Confirmez votre mail
-    input(type="text",name="umail_confirmation", placeholder="confirmation du mail")
-  div.row
+    input(type="text" name="mail_confirmation" placeholder="confirmation du mail")
+
+  div.row(class=vdt&&vdt.getClass('password'))
     label Mot de passe
-    input(type="password",name="upassword",placeholder="Votre mot de passe")
-  div.row
+    input(type="password" name="password" placeholder="Votre mot de passe")
+      
+  div.row(class=vdt&&vdt.getClass('password_confirmation'))
     label Confirmez votre mot de passe
-    input(type="password",name="upassword_confirmation",placeholder="confirmation mot de passe")
-  div.row
+    input(type="password" name="password_confirmation" placeholder="confirmation mot de passe")
+
+  div.row(class=vdt&&vdt.getClass('presentation'))
     label Document de présentation
-    input(type="file",name="upresentation",id="upresentation")
-  div.row
+    input(type="file" name="presentation" id="presentation")
+  
+  div.row(class=vdt&&vdt.getClass('motivation'))
     label Lettre de motivation
-    input(type="file",name="umotivation",id="umotivation")
+    input(type="file" name="motivation" id="motivation")
+  
+  div.row
+    label Extraits (5 pages maximum)
+    input(type="file" name="extraits" id="extraits")
+      
   div.buttons
     input(type="submit",value="Poser sa candidature")
