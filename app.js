@@ -129,7 +129,9 @@ app.get('/', function (req, res) {
   res.render('gabarit', {place:'signup', token:token})
 })
 .post('/signup', upload.any(), async function(req, res){
+  // console.log("req.files = ", req.files)
   FrontTests.checkFields(req)
+  // console.log("req.files après checkFields = ", req.files)
   const Signup = require('./controllers/user/signup')
   if ( await Signup.isValid(req, res) ) {
     res.render('gabarit', {place:'signup', action:'confirmation'})

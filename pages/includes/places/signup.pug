@@ -6,51 +6,100 @@ h1 Poser sa candidature à l’atelier Icare
 form(method="POST",id="new_user_form",enctype="multipart/form-data")
   input(type="hidden" name="token" value=`${token}`)
     
+  
+  fieldset
+    legend Votre identité
+    div.row(id="div-row-pseudo" class=vdt && vdt.getClass('pseudo'))
+      label Votre pseudo (ou votre nom de préférence)
+        span.warning.tiny= vdt && vdt.getError('pseudo')
+      input(
+        type="text" name="pseudo" placeholder="Votre pseudo" 
+        value=vdt && vdt.getValue('pseudo') 
+        )
+
+    div.row(id="div-row-mail" class=vdt&&vdt.getClass('mail'))
+      label Votre mail
+        span.warning.tiny= vdt && vdt.getError('mail')
+      input(type="text" name="mail" placeholder="Votre mail"
+        value=vdt&&vdt.getValue('mail')
+        )
+
+    div.row(class=vdt&&vdt.getClass('mail_confirmation'))
+      label Confirmez votre mail
+        span.warning.tiny= vdt && vdt.getError('mail_confirmation')
+      input(type="text" name="mail_confirmation" placeholder="confirmation du mail")
+
+    div.row(class=vdt&&vdt.getClass('password'))
+      label Mot de passe
+        span.warning.tiny= vdt && vdt.getError('password')
+      input(type="password" name="password" placeholder="Votre mot de passe")
+        
+    div.row(class=vdt&&vdt.getClass('password_confirmation'))
+      label Confirmez votre mot de passe
+        span.warning.tiny= vdt && vdt.getError('password_confirmation')
+      input(type="password" name="password_confirmation" placeholder="confirmation mot de passe")
+
+    //- PRÉCISIONS
+    div.row
+      label Votre année de naissance
+      - 
+        currentYear = new Date().getFullYear() - 16
+        i = 0
+      select(name="naissance" id="naissance")
+        while i++ < 100
+          - year = currentYear - i
+          option(value=`${year}`)= year
+
+    div.row
+      label Je suis…
+      select(name="sexe")
+        option(value="F") une femme
+        option(value="H") un homme
+        options(value="X") autre chose
+          
+  //- LES DOCUMENTS
+  
+  fieldset
+    legend Documents de présentation
+    div.row(class=vdt&&vdt.getClass('presentation'))
+      label Document de présentation
+        span.warning.tiny= vdt && vdt.getError('presentation')
+      input(type="file" name="presentation" id="presentation")
     
-  div.row(id="div-row-pseudo" class=vdt && vdt.getClass('pseudo'))
-    label Votre pseudo
-      span.warning.tiny= vdt && vdt.getError('pseudo')
-    input(
-      type="text" name="pseudo" placeholder="Votre pseudo" 
-      value=vdt && vdt.getValue('pseudo') 
-      )
-
-  div.row(id="div-row-mail" class=vdt&&vdt.getClass('mail'))
-    label Votre mail
-      span.warning.tiny= vdt && vdt.getError('mail')
-    input(type="text" name="mail" placeholder="Votre mail"
-      value=vdt&&vdt.getValue('mail')
-      )
-
-  div.row(class=vdt&&vdt.getClass('mail_confirmation'))
-    label Confirmez votre mail
-      span.warning.tiny= vdt && vdt.getError('mail_confirmation')
-    input(type="text" name="mail_confirmation" placeholder="confirmation du mail")
-
-  div.row(class=vdt&&vdt.getClass('password'))
-    label Mot de passe
-      span.warning.tiny= vdt && vdt.getError('password')
-    input(type="password" name="password" placeholder="Votre mot de passe")
-      
-  div.row(class=vdt&&vdt.getClass('password_confirmation'))
-    label Confirmez votre mot de passe
-      span.warning.tiny= vdt && vdt.getError('password_confirmation')
-    input(type="password" name="password_confirmation" placeholder="confirmation mot de passe")
-
-  div.row(class=vdt&&vdt.getClass('presentation'))
-    label Document de présentation
-      span.warning.tiny= vdt && vdt.getError('presentation')
-    input(type="file" name="presentation" id="presentation")
-  
-  div.row(class=vdt&&vdt.getClass('motivation'))
-    label Lettre de motivation
-      span.warning.tiny= vdt && vdt.getError('motivation')
-    input(type="file" name="motivation" id="motivation")
-  
+    div.row(class=vdt&&vdt.getClass('motivation'))
+      label Lettre de motivation
+        span.warning.tiny= vdt && vdt.getError('motivation')
+      input(type="file" name="motivation" id="motivation")
+    
+    div.row
+      label Extraits (5 pages maximum)
+        span.warning.tiny= vdt && vdt.getError('extraits')
+      input(type="file" name="extraits" id="extraits")
+    
+    
+    
   div.row
-    label Extraits (5 pages maximum)
-      span.warning.tiny= vdt && vdt.getError('extraits')
-    input(type="file" name="extraits" id="extraits")
-      
+    label Merci de répondre à ces quelques questions…
+    fieldset
+      div 
+        input(type="checkbox" id="cb-atelier-inline" name="atelier-inline")
+        label(for="cb-atelier-inline") J’ai déjà participé à des ateliers en ligne
+      div
+        input(type="checkbox" id="cb-atelier-insitu" name="atelier-insitu")
+        label(for="cb-atelier-insitu") J’ai déjà participé à des ateliers physiques
+      div
+        input(type="checkbox" id="cb-school" name="school")
+        label(for="cb-school") J’ai fait une école d’écriture
+    fieldset
+      div
+        input(type="radio" id="cb-knowledges-none" name="knowledges" value="none")
+        label(for="cb-knowledges-none") Je n’ai jamais rien lu sur la dramaturgie
+      div
+        input(type="radio" id="cb-knowledges-afew" name="knowledges" value="afew")
+        label(for="cb-knowledges-afew") J’ai lu quelques livres sur la dramaturgie
+      div
+        input(type="radio" id="cb-knowledges-alot" name="knowledges" value="alot")
+        label(for="cb-knowledges-alot") J’ai lu beaucoup de choses sur la dramaturgie
+  
   div.buttons
-    input(type="submit",value="Poser sa candidature")
+    input(type="submit",value="Poser sa candidature" class="btn main")

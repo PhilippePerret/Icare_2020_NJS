@@ -4,7 +4,9 @@ input[type="text"], input[type="password"], textarea, select, select option
   font-style: inherit
 
 form
-  div.row
+  > fieldset, fieldset
+    max-width: 400px
+  > div.row, > fieldset div.row
     border: 1px solid transparent
     padding: 4px
     margin-top: 4px
@@ -23,7 +25,3 @@ form
   > div.buttons
     text-align: right
     margin-top: 1em
-    input[type="submit"]
-      border: 1px solid
-      border-radius: 8px
-      padding: 2px 8px

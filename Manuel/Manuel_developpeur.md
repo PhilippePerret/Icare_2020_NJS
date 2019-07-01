@@ -12,6 +12,7 @@
 * [Les formulaires](#les_formulaires)
   * [Validation des formulaires](#valider_les_formulaires)
     * [Validateurs propres à l'application](#custom_form_validators)
+    * [Validation d’un fichier](#validate_a_file)
     * [Fichier App Validator](#fichier_validator_app)
     * [définir les tables DB de validation](#define_db_tables)
 
@@ -355,7 +356,100 @@ PropValidator.prototype.MaCustomMethodeDeCheck = function(params){
 
 ```
 
-### Fichier support Validator {#fichier_validator_app}
+### Validation d’un fichier {#validate_a_file}
+
+La validation d’un fichier est une opération spéciale. Il faut d'abord considérer que le traitement des formulaire `multipart/form-data` requièrent un traitement particulier, exécuté ici par le package `multer`. La route est définie par :
+
+```javascript
+
+post('/recevoir', upload.any(), async function(req, res){
+  //  Ici, req.files est un Array qui contient tous les fichiers
+  // donnés dans le formulaire.
+
+  FrontTests.checkFields(req) // permet d'exécuter les tests en simulant
+                              // l'entrée de documents
+
+  // On peut charger un validateur qui va permettre d'isoler le traitement
+  // de la validation.
+  const MonValidateur = require('./controllers/monValidateur')
+
+  if (await MonValidateur.validate(req, res)) {
+    // Le formulaire a été validé
+  } else {
+    // Le formulaire n'a pas été validé, il faut le soumettre
+    // à nouveau à l'utilisateur
+  }
+})
+
+```
+
+Ensuite, c'est dans `./controllers/monValidateur.js` que tout va se jouer. D'abord, en haut du fichier, on va appeler la configuration du grand validateur général `Validator`, avec :
+
+```javascript
+
+const Validator = require('../config/validator')
+
+```
+
+Ce chargement charge la classe générale, mais également toutes les définitions propres à l'application courante. Et notamment `Validator.prototype.validatorOfAppProperty` qui permet de définir des traitements sur des propriétés propres. Les documents sont des propriétés propres.
+
+Imaginons un document dont la propriété s'appelle `presentation` (c'est la présentation de l'utilisateur, par exemple). On peut la définir de cette manière :
+
+```javascript
+
+Validator.prototype.validatorOfAppProperty = function(property) {
+  let fval
+  switch (property) {
+    // ... des cas
+    case 'presentation':
+      fval = new FileValidator(this, 'presentation')
+      // On définit le nom human du document, qui apparaitra dans les messages
+      // de validation ou d'erreur
+      fval.human_name = 'le document « Présentation de l’user »'
+      // Ensuite, on définit comment le document doit être validé par
+      // la méthode de validation `isValidFile`
+      fval.isValidFile.data = {
+        // Le document doit avoir une de ces extensions :
+          extensions: ['.jpg', '.png', '.mp4']
+        // Le document doit avoir une taille supérieure à ce nombre d'octets
+        , min_size: 2000
+        // Le document doit avoir une taille inférieure ou égale à ce nombre
+        // d'octets
+        , max_size: 100000
+      }
+      // On doit retourner cette instance de validateur
+      return fval
+  }
+}
+
+```
+
+À présent, nous sommes prêts pour implémenter notre champ de formulaire pour recevoir le fichier de présentation de l'user :
+
+```javascript
+
+form(id="monForm")
+  div.row(class=vdt&&vdt.getClass('presentation'))
+    label Votre fichier de présentation
+    if !vdt || (vdt && vdt.hasError())
+      input(
+        type="file"
+        name="presentation"
+        id="presentation"
+      )
+    else //- validation OK du document
+      span= vdt.getValue('presentation') // DOIT RENVOYER LE NOM DU DOCUMENT
+      // TODO VOIR POUR NE FAIRE QU'UN SEUL INPUT-[file/hidden] AVEC
+      // DÉFINITION DE LA VALEUR (cf. le fichier TODO)
+      input(
+        type="hidden"
+        name="presentation"
+        value=vdt.getValue('presentation')
+      )
+
+```
+
+### Fichier App Validator {#fichier_validator_app}
 
 C'est un fichier qui peut se trouver dans le dossier des configuration de l'application, par exemple à l'adresse `<app folder>/config/validator.js`.
 
@@ -405,3 +499,7 @@ En clé se trouve la propriété utilisée dans le formulaire (en général, c'e
 `isUniq(property)` `['isUniq', 'property']`
 : Produit une erreur si la valeur du champ ne contient pas une valeur unique pour la colonne `property` dans la table `table`.
 : Cette méthode a besoin de [définir les tables DB de validation](#define_db_tables)
+
+`isValidFile(hexpected)`
+: Produit une erreur si le document correspondant à la propriété courante ne respecte pas les données définies dans `hexpected` (ou définies dans `isValidFile.data`).
+: Cf. [Validation d’un fichier](#validate_a_file) pour le détail.

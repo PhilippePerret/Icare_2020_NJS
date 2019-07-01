@@ -8,13 +8,19 @@
 
 **/
 const path = require('path')
+const fs = require('fs')
 
 function raise(msg){throw new Error(msg)}
 
 
 class Validator {
   static get REG_MAIL(){return /^([a-z0-9_\.\-]{4,30})\@([a-z0-9_\.\-]{4,30})\.([a-z]{1,6})$/}
-  static get REG_PSEUDO(){return /^[a-zA-Z0-9_]+$/}
+  // static get REG_PSEUDO(){return /^[a-zA-Z0-9_]+$/}
+  static get REG_PSEUDO(){return /^([A-zÀ-ÿ]| )+$/}
+
+  static getValidatorClass(name){
+    return eval(name)
+  }
 
 // ---------------------------------------------------------------------
 //  INSTANCE
@@ -28,6 +34,15 @@ class Validator {
     this.validators = {}
     this.errors  = []
     this.errorsPerProperty = {} // pour les champs
+    // Si la propriété request.files est définie (formulaire avec des documents)
+    // alors on fait une propriété `files` pour le validator avec en clé le
+    // champ et en valeur les données du file.
+    if ( this.requete.files ) {
+      this.files = new Map()
+      for (var dfile of this.requete.files ) {
+        this.files.set(dfile.fieldname, dfile)
+      }
+    }
   }
   // La méthode principale qui appelle la propriété à valider
   async validate(properties, options){
@@ -45,6 +60,8 @@ class Validator {
         return new MailValidator(this)
       case 'pseudo':
         return new PseudoValidator(this)
+      case 'password':
+        return new PasswordValidator(this)
       default:
         if ( typeof this.validatorOfAppProperty === 'function' ) {
           // Les propriétés propres à l'application
@@ -129,9 +146,17 @@ class PropValidator {
   constructor(validator, property){
     this.validator = validator
     this.property  = property
-    this.value     = this.requete.body[this.property]
-    // la confirmation, if any (utile pour `isConfirmed`)
-    this.value_confirmation = this.requete.body[`${this.property}_confirmation`]
+    // Si c'est un fichier
+    if ( this.requete.files && this.validator.files.has(property)) {
+      this.value = this.validator.files.get(property)
+      // console.log("this.value (file) = ", this.value)
+    } else {
+      this.value = this.requete.body[this.property]
+      if (this.value) this.value = this.value.trim()
+      // la confirmation, if any (utile pour `isConfirmed`)
+      this.value_confirmation = this.requete.body[`${this.property}_confirmation`]
+      if (this.value_confirmation) this.value_confirmation = this.value_confirmation.trim()
+    }
   }
   get requete(){return this.validator.requete}
   get reponse(){return this.validator.reponse}
@@ -191,6 +216,32 @@ class PropValidator {
       return this.addError(params, `${this.human_name} est absolument requis`)
     }
   }
+  isValidFile(expectedh, params){
+    // Confirme que le fichier de la propriété courante correspond aux
+    // exigences de la table expectedh qui peut contenir :extensions, les
+    // extensions acceptées, :min_size, la taille minimum supportée, :max_size
+    // la taille maximales acceptée etc.
+    expectedh = expectedh || this.isValidFile.data
+    const file = this.value
+    if ( expectedh.extensions ) {
+      // Le fichier doit avoir l'extension attendue
+      var extension = path.extname(file['originalname'])
+      if ( expectedh.extensions.includes(extension) === false ) {
+        return this.addError(params, `${this.human_name} n’est pas d’un format valide (${extension}). Formats possibles : ${expectedh.extensions.join(', ')}.`)
+      }
+    }
+    if ( expectedh.max_size ) {
+      if ( file.size > expectedh.max_size ) {
+        return this.addError(params, `${this.human_name} est trop gros (${file.size} octets). Taille maximale : ${expectedh.max_size} octets.`)
+      }
+    }
+    if ( expectedh.min_size ) {
+      if ( file.size < expectedh.min_size ) {
+        return this.addError(params, `${this.human_name} est trop petit (${file.size} octets). Taille minimale : ${expectedh.max_size} octets.`)
+      }
+    }
+
+  }
   async isUniq(params){
     // Cette validation particulière a besoin de connaitre la table DB dans
     // laquelle on doit chercher les données. Elle doit être définie par
@@ -240,12 +291,21 @@ class PasswordValidator extends PropValidator {
   get human_name(){return 'le mot de passe'}
   get conditions(){return [
       ['isRequired']
+    , ['isShorterThan', 30]
+    , ['isGreaterThan', 6]
     , ['isConfirmed']
   ]}
 }
 
-Object.defineProperty(Validator, 'TablePerProperty',{
-  get(){return require(path.resolve(__dirname, '../config/validator_tables'))}
-})
+class FileValidator extends PropValidator {
+  constructor(validator, property){super(validator, property)}
+  get human_name(){return this._human_name || `le document "${this.property}"`}
+  set human_name(v){ this._human_name = v}
+  get conditions(){return this._conditions || [
+      ['isRequired']
+    , ['isValidFile']
+  ]}
+  set conditions(v){this._conditions = v}
+}
 
 module.exports = Validator

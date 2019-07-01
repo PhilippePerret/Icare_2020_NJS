@@ -1,7 +1,8 @@
 'use strict'
 
-// const Validate = require('../Validate')
-const Validator = require('../Validator')
+// const Validate = require('../Validate') // NE SERT PLUS
+// const Validator = require('../Validator')
+const Validator = require('../../config/validator')
 /**
   La Class Signup qui s'occupe de valider ou invalider l'inscription
 **/
@@ -21,8 +22,7 @@ class Signup {
     // modifiés, etc.
     let validator = new Validator(req, res)
     // Ici, on définit ce que le validateur doit vérifier
-    await validator.validate(['token', 'mail', 'pseudo'])
-    // await validator.validate(['token','pseudo','mail','sexe','birthday'])
+    await validator.validate(['token', 'mail', 'pseudo', 'password', 'presentation', 'motivation'])
 
     // console.log("Liste totale des erreurs à la fin du check : ", errors, errors.length)
     if ( validator.hasErrors() ) {
