@@ -11,6 +11,9 @@
   * [`update`, actualiser des données](#update_data_in_db)
 * [Les formulaires](#les_formulaires)
   * [Validation des formulaires](#valider_les_formulaires)
+    * [Validateurs propres à l'application](#custom_form_validators)
+    * [Fichier App Validator](#fichier_validator_app)
+    * [définir les tables DB de validation](#define_db_tables)
 
 
 ---------------------------------------------------------------------
@@ -174,10 +177,11 @@ form(id="form-Id" enctype="multipart/form-data" ...)
 
   div.row(id="div-row-property" class=vdt&&vdt.getClass('property'))
 
-    // Le label
+    // Le label (avec écriture du message d'erreur sur le champ)
     label "Label de la propriété"
+      span.warning.tiny= vdt && vdt.getError('property')
 
-    // Le champ de saisi
+    // Le champ de saisie
     input(
       type="text"
       name="property"
@@ -278,13 +282,15 @@ class MaValidation {
 }
 ```
 
+### Validateurs propres à l'application {#custom_form_validators}
+
 Parmi les propriétés à valider, certaines sont communes : `token`, `mail` pour tester un mail et sa confirmation, `pseudo` pour tester un pseudo, `password` pour tester un mot de passe et sa confirmation.
 
 Pour les propriétés propres des formulaires, il faut créer des classes héritant de la class `PropValidator` et définir à quelles propriétés elle doivent réagir.
 
 Pour l'exemple, imaginons que nous devions valider deux propriétés : la première est `experience` (un champ pour écrire son expérience) et la seconde est `cv` (un document).
 
-Dans le dossier `support/app`, nous allons commencer par définir un fichier qui va contenir la définition de nos validations. Par exemple dans `support/app/validations.js`. Dans ce fichier, nous commençons par mettre :
+Dans le dossier `config/`, nous allons commencer par définir un fichier qui va contenir la définition de nos validations et que nous appellerons le [« fichier App Validator »](#fichier_validator_app). Dans `config/validator_tables.js`. Dans ce fichier, nous commençons par mettre :
 
 ```javascript
 
@@ -349,11 +355,33 @@ PropValidator.prototype.MaCustomMethodeDeCheck = function(params){
 
 ```
 
+### Fichier support Validator {#fichier_validator_app}
+
+C'est un fichier qui peut se trouver dans le dossier des configuration de l'application, par exemple à l'adresse `<app folder>/config/validator.js`.
+
+Il permet entre autres choses de [définir les validations](#custom_form_validators) propres au site ou [définir les tables DB](#define_db_tables).
+
+### Définir les tables DB de validation {#define_db_tables}
+
+Certaines méthodes, en particulier `isUniq`, ont besoin de savoir quelle table utilisée pour effectuer leur test. On le définit en étendant la classe `Validator` avec la propriété `tablePerProperty`. Cette extension peut se faire dans le [fichier App Validator](#fichier_validator_app).
+
+```javascript
+
+// Pour tablePerProperty
+module.exports = {
+    'mail': ['icare_users.users', 'mail']
+  , 'pseudo': ['icare_users.users', 'pseudo']
+}
+
+```
+
+En clé se trouve la propriété utilisée dans le formulaire (en général, c'est le nom de la colonne dans la table). En valeur, on définit un Array qui contient en premier élément la table à utiliser, sous la forme `database.table` et en second élément le nom de la colonne qui contient la valeur.
+
 
 ### Liste complète des conditions {#validator_all_conditions}
 
-`isRequired` (fichiers)
-: Produit un échec si le fichier n'est pas fourni.
+`isRequired`
+: Produit un échec si l'élément n'est pas fourni.
 
 `isNotEmpty`
 : Produit une erreur si le champ est vide.
@@ -364,11 +392,16 @@ PropValidator.prototype.MaCustomMethodeDeCheck = function(params){
 `isMatching(regExp)`
 : Produit une erreur si la valeur du champ ne matche pas l'expression régulière fournie en argument.
 
+`isConfirmed`
+: Produit une erreur si la confirmation de la valeur ne correspond pas à la valeur (comme c'est la nécessité pour le mail ou le mot de passe à l'inscription).
+: Pour pouvoir fonctionner, le champ de saisie de la confirmation doit impérativement porter le même nom que la propriété, auquel on ajoute `_confirmation`. Par exemple, si le champ du mail s'appelle `mail` (`name="mail"`), il est impératif que le champ de saisie de la confirmation porte le `name="mail_confirmation"`. Dans le cas contraire, la confirmation ne pourrait être testée.
+
 `isGreaterThan(expected)`
 : Produit une erreur si la valeur du champ est moins long que la valeur donnée en argument (expected).
 
 `isShorterThan(expecter)`
 : Produit une erreur si la valeur du champ est plus long que la valeur donnée en argument (expected).
 
-`isUniq(table, property)`, `['isUniq', '<property>']`
+`isUniq(property)` `['isUniq', 'property']`
 : Produit une erreur si la valeur du champ ne contient pas une valeur unique pour la colonne `property` dans la table `table`.
+: Cette méthode a besoin de [définir les tables DB de validation](#define_db_tables)

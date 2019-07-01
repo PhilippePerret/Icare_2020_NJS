@@ -1,3 +1,4 @@
+
 .mini {font-size:8.5pt;}
 
 div#fronttests-div-regfile {
@@ -31,14 +32,15 @@ input#fronttests-test-filename {
 }
 #console #console-messages {
   padding:1em;
-  max-height: 300px;
-  height: 300px;
+  height: 330px;
   overflow:auto;
+  font-size:10.4pt;
   /* border:1px solid red; */
 }
 #console #console-messages .warning, #console .failure {color:#E90000;}
 #console #console-messages .notice,  #console .success {color:#00DD00;}
 #console #console-messages .blue {color:#127AFF!important;}
+#console #console-messages .orange {color: orange;}
 #console .mini {font-size:0.85em;}
 #console .discret {font-size:0.85em;opacity:0.5;}
 

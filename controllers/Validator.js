@@ -7,6 +7,8 @@
   Class Validate
 
 **/
+const path = require('path')
+
 function raise(msg){throw new Error(msg)}
 
 
@@ -32,7 +34,7 @@ class Validator {
     for ( var property of properties ){
       // On valide — ou pas — la propriété
       Object.assign(this.validators, {[property]: this.validatorOfProperty(property)})
-      this.validators[property].validate()
+      await this.validators[property].validate()
     }
   }
   validatorOfProperty(property){
@@ -67,7 +69,34 @@ class Validator {
     }
   }
   getClass(property){
-    return this.errorsPerProperty[property] ? 'fieldError' : ''
+    return this.isErrorField(property) ? 'fieldError' : ''
+  }
+
+  // Retourne true si +property+ est une propriété erronée, ou
+  // sa confirmation.
+  isErrorField(property){
+    let prop
+    if ( property.endsWith('_confirmation')) {
+      prop = property.replace(/_confirmation$/,'')
+    } else {
+      prop = '' + property
+    }
+    return !!this.errorsPerProperty[prop]
+  }
+  /**
+    Retourne un message d'erreur, entre parenthèses, à mettre après
+    le label de la propriété.
+    Noter qu'on met les parenthèses ici pour pouvoir faire simplement :
+    `span.warning.tiny= vdt && vdt.getError('property')` dans la vue
+    Noter également qu'ici passent aussi les champs de confirmation mais
+    qu'ils n'ont pas été validés en tant que tel. C'est le champ de référence
+    qui porte cette validation. Par exemple, si mail_confirmation est mauvais,
+    c'est la property 'mail' qui va porter l'erreur. Donc il faut faire un
+    test ici
+  **/
+  getError(property){
+    if ( this.isErrorField(property) === false || property.endsWith('_confirmation') ) return ''
+    else return ` (${this.errorsPerProperty[property].error})`
   }
   /**
     On ajoute une erreur
@@ -101,6 +130,8 @@ class PropValidator {
     this.validator = validator
     this.property  = property
     this.value     = this.requete.body[this.property]
+    // la confirmation, if any (utile pour `isConfirmed`)
+    this.value_confirmation = this.requete.body[`${this.property}_confirmation`]
   }
   get requete(){return this.validator.requete}
   get reponse(){return this.validator.reponse}
@@ -132,34 +163,52 @@ class PropValidator {
   }
   isNotEmpty(params){
     if ( !this.value || this.value.length === 0) {
-      return this.addError(params, `${this.human_name} ne devrait pas être vide.`)
+      return this.addError(params, `${this.human_name} ne devrait pas être vide`)
     }
   }
   isGreaterThan(expected, params){
     if (!this.value || this.value.length <= expected) {
-      return this.addError(params, `${this.human_name} doit faire plus de ${expected} signes (il en fait ${this.value.length}).`)
+      return this.addError(params, `${this.human_name} doit faire plus de ${expected} signes, il en fait ${this.value.length}`)
     }
   }
   isShorterThan(expected, params){
     if (!this.value || this.value.length >= expected) {
-      return this.addError(params, `${this.human_name} doit faire moins de ${expected} signes (il en fait ${this.value.length}).`)
+      return this.addError(params, `${this.human_name} doit faire moins de ${expected} signes, il en fait ${this.value.length}`)
     }
   }
   isMatching(regexp, params){
     if ( this.value.match(regexp) === null) {
-      return this.addError(params, `${this.human_name} n’est pas valide.`)
+      return this.addError(params, `${this.human_name} n’est pas valide`)
+    }
+  }
+  isConfirmed(params){
+    if ( this.value !== this.value_confirmation ) {
+      return this.addError(params, `${this.human_name} n’est pas correctement confirmé`)
     }
   }
   isRequired(params){
     if ( !this.value ) {
-      return this.addError(params, `{this.human_name} est absolument requis.`)
+      return this.addError(params, `${this.human_name} est absolument requis`)
+    }
+  }
+  async isUniq(params){
+    // Cette validation particulière a besoin de connaitre la table DB dans
+    // laquelle on doit chercher les données. Elle doit être définie par
+    // l'application, p.e. dans support/app/validator.js, dans la propriété
+    // Validator.tablePerProperty
+    Validator.TablePerProperty || raise("Il faut impérativement définir `Validator.TablePerProperty` pour pouvoir utiliser le validateur `isUniq`.")
+    let [table, column] = Validator.TablePerProperty[this.property]
+    table || raise(`Il faut impérativement définir Validator.TablePerProperty['${this.property}'] pour pouvoir checker la propriété "${this.property}."`)
+    let ret2 = await DB.getWhere(table, {[column]: this.value}, ['id', 'pseudo'])
+    if ( ret2.length > 0 ){
+      return this.addError(params, `${this.human_name} doit être unique`)
     }
   }
 }
 
 class TokenValidator extends PropValidator {
   constructor(validator){super(validator,'token')}
-  get human_name(){return 'Le token du formulaire'}
+  get human_name(){return 'le token du formulaire'}
   get conditions(){return [
     ['isEqual', this.requete.session.form_token, {error:"Le formulaire est invalide."}]
   ]}
@@ -167,28 +216,36 @@ class TokenValidator extends PropValidator {
 
 class MailValidator extends PropValidator {
   constructor(validator){super(validator,'mail')}
-  get human_name(){return "Le mail"}
+  get human_name(){return "le mail"}
   get conditions(){return [
-        ['isNotEmpty', {error: 'votre mail est absolument requis'}]
+        ['isRequired']
       , ['isMatching', Validator.REG_MAIL]
-      , ['isUniq', 'mail']
+      , ['isUniq', {error: 'le mail existe déjà, vous ne pouvez pas l’utiliser'}]
+      , ['isConfirmed']
   ]}
 }
 class PseudoValidator extends PropValidator {
   constructor(validator){super(validator,'pseudo')}
-  get human_name(){return "Le pseudo"}
+  get human_name(){return "le pseudo"}
   get conditions(){return [
-        ['isNotEmpty', {error: 'votre pseudo est absolument requis'}]
+        ['isRequired']
       , ['isMatching', Validator.REG_PSEUDO]
       , ['isGreaterThan', 3]
       , ['isShorterThan', 31]
-      , ['isUniq', 'pseudo']
+      , ['isUniq', {error: 'ce pseudo ne peut pas être utilisé'}]
   ]}
 }
 class PasswordValidator extends PropValidator {
-  constructor(validator){
-    super(validator,'password')
-  }
+  constructor(validator){super(validator,'password')}
+  get human_name(){return 'le mot de passe'}
+  get conditions(){return [
+      ['isRequired']
+    , ['isConfirmed']
+  ]}
 }
+
+Object.defineProperty(Validator, 'TablePerProperty',{
+  get(){return require(path.resolve(__dirname, '../config/validator_tables'))}
+})
 
 module.exports = Validator

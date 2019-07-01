@@ -6,6 +6,7 @@ Dernier numéro de note : 0001
 * [Installation](#setup_fronttests_for_a_site)
   * [Chargement du middleware](#setting_the_middleware)
   * [Lancement des tests (chargement du panneau FrontTests)](#load_tests_panel)
+* [Messages de résultat](#resultats_messages)
 * [Tests sur le DOM et les DOM elements](#tester_le_dom)
   * [Test des DOM Elements](#tests_on_dom_elements)
     * [Programmer une nouvelle assertion](#new_assertion_for_dom_element)
@@ -53,6 +54,26 @@ La fenêtre s'ouvre alors en deux parties, avec à gauche le site lui-même et �
 > Noter que pour le moment, il faut impérativement utiliser l'adresse `localhost:3000` pour lancer l'application et les front-tests.
 
 Pour forcer l'actualisation de la liste des tests, il faut utiliser l'adresse `http://localhost:3000/ftt/update`.
+
+---------------------------------------------------------------------
+
+## Messages de résultat {#resultats_messages}
+
+### Pour écrire une contrainte {#ecrire_une_contrainte}
+
+```javascript
+
+constraint("Cette contrainte doit être respecter")
+
+```
+
+### Pour écrire une action accomplie {#ecrire_une_action}
+
+```javascript
+
+action("J'accomplis telle action")
+
+```
 
 ---------------------------------------------------------------------
 

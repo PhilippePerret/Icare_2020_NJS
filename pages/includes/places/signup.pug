@@ -9,40 +9,47 @@ form(method="POST",id="new_user_form",enctype="multipart/form-data")
     
   div.row(id="div-row-pseudo" class=vdt && vdt.getClass('pseudo'))
     label Votre pseudo
+      span.warning.tiny= vdt && vdt.getError('pseudo')
     input(
       type="text" name="pseudo" placeholder="Votre pseudo" 
       value=vdt && vdt.getValue('pseudo') 
-      
       )
 
   div.row(id="div-row-mail" class=vdt&&vdt.getClass('mail'))
     label Votre mail
+      span.warning.tiny= vdt && vdt.getError('mail')
     input(type="text" name="mail" placeholder="Votre mail"
       value=vdt&&vdt.getValue('mail')
       )
 
   div.row(class=vdt&&vdt.getClass('mail_confirmation'))
     label Confirmez votre mail
+      span.warning.tiny= vdt && vdt.getError('mail_confirmation')
     input(type="text" name="mail_confirmation" placeholder="confirmation du mail")
 
   div.row(class=vdt&&vdt.getClass('password'))
     label Mot de passe
+      span.warning.tiny= vdt && vdt.getError('password')
     input(type="password" name="password" placeholder="Votre mot de passe")
       
   div.row(class=vdt&&vdt.getClass('password_confirmation'))
     label Confirmez votre mot de passe
+      span.warning.tiny= vdt && vdt.getError('password_confirmation')
     input(type="password" name="password_confirmation" placeholder="confirmation mot de passe")
 
   div.row(class=vdt&&vdt.getClass('presentation'))
     label Document de présentation
+      span.warning.tiny= vdt && vdt.getError('presentation')
     input(type="file" name="presentation" id="presentation")
   
   div.row(class=vdt&&vdt.getClass('motivation'))
     label Lettre de motivation
+      span.warning.tiny= vdt && vdt.getError('motivation')
     input(type="file" name="motivation" id="motivation")
   
   div.row
     label Extraits (5 pages maximum)
+      span.warning.tiny= vdt && vdt.getError('extraits')
     input(type="file" name="extraits" id="extraits")
       
   div.buttons
