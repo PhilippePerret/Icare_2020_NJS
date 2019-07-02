@@ -68,7 +68,7 @@ class Signup {
       |
       |
     **/
-    this.create(req.body)
+    await this.create(req.body)
 
     /**
       |
@@ -76,8 +76,7 @@ class Signup {
       |     à l'utilisateur
       |
     **/
-    this.sendMails()
-    console.log("Je passe la procédure d'envoi des mails pour poursuivre")
+    await this.sendMails()
     /**
       |
       | -- On confirme la bonne marche de la candidature en envoyant
@@ -121,15 +120,18 @@ static async sendMails(){
   // Mail à l'user pour lui confirmer son inscription
   // Mail à l'administration pour informer de l'inscription
   console.log("J'envoie les mails")
-  // J'essaie d'envoyer un mail
-  new Mail(
-    {subject: "Confirmation candidature", text:'Salut Phil !', html: '<p>Salut Phil !</p>'}
-  ).send()
-  new Mail(
-    {subject: "Confirmation candidature", to:'philippe.perret@yahoo.fr', text:'Salut Phil !', html: '<p>Salut Phil !</p>'}
-  ).send()
+
+  await Mail.send({
+      to:'phil@atelier-icare.net'
+    , subject:'Nouvelle candidature'
+    , text: 'Nouvelle candidature sur le site.'
+  })
+  await Mail.send({
+      to:'philippe.perret@yahoo.fr'
+    , subject:'Votre candidature a été reçue'
+    , text: 'Bonjour, nous avons fait bonne réception de votre candidature.'
+  })
   console.log("J'ai envoyé les mails")
-  // Mail.transporter.close()
 }
 
 } // /Signup
