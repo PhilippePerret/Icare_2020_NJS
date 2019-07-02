@@ -22,6 +22,9 @@ global.DB = require('./config/mysql') // DB.connexion
 // }
 // essaiDB()
 
+global.APP_PATH = __dirname
+
+global.Icare = require('./controllers/Icare')
 global.User = require('./models/User')
 
 global.Dialog = class {
@@ -60,8 +63,6 @@ app.use(cookieParser('ATELIERICARECOOKIES'))
 app.use(flash())
 
 app.use('/assets', express.static(__dirname + '/lib'))
-
-global.APPPATH = __dirname
 
 // Settings
 app.set('views', './pages')

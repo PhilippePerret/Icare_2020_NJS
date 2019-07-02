@@ -9,6 +9,8 @@ private/
 
 uploads/
 
+tmp/
+
 # Runtime data
 pids
 *.pid

@@ -9,15 +9,14 @@ const FileValidator = Validator.getValidatorClass('FileValidator')
     , PropValidator = Validator.getValidatorClass('PropValidator')
 
 Validator.TablePerProperty = {
-    'mail':   ['icare_users.users', 'mail']
-  , 'pseudo': ['icare_users.users', 'pseudo']
+    'mail':       ['icare_users.users', 'mail']
+  , 'pseudo':     ['icare_users.users', 'pseudo']
+  , 'patronyme':  ['icare_users.users', 'patronyme']
 }
 
 Validator.prototype.validatorOfAppProperty = function(property){
   let fval
   switch (property) {
-    case 'patronyme':
-      return new PropValidator(this,'patronyme')
     case 'presentation':
       fval = new FileValidator(this, 'presentation')
       fval.human_name = 'le document de présentation'
@@ -27,7 +26,7 @@ Validator.prototype.validatorOfAppProperty = function(property){
       return fval
     case 'motivation':
       fval = new FileValidator(this, 'motivation')
-      fval.human_name = 'le document « lettre de motivation »'
+      fval.human_name = 'le document « Lettre de motivation »'
       fval.isValidFile.data = {
         extensions: TEXT_EXTENSIONS, max_size: 500000, min_size: 1000
       }

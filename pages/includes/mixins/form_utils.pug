@@ -16,7 +16,7 @@ mixin divRow(label, property, withConf, vdt)
       div.warning.tiny= vdt && vdt.getError(property)
     input(type='text' name=`${property}` value=vdt&&vdt.getValue(property))
   if withConf
-    +divRow(`Confirmez ${label.toLowerCase()}`, `${property}_confirmation`)
+    +divRow(`Confirmez ${label.toLowerCase()}`, `${property}_confirmation`, false, vdt)
 
 mixin divFile(label, property, vdt)
   div.row(id=`div-row-${property}` class=vdt&&vdt.getClass(property))

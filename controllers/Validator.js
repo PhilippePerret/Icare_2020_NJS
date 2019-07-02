@@ -16,7 +16,8 @@ function raise(msg){throw new Error(msg)}
 class Validator {
   static get REG_MAIL(){return /^([a-z0-9_\.\-]{4,30})\@([a-z0-9_\.\-]{4,30})\.([a-z]{1,6})$/}
   // static get REG_PSEUDO(){return /^[a-zA-Z0-9_]+$/}
-  static get REG_PSEUDO(){return /^([A-zÀ-ÿ]| )+$/}
+  static get REG_PSEUDO(){return /^([A-zÀ-ÿ0-9]| )+$/}
+  static get REG_PATRONYME(){return /^([A-zÀ-ÿ]| )+$/}
 
   static getValidatorClass(name){
     return eval(name)
@@ -78,6 +79,8 @@ class Validator {
         return new PseudoValidator(this)
       case 'password':
         return new PasswordValidator(this)
+      case 'patronyme':
+        return new PatronymeValidator(this)
       default:
         if ( typeof this.validatorOfAppProperty === 'function' ) {
           // Les propriétés propres à l'application
@@ -287,7 +290,9 @@ class PropValidator {
     }
   }
   isMatching(regexp, params){
+    // console.log("this.value, regexp = ", this.value, regexp)
     if ( this.value.match(regexp) === null) {
+      console.log("Ça ne matche pas.")
       return this.addError(params, `${this.human_name} n’est pas valide`)
     }
   }
@@ -306,8 +311,15 @@ class PropValidator {
     // exigences de la table expectedh qui peut contenir :extensions, les
     // extensions acceptées, :min_size, la taille minimum supportée, :max_size
     // la taille maximales acceptée etc.
+
+    // Mais si la valeur est un string, c'est que le fichier a déjà été
+    // confirmée.
+    if ( typeof this.value === 'string' ) return true
+
+    // Sinon, c'est bien un fichier qu'il faut vérifier
     expectedh = expectedh || this.isValidFile.data
     const file = this.value
+    // console.log("[isValidFile] this.value, expectedh = ", this.value, expectedh)
     if ( expectedh.extensions ) {
       // Le fichier doit avoir l'extension attendue
       var extension = path.extname(file['originalname'])
@@ -316,13 +328,13 @@ class PropValidator {
       }
     }
     if ( expectedh.max_size ) {
-      if ( file.size > expectedh.max_size ) {
-        return this.addError(params, `${this.human_name} est trop gros (${file.size} octets). Taille maximale : ${expectedh.max_size} octets.`)
+      if ( file['size'] > expectedh.max_size ) {
+        return this.addError(params, `${this.human_name} est trop long (${file['size']} octets). Taille maximale : ${expectedh.max_size} octets.`)
       }
     }
     if ( expectedh.min_size ) {
       if ( file.size < expectedh.min_size ) {
-        return this.addError(params, `${this.human_name} est trop petit (${file.size} octets). Taille minimale : ${expectedh.max_size} octets.`)
+        return this.addError(params, `${this.human_name} est trop court (${file.size} octets). Taille minimale : ${expectedh.min_size} octets.`)
       }
     }
 
@@ -335,7 +347,8 @@ class PropValidator {
     Validator.TablePerProperty || raise("Il faut impérativement définir `Validator.TablePerProperty` pour pouvoir utiliser le validateur `isUniq`.")
     let [table, column] = Validator.TablePerProperty[this.property]
     table || raise(`Il faut impérativement définir Validator.TablePerProperty['${this.property}'] pour pouvoir checker la propriété "${this.property}."`)
-    let ret2 = await DB.getWhere(table, {[column]: this.value}, ['id', 'pseudo'])
+    let ret2 = await DB.getWhere(table, {[column]: this.value}, ['id', 'pseudo', 'patronyme'])
+    // console.log(`ret2 avec ${column} et ${this.value}`, ret2)
     if ( ret2.length > 0 ){
       return this.addError(params, `${this.human_name} doit être unique`)
     }
@@ -371,6 +384,17 @@ class PseudoValidator extends PropValidator {
       , ['isUniq', {error: 'ce pseudo ne peut pas être utilisé'}]
   ]}
 }
+
+class PatronymeValidator extends PropValidator {
+  constructor(validator){super(validator,'patronyme')}
+  get human_name(){return 'le patronyme'}
+  get conditions(){return [
+      ['isGreaterThan', 4]
+    , ['isShorterThan', 31]
+    , ['isUniq', {error: 'ce patronyme est déjà porté'}]
+  ]}
+}
+
 class PasswordValidator extends PropValidator {
   constructor(validator){super(validator,'password')}
   get human_name(){return 'le mot de passe'}

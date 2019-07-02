@@ -11,6 +11,7 @@ Dernier numéro de note : 0001
   * [Test des DOM Elements](#tests_on_dom_elements)
     * [Programmer une nouvelle assertion](#new_assertion_for_dom_element)
 * [Manipulation des formulaires](#deal_with_forms)
+  * [Simuler le choix d'un fichier](#simulate_file_upload)
 
 ## Introduction, présentation {#introduction_presentation}
 
@@ -168,3 +169,17 @@ let form = Form.new('#monFormulaire')
 ```
 
 Le problème est que la page est rechargée et que le formulaire initial n'est plus le même. C'est la raison pour laquelle on initialise toujours `_domobj` afin que l'élément DOM soit toujours recherché dans la page courante.
+
+### Simuler le choix d'un fichier {#simulate_file_upload}
+
+Pour simuler un fichier on peut utiliser :
+
+```javascript
+
+form.fillWith({
+  file_field_name: "long_document.docx"
+})
+
+```
+
+Le nom du document doit impérativement être un document se trouvant dans le dossier `lib/fronttests/__app_tests__/support/documents/`.
