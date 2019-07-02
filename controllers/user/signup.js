@@ -22,7 +22,12 @@ class Signup {
     // modifiés, etc.
     let validator = new Validator(req, res)
     // Ici, on définit ce que le validateur doit vérifier
-    await validator.validate(['token', 'mail', 'pseudo', 'password', 'presentation', 'motivation'])
+    // Mais on doit aussi lui donner les autres champs afin qu'il puisse en
+    // connaitre les valeurs
+    await validator.validate(
+        ['token', 'pseudo', 'mail', 'password', 'presentation', 'motivation']
+      , ['patronyme', 'extraits']
+    )
 
     // console.log("Liste totale des erreurs à la fin du check : ", errors, errors.length)
     if ( validator.hasErrors() ) {

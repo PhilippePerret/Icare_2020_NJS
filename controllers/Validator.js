@@ -23,7 +23,7 @@ class Validator {
   }
 
 // ---------------------------------------------------------------------
-//  INSTANCE
+//  INSTANCE VALIDATOR
 
   constructor(req, rep){
     this.requete = req
@@ -37,6 +37,7 @@ class Validator {
     // Si la propriété request.files est définie (formulaire avec des documents)
     // alors on fait une propriété `files` pour le validator avec en clé le
     // champ et en valeur les données du file.
+    // console.log("this.requete.files= ", this.requete.files)
     if ( this.requete.files ) {
       this.files = new Map()
       for (var dfile of this.requete.files ) {
@@ -44,11 +45,26 @@ class Validator {
       }
     }
   }
-  // La méthode principale qui appelle la propriété à valider
-  async validate(properties, options){
+
+  /**
+    |
+    |
+    | Méthode appelée dans le module de validation d'un formulaire
+    | qui demande la validation
+    |
+    |
+    @param {Array} properties Liste des propriétés à valider
+    @param {Array} outProperties  Liste des propriétés à ne pas valider, mais
+                                  qu'il faut connaitre pour que les mixins
+                                  fonctionnent, par exemple.
+    @param {Object} options       Options éventuelles (non utilisées encore)
+  **/
+  async validate(properties, outProperties, options){
+    for ( var property of [...properties,...outProperties]) {
+      Object.assign(this.validators, {[property]: this.validatorOfProperty(property)})
+    }
     for ( var property of properties ){
       // On valide — ou pas — la propriété
-      Object.assign(this.validators, {[property]: this.validatorOfProperty(property)})
       await this.validators[property].validate()
     }
   }
@@ -74,17 +90,44 @@ class Validator {
 
   hasErrors(){return this.errors.length > 0}
 
+
+  /**
+    |
+    | Helpers utilisés par les formulaires pour marquer les champs
+    | erronés, pour remettre les valeurs validées, etc.
+    |
+    |
+  **/
+
   /**
     Appelée depuis le formulaire, cette méthode retourne la valeur à donner
     au champ de la propriété +property+
   **/
   getValue(property){
+    // console.log("property=", property)
     if ( this.errorsPerProperty[property] ) {
       return this.errorsPerProperty[property].newValue || this.errorsPerProperty[property].value || ''
     } else {
-      return this.validators[property].value
+      // Propriété normale ou onfirmation valide (puisqu'il n'y a pas d'erreur)
+      var prop = this.isConfirmation(property) ? this.confirmationProp(property) : property
+      return this.validators[prop].value
     }
   }
+  /**
+    Appelée depuis le formulaire, retourne la valeur à donner au champ
+    hidden pour un input-hidden de fichier, lorsque le fichier a été
+    confirmé/validé
+  **/
+  getValueAsFile(property){
+    // Quelle valeur faut-il retourner ? peut-être un truc avec le
+    // nom original (originalname) et le nom dans 'uploads' ?
+    const value = this.getValue(property)
+    return `${value['originalname']}::${value['path']}`
+  }
+  getFileName(property){
+    return this.getValue(property)['originalname']
+  }
+  // Class CSS à donner au div.row suivant que le champ est erroné ou non
   getClass(property){
     return this.isErrorField(property) ? 'fieldError' : ''
   }
@@ -93,13 +136,15 @@ class Validator {
   // sa confirmation.
   isErrorField(property){
     let prop
-    if ( property.endsWith('_confirmation')) {
-      prop = property.replace(/_confirmation$/,'')
+    if ( this.isConfirmation(property) ) {
+      prop = this.confirmationProp(property)
     } else {
       prop = '' + property
     }
     return !!this.errorsPerProperty[prop]
   }
+  isNotErrorField(property){return !this.isErrorField(property)}
+
   /**
     Retourne un message d'erreur, entre parenthèses, à mettre après
     le label de la propriété.
@@ -112,11 +157,28 @@ class Validator {
     test ici
   **/
   getError(property){
-    if ( this.isErrorField(property) === false || property.endsWith('_confirmation') ) return ''
+    if ( this.isErrorField(property) === false || this.isConfirmation(property) ) return ''
     else return ` (${this.errorsPerProperty[property].error})`
   }
+
+  isConfirmation(property){
+    return property.endsWith('_confirmation')
+  }
+  // Reçoit 'mail_confirmation' et retourne 'mail'
+  confirmationProp(property){
+    return property.replace(/_confirmation$/,'')
+  }
   /**
-    On ajoute une erreur
+    |
+    |
+    | Méthodes de traitement des erreurs
+    |
+    |
+    |
+  **/
+
+  /**
+    Ajout d'une erreur
     @param {PropValidator} propV L'instance de validateur de propriété
     @param {Object} params  Les paramètres. Contient notamment :error, le
                             message de l'erreur rencontrée et :silence qui
@@ -140,17 +202,30 @@ class Validator {
 
 }
 
-// ---------------------------------------------------------------------
+/** ---------------------------------------------------------------------
+  |
+  |
+  |
+  | Les validateurs de propriété
+  |
+  |
+  |
+**/
 
 class PropValidator {
   constructor(validator, property){
     this.validator = validator
     this.property  = property
+    // console.log("Instanciation du validateur de la propriété ", property)
+    // console.log("this.requete.files = ", this.requete.files)
+    // console.log("this.validator.files = ", this.validator.files)
+    // console.log(`this.validator.files.get('${property}') = `, this.validator.files.get(property))
     // Si c'est un fichier
-    if ( this.requete.files && this.validator.files.has(property)) {
+    if ( this.validator.files && this.validator.files.has(property)) {
+      // Pour un input-file
       this.value = this.validator.files.get(property)
-      // console.log("this.value (file) = ", this.value)
     } else {
+      // Pour un autre champ normal
       this.value = this.requete.body[this.property]
       if (this.value) this.value = this.value.trim()
       // la confirmation, if any (utile pour `isConfirmed`)
@@ -180,6 +255,16 @@ class PropValidator {
       if (await this[method](...condition) === false) break
     }
   }
+
+  /** ---------------------------------------------------------------------
+    |
+    |
+    |
+    | Les méthodes de validation
+    |
+    |
+    |
+  **/
 
   isEqual(expected, params){
     if ( this.value !== expected ) {

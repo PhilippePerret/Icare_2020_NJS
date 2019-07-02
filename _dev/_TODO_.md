@@ -1,6 +1,9 @@
 # Todo list
 
-
+- Comment faire la différence entre les champs à modifier et les autres
+  Le problème est qu'un champ qui n'est pas à modifier ne produit rien dans le validateur, et qu'on ne peut donc pas l'utiliser pour récupérer les valeurs, etc.
+  Voir le problème avec le document 'extraits' du formulaire d'inscription
+  
 - Poursuivre l'implémentation du formulaire pour un document
   S'arranger pour avoir un seul `input` et régler son type à `file` quand le document n'a pas été encore soumis ou quand il est invalide et `hidden` lorsqu'il est valide
   - Lorsqu'il est valide :

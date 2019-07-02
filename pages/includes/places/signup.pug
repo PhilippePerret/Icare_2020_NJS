@@ -2,43 +2,18 @@ h1 Poser sa candidature à l’atelier Icare
   
 - const vdt = locals.validator
 
+include ../mixins/form_utils
 
 form(method="POST",id="new_user_form",enctype="multipart/form-data")
   input(type="hidden" name="token" value=`${token}`)
-    
   
   fieldset
     legend Votre identité
-    div.row(id="div-row-pseudo" class=vdt && vdt.getClass('pseudo'))
-      label Votre pseudo (ou votre nom de préférence)
-        span.warning.tiny= vdt && vdt.getError('pseudo')
-      input(
-        type="text" name="pseudo" placeholder="Votre pseudo" 
-        value=vdt && vdt.getValue('pseudo') 
-        )
-
-    div.row(id="div-row-mail" class=vdt&&vdt.getClass('mail'))
-      label Votre mail
-        span.warning.tiny= vdt && vdt.getError('mail')
-      input(type="text" name="mail" placeholder="Votre mail"
-        value=vdt&&vdt.getValue('mail')
-        )
-
-    div.row(class=vdt&&vdt.getClass('mail_confirmation'))
-      label Confirmez votre mail
-        span.warning.tiny= vdt && vdt.getError('mail_confirmation')
-      input(type="text" name="mail_confirmation" placeholder="confirmation du mail")
-
-    div.row(class=vdt&&vdt.getClass('password'))
-      label Mot de passe
-        span.warning.tiny= vdt && vdt.getError('password')
-      input(type="password" name="password" placeholder="Votre mot de passe")
-        
-    div.row(class=vdt&&vdt.getClass('password_confirmation'))
-      label Confirmez votre mot de passe
-        span.warning.tiny= vdt && vdt.getError('password_confirmation')
-      input(type="password" name="password_confirmation" placeholder="confirmation mot de passe")
-
+    +divRow('Votre pseudo', 'pseudo', false, vdt)
+    +divRow('Votre patronyme', 'patronyme', false, vdt)
+    +divRow('Votre mail', 'mail', true, vdt)
+    +divRow('Votre mot de passe', 'password', true, vdt)
+    
     //- PRÉCISIONS
     div.row
       label Votre année de naissance
@@ -55,28 +30,15 @@ form(method="POST",id="new_user_form",enctype="multipart/form-data")
       select(name="sexe")
         option(value="F") une femme
         option(value="H") un homme
-        options(value="X") autre chose
+        option(value="X") autre chose
           
   //- LES DOCUMENTS
   
   fieldset
     legend Documents de présentation
-    div.row(class=vdt&&vdt.getClass('presentation'))
-      label Document de présentation
-        span.warning.tiny= vdt && vdt.getError('presentation')
-      input(type="file" name="presentation" id="presentation")
-    
-    div.row(class=vdt&&vdt.getClass('motivation'))
-      label Lettre de motivation
-        span.warning.tiny= vdt && vdt.getError('motivation')
-      input(type="file" name="motivation" id="motivation")
-    
-    div.row
-      label Extraits (5 pages maximum)
-        span.warning.tiny= vdt && vdt.getError('extraits')
-      input(type="file" name="extraits" id="extraits")
-    
-    
+    +divFile('Document de présentation', 'presentation', vdt)
+    +divFile('Lettre de motivation', 'motivation', vdt)
+    +divFile('Extraits (~ 5 pages)', 'extraits', vdt)    
     
   div.row
     label Merci de répondre à ces quelques questions…

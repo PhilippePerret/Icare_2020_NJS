@@ -1,0 +1,37 @@
+//- 
+  
+  Utilitaires pour les formulaires
+  
+  Requiert la class Validator
+
+//- 
+  Pour une row dans un formulaire avec un input-text simple
+  @param {String} label     Le label du champ
+  @param {String} property  La propriété concernée
+  @param {Boolean} withConf Si true, on ajoute le champ de confirmation
+  @param {Validator} vdt    Le validateur de formulaire
+mixin divRow(label, property, withConf, vdt)
+  div.row(id=`div-row-${property}` class=vdt&&vdt.getClass(property))
+    label= label
+      div.warning.tiny= vdt && vdt.getError(property)
+    input(type='text' name=`${property}` value=vdt&&vdt.getValue(property))
+  if withConf
+    +divRow(`Confirmez ${label.toLowerCase()}`, `${property}_confirmation`)
+
+mixin divFile(label, property, vdt)
+  div.row(id=`div-row-${property}` class=vdt&&vdt.getClass(property))
+    label= label
+      div.warning.tiny= vdt&&vdt.getError(property)
+    //- 
+      Si le document a été donné, validé si nécessaire, on écrit 
+      simplement son nom.
+    if vdt && vdt.getValue(property) && vdt.isNotErrorField(property)
+      span= vdt.getFileName(property)
+    input(
+      type=(vdt&&vdt.getValue(property)&&vdt.isNotErrorField(property))?'hidden':'file'
+      name=`${property}`
+      id=`${property}`
+      value=vdt&&vdt.getValue(property)&&vdt.getValueAsFile(property)
+    )
+
+      

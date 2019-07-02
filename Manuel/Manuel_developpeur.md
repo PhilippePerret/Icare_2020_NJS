@@ -189,6 +189,16 @@ form(id="form-Id" enctype="multipart/form-data" ...)
       value=vdt&&vdt.getValue('property')
     )
 
+    // Le champ de saisie pour une confirmation, si nécessaire
+    label "Confirmation de la propriété"
+      span.warning.tiny= vdt && vdt.getError('property_confirmation')
+    input(
+      type="text"
+      name="property_confirmation"
+      value=vdt&&vdt.getValue('property_confirmation')
+    )
+
+
 
   div.buttons
 
@@ -431,21 +441,18 @@ Validator.prototype.validatorOfAppProperty = function(property) {
 form(id="monForm")
   div.row(class=vdt&&vdt.getClass('presentation'))
     label Votre fichier de présentation
-    if !vdt || (vdt && vdt.hasError())
-      input(
-        type="file"
-        name="presentation"
-        id="presentation"
-      )
-    else //- validation OK du document
-      span= vdt.getValue('presentation') // DOIT RENVOYER LE NOM DU DOCUMENT
-      // TODO VOIR POUR NE FAIRE QU'UN SEUL INPUT-[file/hidden] AVEC
-      // DÉFINITION DE LA VALEUR (cf. le fichier TODO)
-      input(
-        type="hidden"
-        name="presentation"
-        value=vdt.getValue('presentation')
-      )
+      span.warning.tiny= vdt && vdt.getError('presentation')
+    //- Pour mettre le nom du document quand il est OK
+    if vdt&&vdt.isNotErrorField('presentation')
+      span= vdt.getFileName('presentation')
+    //- input-file ou input-hidden suivant que le document a été
+    //- donné ou non
+    input(
+      type=(vdt&&vdt.isNotErrorField('presentation'))?'hidden':'file'
+      name="presentation"
+      id="presentation"
+      value=vdt&&vdt.getValueAsFile('presentation')
+    )
 
 ```
 
