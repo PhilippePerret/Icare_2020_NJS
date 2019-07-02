@@ -26,6 +26,7 @@ global.APP_PATH = __dirname
 
 global.Icare = require('./controllers/Icare')
 global.User = require('./models/User')
+const Mail = require('./controllers/Mail')
 
 global.Dialog = class {
   static init() { delete this._message }
@@ -135,12 +136,13 @@ app.get('/', function (req, res) {
   // console.log("req.files après checkFields = ", req.files)
   const Signup = require('./controllers/user/signup')
   if ( await Signup.isValid(req, res) ) {
-    res.render('gabarit', {place:'signup', action:'confirmation'})
+    // res.render('gabarit', {place:'signup', action:'confirmation'})
+    res.redirect('/')
   } else {
     var token = uuidv4()
     req.session.form_token = token
     Dialog.error(req.flash('error'))
-      res.render('gabarit', {place:'signup', token: token})
+    res.render('gabarit', {place:'signup', token: token})
       // res.redirect('/signup')
   }
 })
@@ -187,5 +189,32 @@ var server = app.listen(process.env.ALWAYSDATA_HTTPD_PORT||3000, process.env.ALW
   console.log("Je quitte l'application.")
   DB.stop()
 })
+
+// console.log("DATA_MAIL = ", DATA_MAIL)
+// let s = new SMTPClient({
+//   host: DATA_MAIL['host'],
+//   port: DATA_MAIL['port']
+// });
+//
+// (async function() {
+//   await s.connect();
+//   await s.greet({hostname: DATA_MAIL['host']}); // runs EHLO command or HELO as a fallback
+//   await s.authPlain({username: DATA_MAIL['auth']['user'], password: DATA_MAIL['auth']['pass']}); // authenticates a user
+//   await s.mail({from: 'phil@atelier-icare.net'}); // runs MAIL FROM command
+//   await s.rcpt({to: 'philippe.perret@yahoo.fr'}); // runs RCPT TO command (run this multiple times to add more recii)
+//   await s.data('mail source'); // runs DATA command and streams email source
+//   await s.quit(); // runs QUIT command
+// })().catch(console.error);
+
+// Mail.send("Un nouveau message pour voir.")
+var dataMessage = {
+    to: 'philippe.perret@yahoo.fr'
+  , subject:'Un essai de message total'
+  , text: 'Ça, c’est l’été ?…'
+  , html: '<p>Ça, c’est l’été ?…</p><div style="background-color:teal;height:8px;"></div>'
+  , BCC: 'phil@atelier-icare.net'
+}
+// Mail.send(dataMessage)
+
 
 module.exports = server

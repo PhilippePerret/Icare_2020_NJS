@@ -3,6 +3,8 @@
 const path = require('path')
     , fs   = require('fs')
 
+const Mail = require('../../controllers/Mail')
+
 // const Validate = require('../Validate') // NE SERT PLUS
 // const Validator = require('../Validator')
 const Validator = require('../../config/validator')
@@ -75,7 +77,7 @@ class Signup {
       |
     **/
     this.sendMails()
-
+    console.log("Je passe la procédure d'envoi des mails pour poursuivre")
     /**
       |
       | -- On confirme la bonne marche de la candidature en envoyant
@@ -115,9 +117,19 @@ static create(uData) {
   fs.writeFileSync(udata_file, JSON.stringify(uData))
 }
 
-static sendMails(){
+static async sendMails(){
   // Mail à l'user pour lui confirmer son inscription
   // Mail à l'administration pour informer de l'inscription
+  console.log("J'envoie les mails")
+  // J'essaie d'envoyer un mail
+  new Mail(
+    {subject: "Confirmation candidature", text:'Salut Phil !', html: '<p>Salut Phil !</p>'}
+  ).send()
+  new Mail(
+    {subject: "Confirmation candidature", to:'philippe.perret@yahoo.fr', text:'Salut Phil !', html: '<p>Salut Phil !</p>'}
+  ).send()
+  console.log("J'ai envoyé les mails")
+  // Mail.transporter.close()
 }
 
 } // /Signup
