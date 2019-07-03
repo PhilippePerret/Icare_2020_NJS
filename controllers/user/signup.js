@@ -128,8 +128,6 @@ create(){
 async sendMails(){
   // Mail à l'user pour lui confirmer son inscription
   // Mail à l'administration pour informer de l'inscription
-  console.log("J'envoie les mails")
-
   await Mail.send({
       to:'phil@atelier-icare.net'
     , subject:'Nouvelle candidature'
@@ -140,7 +138,6 @@ async sendMails(){
     , subject:'Votre candidature a été reçue'
     , text: `Bonjour,\n\nNous avons fait bonne réception de votre candidature à l’atelier Icare.\n\nVotre numéro d'enregistrement est le : ${this.uuid}.\n\nVous serez informé${this.e_f} très prochainement de la décision prise par Phil d’accepter votre candidature.`
   })
-  console.log("J'ai envoyé les mails")
 }
 
 

@@ -96,22 +96,27 @@ app.use((req, res, next) => {
   next()
 })
 
-const FrontTests = require('./lib/fronttests/lib/middleware')
+app.use((req,res,next) => {
+  // res.locals.request = req
+  Icare.isLocalSite = req.headers.host.split(':')[0] === 'localhost'
+
+  // On renseigne `route` qui pourra être utilisé n'importe où
+  // dans les vues et templates
+  res.locals.route = req.path
+
+  // On continue
+  next()
+})
+
+const FrontTests = require('./lib/fronttests/app_middleware')
 app.use('/ftt(/:action)?', FrontTests.run)
+app.get('/fttajax', FrontTests.ajax.bind(FrontTests))
+
+
 
 app.post('/login', function(req, res){
   User.existsAndIsValid(req, res, {mail:req.body._umail_, password:req.body._upassword_})
 })
-
-
-
-app.use((req,res,next)=>{
-  // res.locals.request = req
-  res.locals.route = req.path
-  next()
-})
-
-
 app.get('/', function (req, res) {
   // res.send('Salut tout le monde !')
   // console.log("req.session.user_id : ", req.session.user_id)
