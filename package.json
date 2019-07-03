@@ -1,13 +1,20 @@
 {
   "name": "icare_2020_njs",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Site de l'Atelier Icare en version node.js",
   "main": "app.js",
   "scripts": {
-    "test": "mocha --full-trace=false ./tests/**/*.test.js --exit",
+    "--test": "mocha --full-trace=false ./tests/**/*.test.js --exit",
     "--test": "MODE_TEST=true node ./app",
-    "start": "nodemon app.js",
+    "start-dev": "nodemon app.js",
+    "start":"node .",
+    "test":"nodemon app.js &",
+    "posttest":"npm run open-google-for-fronttests",
+    "open-google-for-fronttests": "open -a 'Google Chrome' 'http://localhost:3000/ftt'",
     "watch-sass": "node-sass -w --recursive --incluce-path=lib/css/_sass/ lib/css/index.sass lib/css/all.css --output-style=compressed"
+  },
+  "nodemonConfig":{
+    "ignore": [".git", "uploads/*", "tmp/*"]
   },
   "repository": {
     "type": "git",
@@ -25,14 +32,18 @@
     "cookie-parser": "^1.4.4",
     "express": "^4.17.1",
     "express-session": "^1.16.2",
+    "multer": "^1.4.1",
     "mysql-easier": "^2.1.0",
     "nodemon": "^1.19.1",
     "passport": "^0.4.0",
     "passport-local": "^1.0.0",
     "pug": "^2.0.4",
+    "smtp-client": "^0.3.1",
     "uuid": "^3.3.2"
   },
   "devDependencies": {
+    "browserify-fs": "^1.0.0",
+    "fs": "0.0.1-security",
     "mocha": "^6.1.4",
     "should": "^13.2.3",
     "supertest": "^4.0.2"

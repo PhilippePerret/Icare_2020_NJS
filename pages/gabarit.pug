@@ -1,24 +1,27 @@
 doctype html
 html
   include includes/layout/head
-  body
-    include includes/layout/header
-    case place
-      when 'home'
-        include includes/places/home
-      when 'login'
-        include includes/places/login
-      when 'bureau'
-        include includes/places/bureau
-      when 'cul_de_sac'
-        include includes/places/cul_de_sac
-      when 'admin'
-        include includes/places/admin
-      when 'aide'
-        include includes/places/aide
-      when 'modules'
-        include includes/places/modules
-      when 'signup'
-        include includes/places/signup
-      
-    include includes/layout/footer
+  body(
+    class = route=='/' ? "home":""
+    )
+    section#content
+      include includes/layout/header
+      case place
+        when 'home'
+          include includes/places/home
+        when 'login'
+          include includes/places/login
+        when 'bureau'
+          include includes/places/bureau
+        when 'cul_de_sac'
+          include includes/places/cul_de_sac
+        when 'admin'
+          include includes/places/admin
+        when 'aide'
+          include includes/places/aide
+        when 'modules'
+          include includes/places/modules
+        when 'signup'
+          include includes/places/signup
+        
+      include includes/layout/footer

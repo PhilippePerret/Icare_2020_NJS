@@ -1,5 +1,5 @@
 <script type="text/javascript" src="/assets/fronttests/fronttests.js"></script>
-<link rel="stylesheet" href="./assets/fronttests/html/fronttests.css">
+<link rel="stylesheet" href="/assets/fronttests/html/fronttests.css">
 <section id="fronttests">
   <div id="console">
     <div id="console-messages"></div>
@@ -14,14 +14,19 @@
       <button type="button" onclick="RunFrontTestsFile()">Jouer :</button>
     </div>
     <div class="col2">
-      <input type="text" id="fronttests-test-filename" value="app/test.js" placeholder="path/or/reg/to/file/from/tests">
+      <input type="text" id="fronttests-test-filename" value="user/signup.test.js" placeholder="path/or/reg/to/file/from/tests">
     </div>
     <div class="col3">
       <button type="button" onclick="RunAllFrontTestsFiles()">Lancer tous</button>
     </div>
   </div>
   <span class="mini">Indiquer le chemin relatif depuis le dossier <code>./lib/fronttests/__app_tests__/</code></span>
-
+  <div id="tests-tools" class="mini" style="vertical-align:middle;">
+    <span>
+      <input type="checkbox" id="fail_fast" name="fail_fast" value="">
+      <label for="fail_fast" class="">S'arrêter au premier échec</label>
+    </span>
+  </div>
 <!--
   |
   | Le champ de saisie pour mettre du code à jouer
@@ -37,7 +42,7 @@
     await wait(5000,"I'm waiting for 5 seconds")
     Log.notify("I'm finish!")
     </textarea>
-    <button type="button" onclick="FrontTestsRunLiveCode()">Jouer le code ci-dessous</button>
+    <button type="button" onclick="FrontTestsRunLiveCode()">Jouer le code ci-dessus</button>
   </div>
 </section>
 

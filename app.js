@@ -3,6 +3,12 @@ const flash = require('connect-flash');
 const app = express()
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
+const uuidv4       = require('uuid/v4');
+
+// Pour l'upload de fichier
+const multer = require('multer')
+// const upload = multer({ storage: multer.memoryStorage() })
+const upload = multer({ dest: 'uploads/' })
 
 const session = require('express-session')
 
@@ -16,7 +22,11 @@ global.DB = require('./config/mysql') // DB.connexion
 // }
 // essaiDB()
 
+global.APP_PATH = __dirname
+
+global.Icare = require('./controllers/Icare')
 global.User = require('./models/User')
+const Mail = require('./controllers/Mail')
 
 global.Dialog = class {
   static init() { delete this._message }
@@ -45,12 +55,15 @@ app.use(session({
 app.use(bodyParser.urlencoded({ extended: false }))
 // parse application/json
 app.use(bodyParser.json())
+
+// J'essaie ça pour pouvoir récupérer les valeurs postées dans le middleware
+// de FrontTests
+app.use(express.urlencoded({ extended: false }))
+
 app.use(cookieParser('ATELIERICARECOOKIES'))
 app.use(flash())
 
 app.use('/assets', express.static(__dirname + '/lib'))
-
-global.APPPATH = __dirname
 
 // Settings
 app.set('views', './pages')
@@ -64,7 +77,7 @@ global.PUG = require('pug')
 app.use(User.reconnect)
 
 // middleware
-app.use((req, res, next)=>{
+app.use((req, res, next) => {
   Dialog.init()
   var msg = req.flash('annonce')
   if ( msg.length ){
@@ -83,22 +96,21 @@ app.use((req, res, next)=>{
   next()
 })
 
-// Pour lancer FrontTests, il faut ajouter "?fronttests=1" à l'url
-app.use((req,res,next)=>{
-  // const FRONTTESTS = req.query.fronttests == '1'
-  const FRONTTESTS = !!req.query.ftt
-  if ( FRONTTESTS ) {
-    res.sendFile(__dirname+'/lib/fronttests/html/frames.html')
-    // Attention, il n'y a pas de `next()` ici, donc on ne va pas plus loin
-  } else {
-    next()
-  }
-})
-
+const FrontTests = require('./lib/fronttests/lib/middleware')
+app.use('/ftt(/:action)?', FrontTests.run)
 
 app.post('/login', function(req, res){
   User.existsAndIsValid(req, res, {mail:req.body._umail_, password:req.body._upassword_})
 })
+
+
+
+app.use((req,res,next)=>{
+  // res.locals.request = req
+  res.locals.route = req.path
+  next()
+})
+
 
 app.get('/', function (req, res) {
   // res.send('Salut tout le monde !')
@@ -123,14 +135,29 @@ app.get('/', function (req, res) {
   res.sendFile(__dirname+'/lib/fronttests/html/fronttests.html')
 })
 .get('/signup', function(req,res){
-  res.render('gabarit', {place:'signup'})
+  var token = uuidv4()
+  req.session.form_token = token
+  res.render('gabarit', {place:'signup', token:token, action:'formulaire'})
 })
-.post('/signup', function(req, res){
-  const Signup = require('./controllers/signup')
-  if ( Signup.isValid(req) )
+.get('/signup/documents', function(req,res){
+  res.render('gabarit', {place:'signup', action:'documents'})
+})
+.get('/signup/explication', function(req,res){
+  res.render('gabarit', {place:'signup', action:'explication'})
+})
+.post('/signup', upload.any(), async function(req, res){
+  // console.log("req.files = ", req.files)
+  FrontTests.checkFields(req)
+  // console.log("req.files après checkFields = ", req.files)
+  const Signup = require('./controllers/user/signup')
+  if ( await Signup.isValid(req, res) ) {
     res.render('gabarit', {place:'signup', action:'confirmation'})
-  else
-    res.redirect('/signup')
+  } else {
+    var token = uuidv4()
+    req.session.form_token = token
+    Dialog.error(req.flash('error'))
+    res.render('gabarit', {place:'signup', token: token, action:'formulaire'})
+  }
 })
 .get('/bureau/(:section)?', function(req,res){
   res.render('gabarit', {place:'bureau', messages: req.flash('info')})
@@ -175,5 +202,15 @@ var server = app.listen(process.env.ALWAYSDATA_HTTPD_PORT||3000, process.env.ALW
   console.log("Je quitte l'application.")
   DB.stop()
 })
+
+// var dataMessage = {
+//     to: 'philippe.perret@yahoo.fr'
+//   , subject:'Un essai de message total'
+//   , text: 'Ça, c’est l’été ?…'
+//   , html: '<p>Ça, c’est l’été ?…</p><div style="background-color:teal;height:8px;"></div>'
+//   , BCC: 'phil@atelier-icare.net'
+// }
+// // Mail.send(dataMessage)
+
 
 module.exports = server

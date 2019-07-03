@@ -28,6 +28,20 @@ class MyMySql {
     return retour[0]
   }
 
+  static async getWhere(table, wheres, columns) {
+    columns = columns || ['*']
+    columns = columns.join(', ')
+    var whereClause = []
+    var valueClause = []
+    for (var col in wheres) {
+      whereClause.push(`${col} = ?`)
+      valueClause.push(wheres[col])
+    }
+    whereClause = whereClause.join(' AND ')
+    var request = `SELECT ${columns} FROM ${table} WHERE ${whereClause}`
+    return await this.processQuery(request, valueClause)
+  }
+
   /**
     Retourne tous les éléments de la table, correspondant au filtre s'il
     est défini (une méthode qui va filtrer comme map.filter )
@@ -50,12 +64,14 @@ class MyMySql {
     Méthode principale pour envoyer une requête
   **/
   static async query(request, params, database){
+    console.log("-> DB.query", request, params)
     if (! this.configured) this.configure()
     if ( ! this.connexion ) {
       this.connexion = await mySqlEasier.getConnection()
     }
     if ( database ) await this.connexion.query(`USE ${database}`)
     var retour = await this.connexion.query(request, params)
+    console.log("<- DB.query", request, params)
     return retour
   }
 

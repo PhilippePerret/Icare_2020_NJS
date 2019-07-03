@@ -27,11 +27,15 @@ section#header
       a(href="/logout").log Se déconnecter
     else
       a(href="/login").log S’identifier
-      a(href="/signup",id="#btn-signup").log S’inscrire
+      a(href="/signup",id="btn-signup").log S’inscrire
   //- On indique l'utilisateur de la session
   if User.current
     div.session-owner= `Session de ${User.current.pseudo}`
-  h1 ATELIER ICARE
+  
+  //- 
+      TITRE DU SITE
+      
+  div#site_name ATELIER ICARE
 
   //- Le message flash à afficher (if any)
   if Dialog.message

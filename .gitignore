@@ -7,6 +7,10 @@ yarn-error.log*
 
 private/
 
+uploads/
+
+tmp/
+
 # Runtime data
 pids
 *.pid
