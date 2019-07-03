@@ -31,7 +31,11 @@ section#header
   //- On indique l'utilisateur de la session
   if User.current
     div.session-owner= `Session de ${User.current.pseudo}`
-  h1#site_name ATELIER ICARE
+  
+  //- 
+      TITRE DU SITE
+      
+  div#site_name ATELIER ICARE
 
   //- Le message flash à afficher (if any)
   if Dialog.message

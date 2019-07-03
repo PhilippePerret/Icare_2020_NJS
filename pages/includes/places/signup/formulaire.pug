@@ -1,0 +1,77 @@
+- const vdt = locals.validator
+
+include ../../mixins/form_utils
+
+p
+  | Avant toute chose, notez que pour déposer votre candidature à
+  | l’atelier Icare vous devez impérativement être en possession de
+  | votre 
+  |
+  a(href="/signup/documents#document_presentation") document de présentation
+  |
+  | et de votre 
+  |
+  a(href="/signup/documents#lettre_motivation") lettre de motivation
+  | .
+
+form(method="POST",id="new_user_form",enctype="multipart/form-data")
+  input(type="hidden" name="token" value=`${token}`)
+  
+  fieldset
+    legend Votre identité
+    +divRow('Votre pseudo', 'pseudo', false, vdt)
+    +divRow('Votre patronyme', 'patronyme', false, vdt)
+    +divRow('Votre mail', 'mail', true, vdt)
+    +divRow('Votre mot de passe', 'password', true, vdt)
+    
+    //- PRÉCISIONS
+    div.row
+      label Votre année de naissance
+      - 
+        currentYear = new Date().getFullYear() - 16
+        i = 0
+      select(name="naissance" id="naissance")
+        while i++ < 100
+          - year = currentYear - i
+          option(value=`${year}`)= year
+
+    div.row
+      label Je suis…
+      select(name="sexe")
+        option(value="F") une femme
+        option(value="H") un homme
+        option(value="X") autre chose
+          
+  //- LES DOCUMENTS
+  
+  fieldset
+    legend Documents de présentation
+    +divFile('Document de présentation', 'presentation', vdt)
+    +divFile('Lettre de motivation', 'motivation', vdt)
+    +divFile('Extraits (~ 5 pages)', 'extraits', vdt)    
+    
+  div.row
+    label Merci de répondre à ces quelques questions…
+    fieldset
+      div 
+        input(type="checkbox" id="cb-atelier-inline" name="atelier-inline")
+        label(for="cb-atelier-inline") J’ai déjà participé à des ateliers en ligne
+      div
+        input(type="checkbox" id="cb-atelier-insitu" name="atelier-insitu")
+        label(for="cb-atelier-insitu") J’ai déjà participé à des ateliers physiques
+      div
+        input(type="checkbox" id="cb-school" name="school")
+        label(for="cb-school") J’ai fait une école d’écriture
+    fieldset
+      div
+        input(type="radio" id="cb-knowledges-none" name="knowledges" value="none")
+        label(for="cb-knowledges-none") Je n’ai jamais rien lu sur la dramaturgie
+      div
+        input(type="radio" id="cb-knowledges-afew" name="knowledges" value="afew")
+        label(for="cb-knowledges-afew") J’ai lu quelques livres sur la dramaturgie
+      div
+        input(type="radio" id="cb-knowledges-alot" name="knowledges" value="alot")
+        label(for="cb-knowledges-alot") J’ai lu beaucoup de choses sur la dramaturgie
+  
+  div.buttons
+    input(type="submit",value="Poser sa candidature" class="btn main")

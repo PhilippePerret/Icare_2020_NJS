@@ -4,11 +4,17 @@
   "description": "Site de l'Atelier Icare en version node.js",
   "main": "app.js",
   "scripts": {
-    "test": "open -a 'Google Chrome' 'http://localhost:3000/ftt';node app.js",
     "--test": "mocha --full-trace=false ./tests/**/*.test.js --exit",
     "--test": "MODE_TEST=true node ./app",
-    "start": "nodemon app.js",
+    "start-dev": "nodemon app.js",
+    "start":"node .",
+    "test":"nodemon app.js &",
+    "posttest":"npm run open-google-for-fronttests",
+    "open-google-for-fronttests": "open -a 'Google Chrome' 'http://localhost:3000/ftt'",
     "watch-sass": "node-sass -w --recursive --incluce-path=lib/css/_sass/ lib/css/index.sass lib/css/all.css --output-style=compressed"
+  },
+  "nodemonConfig":{
+    "ignore": [".git", "uploads/*", "tmp/*"]
   },
   "repository": {
     "type": "git",

@@ -68,16 +68,19 @@ class Signup {
       |
       |
     **/
-    await this.create(req.body)
+    let signup = await this.create(req.body)
 
     /**
       |
       | --  On transmet la demande à l'administration et on la confirme
       |     à l'utilisateur
+      |     Note : ça se fait de façon asynchrone, sans retarder le chargement
+      |     de la page, contrairement à la version avec `await` qui prend
+      |     vraiment trop de temps.
       |
     **/
-    // await this.sendMails()
-    this.sendMails()
+    // await signup.sendMails()
+    signup.sendMails()
     /**
       |
       | -- On confirme la bonne marche de la candidature en envoyant
@@ -96,28 +99,33 @@ class Signup {
   avec les documents.
 **/
 static create(uData) {
-  let folderCandidature = path.join(Icare.folderCandidats, uData['token'])
-    , [name_presentation, src_presentation] = uData['presentation'].split('::')
-    , [name_motivation, src_motivation] = uData['motivation'].split('::')
-    , [name_extraits, src_extraits] = (uData['extraits']||'').split('::')
-    , dst_presentation = path.join(folderCandidature, `presentation${path.extname(name_presentation)}`)
-    , dst_motivation = path.join(folderCandidature, `motivation${path.extname(name_motivation)}`)
-    , udata_file = path.join(folderCandidature, 'udata.json')
-
-  // On crée le dossier de la candidature
-  fs.mkdirSync(folderCandidature)
-
-  // On copie les documents et les données dedans
-  fs.copyFileSync(src_presentation, dst_presentation)
-  fs.copyFileSync(src_motivation, dst_motivation)
-  if ( src_extraits ) {
-    let dst_extraits = path.join(folderCandidature, `extraits${path.extname(name_extraits)}`)
-    fs.copyFileSync(src_extraits, dst_extraits)
-  }
-  fs.writeFileSync(udata_file, JSON.stringify(uData))
+  let signup = new Signup(uData)
+  signup.create()
+  return signup
 }
 
-static async sendMails(){
+
+// ---------------------------------------------------------------------
+//  INSTANCE SIGNUP
+//  Pour gérer l'inscription en particulier
+constructor(uData){
+  this.uData = uData
+}
+
+/**
+  Création du dossier complet de candidature
+**/
+create(){
+  this.makeCandidatureFolder()
+  this.copyCandidatureFiles()
+  this.makeDataFile()
+}
+
+/**
+  Envoi des messages de confirmation au candidat et d'information
+  à l'administration.
+**/
+async sendMails(){
   // Mail à l'user pour lui confirmer son inscription
   // Mail à l'administration pour informer de l'inscription
   console.log("J'envoie les mails")
@@ -125,14 +133,80 @@ static async sendMails(){
   await Mail.send({
       to:'phil@atelier-icare.net'
     , subject:'Nouvelle candidature'
-    , text: 'Nouvelle candidature sur le site.'
+    , text: `Nouvelle candidature sur le site.\n\nID: ${this.uuid}`
   })
   await Mail.send({
       to:'philippe.perret@yahoo.fr'
     , subject:'Votre candidature a été reçue'
-    , text: 'Bonjour, nous avons fait bonne réception de votre candidature.'
+    , text: `Bonjour,\n\nNous avons fait bonne réception de votre candidature à l’atelier Icare.\n\nVotre numéro d'enregistrement est le : ${this.uuid}.\n\nVous serez informé${this.e_f} très prochainement de la décision prise par Phil d’accepter votre candidature.`
   })
   console.log("J'ai envoyé les mails")
+}
+
+
+/**
+  Le token du formulaire, qui sert aussi d'identifiant pour la candidature
+**/
+get token(){ return this.uData['token'].replace(/-/g,'').toUpperCase()}
+get uuid(){ return this.token }
+
+// Retourne un 'e' si le candidat est une femme.
+get e_f(){
+  if ( undefined === this._e_f ) this._e_f = this.isFemme?'e':''
+  return this._e_f
+}
+get isFemme(){
+  if ( undefined === this.isfemme ) this.isfemme = this.uData['sexe']=='F'
+  return this.isfemme
+}
+
+// Path au dossier candidature de l'élément +relpath+
+pathTo(relpath){
+  return path.join(this.folderCandidature,relpath)
+}
+
+get folderCandidature(){
+  if (undefined === this._foldercandidature){
+    this._foldercandidature = path.join(Icare.folderCandidats, this.token)
+  }
+  return this._foldercandidature
+}
+
+get uDataFile(){ return this.pathTo('udata.json') }
+
+// On crée le dossier de la candidature
+makeCandidatureFolder(){
+  fs.mkdirSync(this.folderCandidature)
+}
+
+// Copie des documents de présentation dans le dossier de candidature
+copyCandidatureFiles(){
+
+  // Document de présentation
+  let [name_pres, src_pres] = this.uData['presentation'].split('::')
+  fs.copyFileSync(
+    src_pres,
+    this.pathTo(`presentation${path.extname(name_pres)}`)
+  )
+
+  // Lettre de motivation
+  let [name_mot, src_mot]   = this.uData['motivation'].split('::')
+  fs.copyFileSync(
+    src_mot,
+    this.pathTo(`motivation${path.extname(name_mot)}`)
+  )
+
+  // Extraits ?
+  let [name_ext, src_ext]   = (this.uData['extraits']||'').split('::')
+  if ( src_ext ) {
+    let dst_ext = this.pathTo(`extraits${path.extname(name_ext)}`)
+    fs.copyFileSync(src_ext, dst_ext)
+  }
+}
+
+// Création du fichier qui contient toutes les informations
+makeDataFile(){
+  fs.writeFileSync(this.uDataFile, JSON.stringify(this.uData))
 }
 
 } // /Signup

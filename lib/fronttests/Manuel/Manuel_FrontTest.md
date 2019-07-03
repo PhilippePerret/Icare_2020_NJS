@@ -54,6 +54,8 @@ La fenêtre s'ouvre alors en deux parties, avec à gauche le site lui-même et �
 
 > Noter que pour le moment, il faut impérativement utiliser l'adresse `localhost:3000` pour lancer l'application et les front-tests.
 
+#### Actualisation de la liste des tests
+
 Pour forcer l'actualisation de la liste des tests, il faut utiliser l'adresse `http://localhost:3000/ftt/update`.
 
 ---------------------------------------------------------------------

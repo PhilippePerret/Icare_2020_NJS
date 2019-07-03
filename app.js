@@ -103,6 +103,15 @@ app.post('/login', function(req, res){
   User.existsAndIsValid(req, res, {mail:req.body._umail_, password:req.body._upassword_})
 })
 
+
+
+app.use((req,res,next)=>{
+  // res.locals.request = req
+  res.locals.route = req.path
+  next()
+})
+
+
 app.get('/', function (req, res) {
   // res.send('Salut tout le monde !')
   // console.log("req.session.user_id : ", req.session.user_id)
@@ -128,7 +137,13 @@ app.get('/', function (req, res) {
 .get('/signup', function(req,res){
   var token = uuidv4()
   req.session.form_token = token
-  res.render('gabarit', {place:'signup', token:token})
+  res.render('gabarit', {place:'signup', token:token, action:'formulaire'})
+})
+.get('/signup/documents', function(req,res){
+  res.render('gabarit', {place:'signup', action:'documents'})
+})
+.get('/signup/explication', function(req,res){
+  res.render('gabarit', {place:'signup', action:'explication'})
 })
 .post('/signup', upload.any(), async function(req, res){
   // console.log("req.files = ", req.files)
@@ -136,14 +151,12 @@ app.get('/', function (req, res) {
   // console.log("req.files après checkFields = ", req.files)
   const Signup = require('./controllers/user/signup')
   if ( await Signup.isValid(req, res) ) {
-    // res.render('gabarit', {place:'signup', action:'confirmation'})
-    res.redirect('/')
+    res.render('gabarit', {place:'signup', action:'confirmation'})
   } else {
     var token = uuidv4()
     req.session.form_token = token
     Dialog.error(req.flash('error'))
-    res.render('gabarit', {place:'signup', token: token})
-      // res.redirect('/signup')
+    res.render('gabarit', {place:'signup', token: token, action:'formulaire'})
   }
 })
 .get('/bureau/(:section)?', function(req,res){
