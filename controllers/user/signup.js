@@ -76,7 +76,8 @@ class Signup {
       |     à l'utilisateur
       |
     **/
-    await this.sendMails()
+    // await this.sendMails()
+    this.sendMails()
     /**
       |
       | -- On confirme la bonne marche de la candidature en envoyant

@@ -77,7 +77,7 @@ global.PUG = require('pug')
 app.use(User.reconnect)
 
 // middleware
-app.use((req, res, next)=>{
+app.use((req, res, next) => {
   Dialog.init()
   var msg = req.flash('annonce')
   if ( msg.length ){

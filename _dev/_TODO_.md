@@ -3,11 +3,11 @@
 - Pour les documents, quand ils sont bons, il faudrait faire un enregistrement,
   dans le dossier `uploads`, qui contienne les informations du fichier : `<uuid>.json` = {filename:, size: etc.}. Et on le remonte toujours à la page.
 
-- Comment faire la différence entre les champs à modifier et les autres
-  Le problème est qu'un champ qui n'est pas à modifier ne produit rien dans le validateur, et qu'on ne peut donc pas l'utiliser pour récupérer les valeurs, etc.
-  Voir le problème avec le document 'extraits' du formulaire d'inscription
+- Utiliser jQuery pour l'iframe front-tests. Pour notamment pouvoir faire des requêtes ajax facilement
+  * dans le code de l'application (le middleware FrontTests) il faut donc toutes les requêtes qui reçoivent ajax.
+  * Il faut totalement désactiver FrontTests en production, mais attention quand même à checkFields ? (même si normalement, on n'en a pas besoin).
 
-- Vider le dossier `uploads` au début des tests.
+- Vider le dossier `uploads` au début des tests. On sait que c'est le début des tests lorsque c'est la route '/ftt' qui est invoquée.
 
 - Poursuivre l'implémentation du formulaire pour un document
   S'arranger pour avoir un seul `input` et régler son type à `file` quand le document n'a pas été encore soumis ou quand il est invalide et `hidden` lorsqu'il est valide

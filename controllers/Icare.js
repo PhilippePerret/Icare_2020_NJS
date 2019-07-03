@@ -18,6 +18,10 @@ class Icare {
     }
     return this._folderCandidats
   }
+  static get folderUploads(){
+    if ( undefined === this._folderuploads ) this._folderuploads = path.join(APP_PATH,'uploads')
+    return this._folderuploads
+  }
   static get folderTemp(){
     if ( undefined === this._foldertemp) {
       this._foldertemp = path.join(APP_PATH, 'tmp')

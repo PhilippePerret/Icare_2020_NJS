@@ -39,7 +39,61 @@ class Mail {
   }
   static set config(v){this._config = v}
 
+  // Méthode qui prépare l'expression régulière de remplacement
+  // des caractères spéciaux dans le sujet
+  static prepareReg(){
+    // Cf. http://www.fileformat.info/info/unicode/char/00f4/index.htm
+    //     http://www.fileformat.info/info/unicode/category/Po/list.htm
+    var hreplace = {
+        'ç': 'A7' // -> =C3=A7
+      , 'Ç': '87'
+      , 'é': 'A9'
+      , 'É': '89'
+      , 'è': 'A8'
+      , 'ê': 'AA'
+      , 'ë': 'AB'
+      , 'Ê': '8A'
+      , 'à': 'A0'
+      , 'â': 'A2'
+      , 'æ': 'A6'
+      , 'Â': '82'
+      , 'Ô': '94'
+      , 'ô': 'F4'
+      , 'ö': 'B6'
+      , 'Œ': ['C5','92']
+      , 'œ': ['C5','93']
+      , 'ù': 'B9'
+      , 'û': 'BB'
+      , 'ü': 'BC'
+      , 'Ù': '99'
+      , 'Û': '9B'
+      , 'î': 'AE'
+      , 'ï': 'AF'
+      , '…': ['E2','80','A6']
+    }
+    var strReg = ""
+    for ( var letter in hreplace ){
+      var co = hreplace[letter]
+      strReg += letter
+      if ( typeof co === 'string' ) {
+        co = `=C3=${co}`
+      } else {
+        co = co.map( oc => `=${oc}`).join('')
+      }
+      hreplace[letter] = co
+    }
+    this.regHashReplacement = hreplace
+    this.regSpeciaux = new RegExp(`([${strReg}])`,'g')
+  }
+  // Méthode appelée par le replace pour remplacer les caractères
+  // spéciaux du sujet (subject)
+  static regFunction( match, ch ){
+    return this.regHashReplacement[ch]
+  }
+
+
   // ---------------------------------------------------------------------
+  // INSTANCE
 
   connexion(){
     return new SMTPClient({
@@ -62,18 +116,18 @@ class Mail {
   fullMessage(data){
     try {
       var add = this.addLines.bind(this)
+      var _ = this.addLines.bind(this)
 
       const boundary = "----ICARE-BOUNDARY----"
           , fullBoundary = `--${boundary}`
 
-      add('Return-Path', `<${data.from || DEFAULT_EMAIL}>`)
+      _('Return-Path', `<${data.from || DEFAULT_EMAIL}>`)
       // add('Date', `${new Date()}`)
-      add('From', `<${data.from || DEFAULT_EMAIL}>`)
-      // add('MIME-Version', '1.0')
-      add('To', `<${data.to || DEFAULT_EMAIL}>`)
+      _('From', `<${data.from || DEFAULT_EMAIL}>`)
+      _('To', `<${data.to || DEFAULT_EMAIL}>`)
       data.CC   && add('CC', `<${data.CC}>`)
       data.BCC  && add('BCC', `<${data.BCC}>`)
-      add('Subject', this.formateSubject(data.subject))
+      _('Subject', this.formateSubject(data.subject))
       add('Content-Type', `multipart/alternative; boundary="${boundary}"`)
       add('Content-Transfer-Encoding','quoted-printable')
       add('Content-Language', 'fr-FR')
@@ -126,61 +180,14 @@ class Mail {
       this.lines.push(propOrLine)
     }
   }
-
-  prepareReg(){
-    // Cf. http://www.fileformat.info/info/unicode/char/00f4/index.htm
-    //     http://www.fileformat.info/info/unicode/category/Po/list.htm
-    var hreplace = {
-        'ç': 'A7' // =C3=A}
-      , 'ç': '87'
-      , 'é': 'A9'
-      , 'É': '89'
-      , 'è': 'A8'
-      , 'ê': 'AA'
-      , 'ë': 'AB'
-      , 'Ê': '8A'
-      , 'à': 'A0'
-      , 'â': 'A2'
-      , 'æ': 'A6'
-      , 'Â': '82'
-      , 'Ô': '94'
-      , 'ô': 'F4'
-      , 'ö': 'B6'
-      , 'Œ': ['C5','92']
-      , 'œ': ['C5','93']
-      , 'ù': 'B9'
-      , 'û': 'BB'
-      , 'ü': 'BC'
-      , 'Ù': '99'
-      , 'Û': '9B'
-      , 'î': 'AE'
-      , 'ï': 'AF'
-      , '…': ['E2','80','A6']
-    }
-    var strReg = ""
-    for ( var let in hreplace ){
-      var co = hreplace[let]
-      strReg += let
-      if ( typeof co === 'string' ) {
-        co = `=C3=${co}`
-      } else {
-        co = co.map( oc => `=${oc}`).join('')
-      }
-      hreplace[let] = co
-    }
-    this.regHashReplacement = hreplace
-    this.regSpeciaux = new RegExp(`([${strReg}])`,'g')
-  }
-  regFunction( match, ch ){
-    return this.regHashReplacement[ch]
-  }
   formateSubject(str){
-    // console.log("Str au départ : ", str)
+    console.log("Str au départ : ", str)
+    const my = this
     if ( Mail.config.subject_header ) str = `${Mail.config.subject_header}${str}`
-    if ( undefined === this.regSpeciaux ) this.prepareReg()
-    str = str.replace(this.regSpeciaux, this.regFunction)
+    if ( undefined === Mail.regSpeciaux ) Mail.prepareReg()
+    str = str.replace(Mail.regSpeciaux, Mail.regFunction.bind(Mail))
     str = `=?utf-8?Q?${str}?=`
-    // console.log("Str à la fin : ", str)
+    console.log("Str à la fin : ", str)
     return str
   }
 
