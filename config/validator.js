@@ -17,6 +17,17 @@ Validator.TablePerProperty = {
 Validator.prototype.validatorOfAppProperty = function(property){
   let fval
   switch (property) {
+    case 'sexe':
+    case 'naissance':
+      fval = new PropValidator(this, property)
+      return fval
+    case 'module':
+      fval = new PropValidator(this, 'module')
+      fval.human_name = 'le module d’apprentissage'
+      fval.conditions = [
+        ['isRequired']
+      ]
+      return fval
     case 'presentation':
       fval = new FileValidator(this, 'presentation')
       fval.human_name = 'le document de présentation'

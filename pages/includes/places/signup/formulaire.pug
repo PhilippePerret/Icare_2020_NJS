@@ -2,7 +2,7 @@
 
 include ../../mixins/form_utils
 
-p
+p.explication
   | Avant toute chose, notez que pour déposer votre candidature à
   | l’atelier Icare vous devez impérativement être en possession de
   | votre 
@@ -25,23 +25,34 @@ form(method="POST",id="new_user_form",enctype="multipart/form-data")
     +divRow('Votre mot de passe', 'password', true, vdt)
     
     //- PRÉCISIONS
-    div.row
-      label Votre année de naissance
-      - 
-        currentYear = new Date().getFullYear() - 16
-        i = 0
-      select(name="naissance" id="naissance")
-        while i++ < 100
-          - year = currentYear - i
-          option(value=`${year}`)= year
+    - 
+      var currentYear = new Date().getFullYear() - 16
+      var values = []
+      for ( var i = 0 ;  i < 100 ; ++i)
+        - values.push([currentYear - i, currentYear - i])
+    +divSelect('Votre année de naissance', 'naissance', values, vdt)
+    +divSelect('Vous êtes…', 'sexe', [['F','une femme'],['H','un  homme']], vdt)
 
-    div.row
-      label Je suis…
-      select(name="sexe")
-        option(value="F") une femme
-        option(value="H") un homme
-        option(value="X") autre chose
-          
+
+  //- LE MODULE D'APPRENTISSAGE
+  fieldset
+    legend Module d’apprentissage ou de suivi
+    p.small 
+      | Merci de choisir dans cette liste le module que vous souhaitez suivre.
+      |
+      a(href="/modules") Présentation de tous les modules
+      |.
+    +divSelect(null, 'module', [
+        ['','Choisir le module…'],
+        [7, 'Suivi de projet'], [8, 'Suivi de projet (intensif)'], [12,'Coaching intensif'],
+        [15,'Manuscrit refusé'],
+        [4,'Les Personnages'], [6,'La Structure'], [11,'Les Procédés narratifs'],
+        [2,'Les Documents d’écriture'], [5,'Le Scénario'], [10,'La Bible de série'],
+        [9,'Les Thèmes'], [3,'La Dynamique narrative'], 
+        [1, 'Analyse de film'],
+        [13,'Découverte de la dramaturgie'], [14,'Initiation à la dramaturgie']
+      ], vdt)
+
   //- LES DOCUMENTS
   
   fieldset

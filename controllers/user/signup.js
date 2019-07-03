@@ -30,8 +30,8 @@ class Signup {
     // Mais on doit aussi lui donner les autres champs afin qu'il puisse en
     // connaitre les valeurs
     await validator.validate(
-        ['token', 'pseudo', 'mail', 'password', 'patronyme', 'presentation', 'motivation']
-      , [ 'extraits']
+        ['token', 'pseudo', 'mail', 'password', 'patronyme', 'module', 'presentation', 'motivation']
+      , [ 'extraits', 'sexe', 'naissance']
     )
 
     // console.log("Liste totale des erreurs à la fin du check : ", errors, errors.length)

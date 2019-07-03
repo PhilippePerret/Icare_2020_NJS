@@ -139,7 +139,7 @@ app.get('/', function (req, res) {
 .get('/fronttests', function(req,res){
   res.sendFile(__dirname+'/lib/fronttests/html/fronttests.html')
 })
-.get('/signup', function(req,res){
+.get('/signup', async function(req,res){
   var token = uuidv4()
   req.session.form_token = token
   res.render('gabarit', {place:'signup', token:token, action:'formulaire'})
