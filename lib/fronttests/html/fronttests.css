@@ -37,6 +37,10 @@ input#fronttests-test-filename {
   font-size:10.4pt;
   /* border:1px solid red; */
 }
+#console #console-messages span.picto {
+  font-size: 8.4px;
+  margin-right: 8px;
+}
 #console #console-messages .warning, #console .failure {color:#E90000;}
 #console #console-messages .notice,  #console .success {color:#00DD00;}
 #console #console-messages .blue {color:#127AFF!important;}

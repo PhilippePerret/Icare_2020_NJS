@@ -126,20 +126,29 @@ create(){
   à l'administration.
 **/
 async sendMails(){
-  // Mail à l'user pour lui confirmer son inscription
   // Mail à l'administration pour informer de l'inscription
   await Mail.send({
       to:'phil@atelier-icare.net'
     , subject:'Nouvelle candidature'
     , text: `Nouvelle candidature sur le site.\n\nID: ${this.uuid}`
   })
+  // Mail à l'user pour lui confirmer son inscription
   await Mail.send({
-      to:'philippe.perret@yahoo.fr'
+      to: this.formatedMailTo
     , subject:'Votre candidature a été reçue'
     , text: `Bonjour,\n\nNous avons fait bonne réception de votre candidature à l’atelier Icare.\n\nVotre numéro d'enregistrement est le : ${this.uuid}.\n\nVous serez informé${this.e_f} très prochainement de la décision prise par Phil d’accepter votre candidature.`
   })
+  // Mail à l'user pour qu'il confirme son mail
+  await Mail.send({
+      to: this.formatedMailTo
+    , subject: 'Confirmation de votre adresse mèl'
+    , text: `Bonjour ${this.uData.pseudo},\n\nMerci de confirmer votre mèl en cliquant sur le lien ci-dessous :\n\n<center><a href="http://www.atelier-icare.net?tck=12345678">Confirmer le mèl « ${this.uData.mail} »</a></center>`
+  })
 }
 
+get formatedMailTo(){
+  return this._formatedmailto || ( this._formatedmailto = `${this.uData.pseudo} <${this.uData.mail}>` )
+}
 
 /**
   Le token du formulaire, qui sert aussi d'identifiant pour la candidature

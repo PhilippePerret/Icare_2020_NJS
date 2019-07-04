@@ -1,5 +1,8 @@
 # Todo list
 
+
+– Une signature pour les mails
+
 - Mettre les routes dans un fichier propre
   * voir comment les autres sites s'organisent à ce niveau-là
 
