@@ -11,4 +11,5 @@ module.exports = {
   // Le path du dossier temporaire où sont enregistrés les mails
   // (au lieu d'être envoyés)
   , folderMails: function(){return Icare.folderMails}
+  , folderTickets: function(){return Icare.folderTickets}
 }

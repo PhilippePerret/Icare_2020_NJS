@@ -3,6 +3,8 @@
 * [Utilisateurs/Icariens](#les_utilisateurs)
   * [Tester si l'user courant est admin](#test_if_user_current_admin)
   * [Tester si l'user courant est icarien](#tests_if_current_icarien)
+* [Programmation générale](#general_programmation)
+  * [Requérir des modules](#require_modules)
 * [Page et contenu](#page_et_contenu)
   * [Afficher des messages utilisateur](#show_user_messages)
 * [Contenu textuel](#contenu_textuel)
@@ -17,7 +19,10 @@
     * [Validation d’un fichier](#validate_a_file)
     * [Fichier App Validator](#fichier_validator_app)
     * [définir les tables DB de validation](#define_db_tables)
-
+* [Mails](#les_mails)
+  * [Envoyer un mail](#send_a_mail)
+  * [Configuration des mails](#mail_configuration)
+  * [Données de transmission](#mail_connexion_data)
 
 ---------------------------------------------------------------------
 
@@ -44,6 +49,16 @@ else
   // Pour un non icarien
 
 ```
+
+---------------------------------------------------------------------
+
+## Programmation générale {#general_programmation}
+
+### Requérir des modules {#require_modules}
+
+Pour requérir n'importe quel module sans se soucier le l'endroit d'où on le fait, le plus simple est d'utiliser `System.require` au lieu de `require`. On peut même ne pas mettre le `./`. Le path relatif que l'on transmet à `System.require` s'estime toujours depuis la racine du site, quel que soit l'endroit d'où on appelle la méthode.
+
+Ainsi, quel que soit le module dans lequel on se trouve, la commande `System.require('controllers/MonCont')` appellera toujours le contrôleur `MonCont` se trouvant dans le dossier `controllers` situé à la racine du site.
 
 ---------------------------------------------------------------------
 
@@ -531,3 +546,79 @@ En clé se trouve la propriété utilisée dans le formulaire (en général, c'e
 `isValidFile(hexpected)`
 : Produit une erreur si le document correspondant à la propriété courante ne respecte pas les données définies dans `hexpected` (ou définies dans `isValidFile.data`).
 : Cf. [Validation d’un fichier](#validate_a_file) pour le détail.
+
+---------------------------------------------------------------------
+
+## Mails {#les_mails}
+
+### Envoyer un mail {#send_a_mail}
+
+Utiliser la méthode :
+
+```javascript
+
+Mail.send({
+    to: 'destinataire' // ou l'atelier
+  , from: 'expéditeur' // ou l'atelier
+  , subject: "Le sujet" // avec ou non l'entête du site
+  , text: "le texte" // le message textuel
+  , html: "code html" // le code HTML ou le texte htmlisé
+  , force_local: false // mettre true pour forcer l'envoi même en local
+})
+
+```
+
+### Configuration des mails {#mail_configuration}
+
+Les mails se configurent dans le fichier `./config/mail.js`. Attention, il ne s'agit pas des [données de connexion](#mail_connexion_data) mais des configurations.
+
+ce fichier de configuration peut définir :
+
+```js
+
+'use strict'
+
+module.exports = {
+    name: 'Fichier de configuration de Mail'
+  // Entête pour les sujets de mail
+  , subject_header: "[ICARE] "
+  // Pour savoir si on utilise les mails en local ou non La méthode à appeler
+  // doit retourner `true` si l'utilisation du site est locale, `false` dans
+  // le cas contraire
+  , checkIfLocal: function(){ return Site.isLocalSite }
+  // Mettre à `true` pour envoyer les mails même en local (localhost)
+  , sendEvenLocal: false
+  // Le path du dossier temporaire (où, notamment, doivent être enregistrés
+  // les mails quand ils ne sont pas envoyés). Indispensable pour les tests.
+  , folderTmp: function(){return Site.folderMails}
+  // La méthode à utiliser pour obtenir l'entête du mail
+  , header: function(){return MailSite.header()}
+  // OU le code à utiliser :
+  // , header: function(){return '<section id="header"></section>'}
+  // La méthode à utiliser pour obtenir le pied de page des mails
+  , footer: function(){return MailSite.footer()}
+  // La feuille de style à utiliser
+  , css: function(){return MailSite.css() }
+}
+
+
+```
+
+### Données de transmission {#mail_connexion_data}
+
+Les données de `host`, de `user` etc. à utiliser pour transmettre des mails doivent être définis dans le fichier `./private/secret/mail.json` qui doit définir :
+
+```json
+{
+  "host": "hote.net",
+  "port": 587,
+  "secure": false,
+  "auth": {
+    "user": "utilisateur",
+    "pass": "mot de passe"
+  },
+  "logger": true
+}
+
+
+```

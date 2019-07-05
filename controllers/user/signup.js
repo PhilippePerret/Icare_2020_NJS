@@ -39,7 +39,7 @@ class Signup {
       req.flash('error', `Votre candidature n'est pas valide :<br/>${validator.humanErrorList}`)
       res.locals.validator = validator // pour montrer les champs
       // console.log("ERRORS : ", errors_msgs)
-      return false
+      return
     }
     // Sinon on continue
 
@@ -92,8 +92,7 @@ class Signup {
       |    le ou la postulante à la page de confirmation
       |
     **/
-    req.flash('notice', `Votre candidature est valide !`)
-    return true
+    return signup
   }
 
 /**
@@ -121,9 +120,17 @@ constructor(uData){
   Création du dossier complet de candidature
 **/
 create(){
+  this.makeTicketConfirmationMail()
   this.makeCandidatureFolder()
   this.copyCandidatureFiles()
   this.makeDataFile()
+}
+
+makeTicketConfirmationMail(){
+  const Ticket = System.require('controllers/Tickets')
+  let hdata = {user_mail: this.uData.mail, operation:'confirmMail', candidature_id:this.uuid}
+  let code = JSON.stringify(hdata)
+  this.ticketConfirmationMail = new Ticket(code)
 }
 
 /**
@@ -147,7 +154,7 @@ async sendMails(){
   await Mail.send({
       to: this.formatedMailTo
     , subject: 'Confirmation de votre adresse mèl'
-    , text: `Bonjour ${this.uData.pseudo},\n\nMerci de confirmer votre mèl en cliquant sur le lien ci-dessous :\n\n<center><a href="http://www.atelier-icare.net?tck=12345678">Confirmer le mèl « ${this.uData.mail} »</a></center>`
+    , text: `Bonjour ${this.uData.pseudo},\n\nMerci de confirmer votre mèl en cliquant sur le lien ci-dessous :\n\n<center><a href="http://www.atelier-icare.net?tck=${this.ticketConfirmationMail.id}">Confirmer le mèl « ${this.uData.mail} »</a></center>`
   })
 }
 

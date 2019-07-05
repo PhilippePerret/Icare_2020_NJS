@@ -23,10 +23,10 @@ global.DB = require('./config/mysql') // DB.connexion
 // essaiDB()
 
 global.APP_PATH = __dirname
-
-global.Icare = require('./controllers/Icare')
-global.User = require('./models/User')
-const Mail = require('./controllers/Mail')
+global.System = require('./Controllers/System')
+global.Icare  = System.require('controllers/Icare')
+global.User   = System.require('models/User')
+const Mail    = System.require('controllers/Mail')
 
 global.Dialog = class {
   static init() { delete this._message }
@@ -81,9 +81,7 @@ app.use((req, res, next) => {
   Dialog.init()
   var msg = req.flash('annonce')
   if ( msg.length ){
-    console.log("Un message est défini : ", msg)
     Dialog.annonce(msg.join(''))
-    // Dialog.message = msg.join('')
   }
   msg = req.flash('action_required')
   if ( msg.length ) {
@@ -148,12 +146,11 @@ app.get('/', function (req, res) {
   res.render('gabarit', {place:'signup', action:'explication'})
 })
 .post('/signup', upload.any(), async function(req, res){
-  // console.log("req.files = ", req.files)
   FrontTests.checkFields(req)
-  // console.log("req.files après checkFields = ", req.files)
   const Signup = require('./controllers/user/signup')
-  if ( await Signup.isValid(req, res) ) {
-    res.render('gabarit', {place:'signup', action:'confirmation'})
+  var signup = await Signup.isValid(req, res)
+  if ( signup ) {
+    res.render('gabarit', {place:'signup', action:'confirmation', candidature_id:signup.uuid })
   } else {
     var token = uuidv4()
     req.session.form_token = token
