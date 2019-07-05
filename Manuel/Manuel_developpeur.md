@@ -3,6 +3,8 @@
 * [Utilisateurs/Icariens](#les_utilisateurs)
   * [Tester si l'user courant est admin](#test_if_user_current_admin)
   * [Tester si l'user courant est icarien](#tests_if_current_icarien)
+* [Page et contenu](#page_et_contenu)
+  * [Afficher des messages utilisateur](#show_user_messages)
 * [Contenu textuel](#contenu_textuel)
   * [Insérer du code HTML dans la page](#insert_html_code_in_page)
 * [Bases de données](#les_bases_de_données)
@@ -42,6 +44,25 @@ else
   // Pour un non icarien
 
 ```
+
+---------------------------------------------------------------------
+
+## Page et contenu {#page_et_contenu}
+
+### Afficher des messages utilisateur {#show_user_messages}
+
+Pour afficher des messages utilisateur, le mieux est d'utiliser la classe `Dialog` exposée partout.
+
+Les méthodes utilisables sont les suivants :
+
+`Dialog.annonce("message")`
+: Pour un message "bleu"
+
+`Dialog.action_required("action")`
+: Quand on demande à l'utilisateur d'accomplir une action.
+
+`Dialog.error("message d'erreur")`
+: Pour signaler une erreur.
 
 ---------------------------------------------------------------------
 

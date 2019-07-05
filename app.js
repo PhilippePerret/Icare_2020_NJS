@@ -114,9 +114,6 @@ app.get('/fttajax', FrontTests.ajax.bind(FrontTests))
 
 
 
-app.post('/login', function(req, res){
-  User.existsAndIsValid(req, res, {mail:req.body._umail_, password:req.body._upassword_})
-})
 app.get('/', function (req, res) {
   // res.send('Salut tout le monde !')
   // console.log("req.session.user_id : ", req.session.user_id)
@@ -125,6 +122,9 @@ app.get('/', function (req, res) {
 .get('/login', function(req,res){
   if ( ! Dialog.message ) Dialog.action_required("Merci de vous identifier.")
   res.render('gabarit', {place: 'login'})
+})
+.post('/login', function(req, res){
+  User.existsAndIsValid(req, res, {mail:req.body._umail_, password:req.body._upassword_})
 })
 .get('/logout', function(req,res){
   if ( User.current ) {
@@ -135,9 +135,6 @@ app.get('/', function (req, res) {
   }
   // TODO Un message pour dire au revoir
   res.redirect('/')
-})
-.get('/fronttests', function(req,res){
-  res.sendFile(__dirname+'/lib/fronttests/html/fronttests.html')
 })
 .get('/signup', async function(req,res){
   var token = uuidv4()
@@ -166,6 +163,11 @@ app.get('/', function (req, res) {
 })
 .get('/bureau/(:section)?', function(req,res){
   res.render('gabarit', {place:'bureau', messages: req.flash('info')})
+})
+.get('/tck/:ticket_id', function(req,res){
+  let Ticket = require('./controllers/Ticket.js')
+  var place = Ticket.traite(req.params.ticket_id)
+  res.render('gabarit', {place:place})
 })
 .get('/modules', async function(req, res){
   global.AbsModule = require('./models/AbsModule')
@@ -197,6 +199,9 @@ app.get('/', function (req, res) {
 .post('/aide', function(req,res){
   req.session.question = req.body.user_question
   res.redirect('/aide/reponse')
+})
+.get('/fronttests', function(req,res){
+  res.sendFile(__dirname+'/lib/fronttests/html/fronttests.html')
 })
 
 var server = app.listen(process.env.ALWAYSDATA_HTTPD_PORT||3000, process.env.ALWAYSDATA_HTTPD_IP, function () {

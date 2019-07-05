@@ -19,10 +19,13 @@ class Icare {
   /**
     |
     |
-    | Les différents chemins d'accès
+    | Tous les chemins d'accès
     |
     |
   **/
+  static get folderTickets(){
+    return this._foldertickets || (this._foldertickets = path.join(this.folderTemp,'tickets'))
+  }
   static get folderMails(){
     return (
       this._foldermails = this._foldermails || path.join(this.folderTemp, 'mails')
