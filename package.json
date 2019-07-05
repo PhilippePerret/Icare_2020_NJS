@@ -1,6 +1,6 @@
 {
   "name": "icare_2020_njs",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Site de l'Atelier Icare en version node.js",
   "main": "app.js",
   "scripts": {
