@@ -58,7 +58,12 @@ class Signup {
     **/
     if ( req.files.length ) {
       for ( var dfile of req.files ) {
-        Object.assign(req.body, {[dfile['fieldname']]: `${dfile['originalname']}::${dfile['path']}`})
+        if ( undefined === dfile['originalname'] ) {
+          console.error(`dfile['originalname'] est indéfini pour la clé "${dfile['fieldname']}"`)
+          console.error(`Note : req.body['${dfile['fieldname']}'], lui, vaut "${req.body[dfile['fieldname']]}"`)
+        } else {
+          Object.assign(req.body, {[dfile['fieldname']]: `${dfile['originalname']}::${dfile['path']}`})
+        }
       }
     }
     /**

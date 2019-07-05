@@ -1,15 +1,26 @@
 
 .mini {font-size:8.5pt;}
 
+button#run-tests {
+  background-color: teal;
+  color:white;
+  padding: 3px 10px;
+  border-radius: 3px;
+}
+div#tests-tools {
+  text-align:right;
+}
 div#fronttests-div-regfile {
   display:grid;
-  grid-template-columns: 60px auto 100px;
+  grid-template-columns: 100px auto 70px;
+  margin-top: 0.5em;
 }
 div#fronttests-div-regfile .col1 {
   grid-column-start:1;
 }
 div#fronttests-div-regfile .col2 {
   grid-column-start:2;
+  text-align:right;
 }
 div#fronttests-div-regfile .col3 {
   grid-column-start:3;

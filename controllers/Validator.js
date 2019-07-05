@@ -62,6 +62,12 @@ class Validator {
   **/
   async validate(properties, outProperties, options){
     for ( var property of [...properties,...outProperties]) {
+      if (property === 'presentation'){
+        console.log("--- surveillance de 'presentation' ---")
+        console.log("this.validatorOfProperty(property).value = ", this.validatorOfProperty(property).value)
+        // console.log("this.validatorOfProperty(property) = ", this.validatorOfProperty(property))
+        console.log("---/")
+      }
       Object.assign(this.validators, {[property]: this.validatorOfProperty(property)})
     }
     for ( var property of properties ){
@@ -125,7 +131,16 @@ class Validator {
     // Quelle valeur faut-il retourner ? peut-être un truc avec le
     // nom original (originalname) et le nom dans 'uploads' ?
     const value = this.getValue(property)
-    return `${value['originalname']}::${value['path']}`
+    console.log(`---> [getValueAsFile] this.getValue('${property}') = `, this.getValue(property))
+    if ( typeof value == 'string' ) {
+      // Quand le champ a déjà été validé et que la données "originalname::path"
+      // a déjà été composé
+      console.error(`[getValueAsFile] Propriété ${property} déjà composée. Je retourne "${value}" tel quel.`)
+      // console.error(`Pour information, this.validators['${property}'] vaut : `, this.validators[property])
+      return value
+    } else {
+      return `${value['originalname']}::${value['path']}`
+    }
   }
   getFileName(property){
     return this.getValue(property)['originalname']
@@ -292,7 +307,6 @@ class PropValidator {
   isMatching(regexp, params){
     // console.log("this.value, regexp = ", this.value, regexp)
     if ( this.value.match(regexp) === null) {
-      console.log("Ça ne matche pas.")
       return this.addError(params, `${this.human_name} n’est pas valide`)
     }
   }
