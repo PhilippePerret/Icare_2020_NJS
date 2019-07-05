@@ -29,9 +29,51 @@ const SPACE = "\r\n\r\n\r\n"
 class Mail {
 
   static async send(dataMsg){
-    await new Mail().send(dataMsg)
+    if ( this.mustSendMail() ) {
+      await new Mail().send(dataMsg)
+    } else {
+      // On se contente d'enregistrer le mail
+      fs.existsSync(this.folderTmp) || fs.mkdirSync(this.folderTmp)
+      dataMsg.UUID || Object.assign(dataMsg, {UUID: this.getAUUID()})
+      let pmail = path.join(this.folderTmp, `${dataMsg.UUID}.json`)
+      Object.assign( dataMsg, {
+          path: pmail
+        , timestamp: Number(new Date())
+      } )
+      console.log("PAS D'ENVOI DE MAIL. J'enregistre les données du mail:", dataMsg)
+      fs.writeFileSync(pmail, JSON.stringify(dataMsg))
+    }
   }
 
+  // Retourne un UUID unique pour le mail. En fait, c'est simplement la
+  // date
+  static getAUUID(){
+    if ( undefined === this._imail ) this._imail = 0
+    ++ this._imail
+    return `${Number(new Date())}-${this._imail}`
+  }
+  /**
+    Méthode qui retourne true si on doit envoyer les mails
+    On doit les envoyer si :
+      - on n'est pas en local (config.checkIfLocal(), défini dans les configs, retourne
+        false)
+      - on est en local mais config.sendEvenLocal retourne true
+  **/
+  static mustSendMail(){
+    return !this.isLocal() || this.config.sendEvenLocal === true
+  }
+
+  /**
+    Retourne true si on est en local.
+    Pour pouvoir le définir, il faut définir la méthode de configuration
+    qui retournera la valeur (config.checkIfLocal())
+  **/
+  static isLocal(){ return this.config.checkIfLocal() }
+
+  static get folderTmp(){
+    if (undefined===this._foldertmp) this._foldertmp = this.config.folderTmp()
+    return this._foldertmp
+  }
   // La configuration, qui peut être définie dans `config/mail.js`
   static get config(){
     if (undefined === this._config) this._config = {}

@@ -30,8 +30,8 @@ class Signup {
     // Mais on doit aussi lui donner les autres champs afin qu'il puisse en
     // connaitre les valeurs
     await validator.validate(
-        ['token', 'pseudo', 'mail', 'password', 'patronyme', 'presentation', 'motivation']
-      , [ 'extraits']
+        ['token', 'pseudo', 'mail', 'password', 'patronyme', 'module', 'presentation', 'motivation']
+      , [ 'extraits', 'sexe', 'naissance']
     )
 
     // console.log("Liste totale des erreurs à la fin du check : ", errors, errors.length)
@@ -58,7 +58,12 @@ class Signup {
     **/
     if ( req.files.length ) {
       for ( var dfile of req.files ) {
-        Object.assign(req.body, {[dfile['fieldname']]: `${dfile['originalname']}::${dfile['path']}`})
+        if ( undefined === dfile['originalname'] ) {
+          console.error(`dfile['originalname'] est indéfini pour la clé "${dfile['fieldname']}"`)
+          console.error(`Note : req.body['${dfile['fieldname']}'], lui, vaut "${req.body[dfile['fieldname']]}"`)
+        } else {
+          Object.assign(req.body, {[dfile['fieldname']]: `${dfile['originalname']}::${dfile['path']}`})
+        }
       }
     }
     /**
@@ -126,23 +131,29 @@ create(){
   à l'administration.
 **/
 async sendMails(){
-  // Mail à l'user pour lui confirmer son inscription
   // Mail à l'administration pour informer de l'inscription
-  console.log("J'envoie les mails")
-
   await Mail.send({
       to:'phil@atelier-icare.net'
     , subject:'Nouvelle candidature'
     , text: `Nouvelle candidature sur le site.\n\nID: ${this.uuid}`
   })
+  // Mail à l'user pour lui confirmer son inscription
   await Mail.send({
-      to:'philippe.perret@yahoo.fr'
+      to: this.formatedMailTo
     , subject:'Votre candidature a été reçue'
     , text: `Bonjour,\n\nNous avons fait bonne réception de votre candidature à l’atelier Icare.\n\nVotre numéro d'enregistrement est le : ${this.uuid}.\n\nVous serez informé${this.e_f} très prochainement de la décision prise par Phil d’accepter votre candidature.`
   })
-  console.log("J'ai envoyé les mails")
+  // Mail à l'user pour qu'il confirme son mail
+  await Mail.send({
+      to: this.formatedMailTo
+    , subject: 'Confirmation de votre adresse mèl'
+    , text: `Bonjour ${this.uData.pseudo},\n\nMerci de confirmer votre mèl en cliquant sur le lien ci-dessous :\n\n<center><a href="http://www.atelier-icare.net?tck=12345678">Confirmer le mèl « ${this.uData.mail} »</a></center>`
+  })
 }
 
+get formatedMailTo(){
+  return this._formatedmailto || ( this._formatedmailto = `${this.uData.pseudo} <${this.uData.mail}>` )
+}
 
 /**
   Le token du formulaire, qui sert aussi d'identifiant pour la candidature

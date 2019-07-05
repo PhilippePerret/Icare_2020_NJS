@@ -4,13 +4,31 @@ const path = require('path')
     , fs   = require('fs')
 
 class Icare {
-
   /**
+    |
+    |
+    | L'état de l'atelier
+    |
+    |
+  **/
+  // Pour savoir si on est en local ou sur l'atelier
+  // Cette donnée est défini dans un middleware en testant 'request.headers.host'
+  // qui vaut 'localhost:3000' en local.
+  static get isLocalSite() { return this._islocalsite }
+  static set isLocalSite(v){ return this._islocalsite = v }
+  /**
+    |
     |
     | Les différents chemins d'accès
     |
     |
   **/
+  static get folderMails(){
+    return (
+      this._foldermails = this._foldermails || path.join(this.folderTemp, 'mails')
+    )
+    // return this._foldermails
+  }
   static get folderCandidats(){
     if ( undefined === this._folderCandidats ) {
       this._folderCandidats = path.join(this.folderTemp, 'candidats')
@@ -29,6 +47,7 @@ class Icare {
     }
     return this._foldertemp
   }
+  static get folderTmp(){return this.folderTemp} // alias
 }
 
 module.exports = Icare

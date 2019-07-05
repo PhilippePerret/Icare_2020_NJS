@@ -18,20 +18,26 @@ mixin divRow(label, property, withConf, vdt)
   if withConf
     +divRow(`Confirmez ${label.toLowerCase()}`, `${property}_confirmation`, false, vdt)
 
+mixin divSelect(label, property, values, vdt)
+  - vdtValue = vdt && vdt.getValue(property)
+  div.row(id=`div-row-${property}` class=vdt&&vdt.getClass(property))
+    label= label
+      div.warning.tiny= vdt && vdt.getError(property)
+    select(name=`${property}` value=vdt&&vdt.getValue(property))
+      each pair in values
+        if pair[0] == vdtValue
+          option(value=pair[0], selected="SELECTED")= pair[1]
+        else
+          option(value=pair[0])= pair[1]
+
 mixin divFile(label, property, vdt)
   div.row(id=`div-row-${property}` class=vdt&&vdt.getClass(property))
     label= label
       div.warning.tiny= vdt&&vdt.getError(property)
-    //- 
-      Si le document a été donné, validé si nécessaire, on écrit 
-      simplement son nom.
+    //- S'il y a un validateur et que la donnée a été traitée
     if vdt && vdt.getValue(property) && vdt.isNotErrorField(property)
       span= vdt.getFileName(property)
-    input(
-      type=(vdt&&vdt.getValue(property)&&vdt.isNotErrorField(property))?'hidden':'file'
-      name=`${property}`
-      id=`${property}`
-      value=vdt&&vdt.getValue(property)&&vdt.getValueAsFile(property)
-    )
-
+      input(type='hidden' name=`${property}` id=`${property}` value=vdt.getValueAsFile(property))
+    else
+      input(type='file' name=`${property}` id=`${property}` )
       

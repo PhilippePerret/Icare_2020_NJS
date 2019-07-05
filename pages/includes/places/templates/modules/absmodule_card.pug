@@ -3,7 +3,7 @@ div.absmodule
     span.name= absmodule.name
     span.tarif= `${absmodule.tarif} €`
     if User.admin()
-      span.module_id= absmodule.module_id
+      span.module_id= absmodule.id
     span.buttons
       if User.admin()
         a(href=`/absmodule/${absmodule.id}/edit`, class="small-tool-btn") edit
