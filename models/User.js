@@ -143,15 +143,21 @@ div.icare
   **/
   static async existsAndIsValid(req, res, data, done) {
     // console.log("-> existsAndIsValid", data)
-    let user_data = await DB.query("SELECT * FROM users WHERE mail = ?", [data.mail], 'icare_users')
-    if ( user_data ){
+    let user_data = await DB.query("SELECT * FROM icare_users.users WHERE mail = ?", [data.mail])
+    if ( user_data.length ){
       let user = new User(user_data[0])
+      console.log("user = ", user)
       if ( user.authenticatePassword(data.password) ) {
+        /**
+          |
+          | TOUT EST OK
+          |
+        **/
         await user.setSession(req.session.id.replace(/\-/g,'').substring(0,32))
         req.session.user_id     = user.id
         req.session.session_id  = user.sessionId
         req.flash('annonce', `Bienvenue à l'atelier, ${user.pseudo} !`)
-        res.redirect(user.redirectionAfterLogin)
+        res.redirect(data.route_after || user.redirectionAfterLogin)
       } else {
         // LE MAIL A ÉTÉ TROUVÉ, MAIS LE MOT DE PASSE NE CORRESPOND PAS
         // done("Inconnu au bataillon", null)
@@ -183,6 +189,7 @@ div.icare
   static async reconnect(req, res, next){
     // On regarde ici si l'user est défini et est correct
     if ( req.session.user_id ) {
+      console.log("ID user à reconnecter : ", req.session.user_id)
       var ret = await DB.get('icare_users.users', parseInt(req.session.user_id,10))
       // Si l'id de session mémorisé est également à l'id de session de
       // l'utilisateur, c'est que tout va bien. On définit l'utilisateur courant

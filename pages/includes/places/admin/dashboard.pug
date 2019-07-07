@@ -1,1 +1,15 @@
 h2 Tableau de bord de l’atelier
+
+- const Admin     = System.require('controllers/Admin')
+- const AbsModule = System.require('models/AbsModule')
+
+fieldset#candidatures
+  legend Candidatures
+  if Admin.candidatures()
+    each candidature in Admin.candidatures()
+      div.candidature
+        div.pseudo= candidature.pseudo
+        - var dmodule = AbsModule.module(candidature.module)
+        div.module= `#${candidature.module} ${dmodule.name}`
+  else
+    div Aucune candidature n'est à étudier.

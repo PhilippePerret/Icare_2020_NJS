@@ -26,22 +26,6 @@ Object.assign(Date,{
           return grain
       }
     })
-    // format = format.replace(/([a-zA-Z]+)/g, '${$1}')
-    // console.log("Je vais formater la date : ", format)
-    // const J   = date.getDate()
-    //     , JJ  = J.length > 2 ? J : `0${J}`
-    //     , M   = ''+(1 + date.getMonth())
-    //     , MM  = M.padStart(2,'0')
-    //     , YY  = date.getYear()
-    //     , YYYY  = date.getFullYear()
-    //     , h     = ''+date.getHours()
-    //     , hh    = h.padStart(2,'0')
-    //     , m     = ''+date.getMinutes()
-    //     , mm    = m.padStart(2,'0')
-    //     , s     = ''+date.getSeconds()
-    //     , ss    = s.padStart(2,'0')
-    // let fdate = eval('`'+format+'`')
-    console.log("Date finale = ", fdate)
     return fdate
   }
 })

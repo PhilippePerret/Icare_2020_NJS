@@ -114,7 +114,6 @@ static create(uData) {
   `makeTicketConfirmationMail`
 **/
 static confirmMail(data){
-  console.log("-> confirmMail")
   let user_mail = data.user_mail
     , candidate_id = data.candidate_id
     , cpath = path.join(Icare.folderCandidats, candidate_id)

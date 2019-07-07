@@ -36,7 +36,7 @@ class News {
     File.execWithLock(lpath, function(){
       try{dNews = require(lpath)} catch(err){dNews = [] /* lancement du site */}
       dNews.length < 20 || dNews.pop()
-      dNews.unshift(`<div class="news" data-id="${news.id}"><span class="date">${news.formatedDate}</span>${news.message}</div>`)
+      dNews.unshift(`<div class="news" data-id="${news.id}"><span class="date">${news.formatedDate}</span><span class="content">${news.message}</span></div>`)
       this.write(JSON.stringify(dNews))
     })
 

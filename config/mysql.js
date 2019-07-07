@@ -30,7 +30,7 @@ class MyMySql {
     if ( undefined === columns ) columns = '*'
     else columns = columns.join(', ')
     var request = `SELECT ${columns} FROM ${table} WHERE id = ?`
-    var retour = await this.processQuery(request, id)
+    var retour = await this.processQuery(request, [id])
     return retour[0]
   }
 
@@ -71,20 +71,14 @@ class MyMySql {
   **/
   static async query(request, params, database){
     console.log("-> DB.query", request, params)
-    // if (! this.configured) this.configure()
-    // if ( ! this.connexion ) {
-    //   this.connexion = await mySqlEasier.getConnection()
-    // }
-    if ( database ) await this.connexion.query(`USE ${database};`)
-
-    return this.processQuery(request, params)
-    // var retour = await this.connexion.query(request, params)
-    // console.log("<- DB.query", request, params)
+    if ( database ) throw new Error("DB.query doit s'appeler sans database (3e argument). Mettre la table sous la forme <database>.<table>.")
+    var retour = await this.processQuery(request, params)
+    console.log("Retour de la requête :", retour)
     return retour
   }
 
   /**
-  
+
     @param  {String}  table Table dans laquelle faire l'insertion
     @param  {Object}  data  Table object des données à insérer dans la table
 

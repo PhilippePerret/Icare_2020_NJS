@@ -26,7 +26,6 @@ global.DB = require('./config/mysql') // DB.connexion
 global.APP_PATH = __dirname
 global.System = require('./Controllers/System')
 System.require('controllers/Date') // extension
-Date.formate()
 global.App    = System.require('controllers/App')
 global.Icare  = System.require('controllers/Icare')
 global.User   = System.require('models/User')
@@ -133,7 +132,7 @@ app.get('/', function (req, res) {
   res.render('gabarit', {place: 'login'})
 })
 .post('/login', function(req, res){
-  User.existsAndIsValid(req, res, {mail:req.body._umail_, password:req.body._upassword_})
+  User.existsAndIsValid(req, res, {mail:req.body._umail_, password:req.body._upassword_, route_after:req.body.route_after})
 })
 .get('/logout', function(req,res){
   if ( User.current ) {
@@ -190,13 +189,14 @@ app.get('/', function (req, res) {
     }
     res.render('gabarit', {place: 'admin', section:req.params.section})
   } else if ( ! User.current ) {
-    res.redirect('/login')
+    Dialog.action_required('Merci de vous identifier pour rejoindre cette section.')
+    res.render('gabarit', {place:'login', route_after:`/admin/${req.params.section}`})
   } else {
     res.render('gabarit', {place:'cul_de_sac'})
   }
 })
 .get('/aide(/:section)?', function(req,res){
-  res.render('gabarit', {place: 'aide', question: req.session.question, section: req.params.section})
+  res.render('gabarit', {place:'aide', question:req.session.question, section:req.params.section})
   delete req.session.question
 })
 .post('/aide', function(req,res){

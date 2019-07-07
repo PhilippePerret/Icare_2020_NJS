@@ -9,6 +9,12 @@ class AbsModule {
   // ---------------------------------------------------------------------
   //  CLASSE
 
+  static async module(moduleId) {
+    var mod = new AbsModule(Number(moduleId))
+    await mod.getData()
+    return mod
+  }
+
   static get allModules(){
     return this._allmodules
   }
@@ -20,13 +26,24 @@ class AbsModule {
   // ---------------------------------------------------------------------
   //  INSTANCE
   constructor(data){
-    this.data = data
+    if ( typeof data === 'object' ) {
+      this.data = data
+    } else {
+      this.id = data
+    }
   }
 
   // ---------------------------------------------------------------------
   //  Propriétés fixes du module absolu
 
-  get id(){ return this.data.id }
+  async getData(){
+    var retour = await DB.get('modules.absmodules', this.id)
+    this.data = retour
+    console.log("Module data : ", this.data)
+  }
+
+  get id()  { return this.data.id }
+  set id(v) { return this.data.id = v }
   get module_id(){ return this.data.module_id }
   get name(){ return this.data.name }
   get tarif(){ return this.data.tarif }
