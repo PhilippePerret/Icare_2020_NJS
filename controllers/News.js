@@ -81,8 +81,7 @@ class News {
   // Retourne la date de l'actualité formatée
   get formatedDate(){
     if (undefined === this._formateddate) {
-      var time = new Date(this.created_at)
-      this._formateddate = time.getDate() + ' ' + (1 + time.getMonth()) + ' ' + time.getFullYear() + ' ' + time.getHours() + ':' + time.getMinutes()
+      this._formateddate = Date.formate(null, this.created_at)
     }
     return this._formateddate
   }

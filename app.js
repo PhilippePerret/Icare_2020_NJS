@@ -13,6 +13,7 @@ const upload = multer({ dest: 'uploads/' })
 const session = require('express-session')
 
 global.glob = require('glob')
+
 // Mes objets et middlewares
 global.DB = require('./config/mysql') // DB.connexion
 
@@ -24,6 +25,8 @@ global.DB = require('./config/mysql') // DB.connexion
 
 global.APP_PATH = __dirname
 global.System = require('./Controllers/System')
+System.require('controllers/Date') // extension
+Date.formate()
 global.App    = System.require('controllers/App')
 global.Icare  = System.require('controllers/Icare')
 global.User   = System.require('models/User')

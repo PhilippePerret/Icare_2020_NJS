@@ -10,6 +10,7 @@
   * [Afficher des messages utilisateur](#show_user_messages)
 * [Contenu textuel](#contenu_textuel)
   * [Insérer du code HTML dans la page](#insert_html_code_in_page)
+  * [Dates formatées](#formated_dates)
 * [Bases de données](#les_bases_de_données)
   * [`get`, obtenir une des valeurs (colonnes) avec l'identifiant](#get_values_with_id})
   * [`getAll`, récupérer tous les enregistrement voulus dans une table](#get_all_values)
@@ -123,6 +124,45 @@ div.leDivPrincipal
   != PUG.render(`${instance.codeHTML.replace(/[\n\r]/g,' ')}`)
 
 ```
+
+### Dates formatées {#formated_dates}
+
+Des méthodes pratiques ont été ajoutées pour formater les dates.
+
+```javascript
+
+Date.formate([format[, date]])
+
+```
+
+Le format utilise :
+
+```
+  JJ    Jour sur deux chiffres
+  J     Jour en un ou deux chiffres
+  MM    Mois sur deux chiffres
+  M     Mois en un ou deux chiffres
+  MH    Mois humain
+  YY    Année sur 2 chiffres
+  YYYY  Année sur 4 chiffres
+
+  h     Heure sur un chiffre ou plus
+  mm    Minutes sur deux chiffres
+  ss    Secondes sur deux chiffres
+```
+
+Si aucune date n'est précisée, c'est la date et le temps courant qui sont pris.
+
+Par exemple :
+
+```javascript
+
+Date.formate('J/MM/YYYY h:mm:ss')
+// => "7/07/2019 13:52:22"
+
+```
+
+Format par défaut : `J/MM/YYYY h:mn`
 
 ---------------------------------------------------------------------
 
