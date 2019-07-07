@@ -24,6 +24,7 @@ global.DB = require('./config/mysql') // DB.connexion
 
 global.APP_PATH = __dirname
 global.System = require('./Controllers/System')
+global.App    = System.require('controllers/App')
 global.Icare  = System.require('controllers/Icare')
 global.User   = System.require('models/User')
 const Mail    = System.require('controllers/Mail')
@@ -97,6 +98,8 @@ app.use((req, res, next) => {
 app.use((req,res,next) => {
   // res.locals.request = req
   Icare.isLocalSite = req.headers.host.split(':')[0] === 'localhost'
+  App.online  = !Icare.isLocalSite
+  App.offline = Icare.isLocalSite
 
   // On renseigne `route` qui pourra être utilisé n'importe où
   // dans les vues et templates
@@ -116,6 +119,11 @@ app.get('/', function (req, res) {
   // res.send('Salut tout le monde !')
   // console.log("req.session.user_id : ", req.session.user_id)
   res.render('gabarit', {place: 'home'})
+})
+.get('/tck/:ticket_id', function(req,res){
+  let Ticket = System.require('controllers/Ticket')
+  var place = Ticket.traite(req.params.ticket_id)
+  res.render('gabarit', { place: place || 'home' })
 })
 .get('/login', function(req,res){
   if ( ! Dialog.message ) Dialog.action_required("Merci de vous identifier.")
@@ -160,11 +168,6 @@ app.get('/', function (req, res) {
 })
 .get('/bureau/(:section)?', function(req,res){
   res.render('gabarit', {place:'bureau', messages: req.flash('info')})
-})
-.get('/tck/:ticket_id', function(req,res){
-  let Ticket = require('./controllers/Ticket.js')
-  var place = Ticket.traite(req.params.ticket_id)
-  res.render('gabarit', {place:place})
 })
 .get('/modules', async function(req, res){
   global.AbsModule = require('./models/AbsModule')

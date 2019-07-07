@@ -23,14 +23,27 @@ class Icare {
     |
     |
   **/
+  // Le path du fichier JSON qui contient les dernières actualités
+  static get lastNewsPath(){
+    return this._lastnewspath || ( this._lastnewspath = path.join(this.folderTempData,'last_news.json'))
+  }
+  // Le path du fichier HTML qui contient les dernières actualités
+  // note : c'est le fichier à inclure dans la page d'accueil
+  static get lastNewsHtmlPath(){
+    return this._lastnewshtmlpath || ( this._lastnewshtmlpath = System.pathFor('pages/includes/elements/last_news.html'))
+  }
   static get folderTickets(){
     return this._foldertickets || (this._foldertickets = path.join(this.folderTemp,'tickets'))
   }
   static get folderMails(){
-    return (
-      this._foldermails = this._foldermails || path.join(this.folderTemp, 'mails')
-    )
-    // return this._foldermails
+    return this._foldermails || ( this._foldermails = path.join(this.folderTemp, 'mails') )
+  }
+  static get folderTempData(){
+    if ( undefined === this._foldertempdata ) {
+      this._foldertempdata = path.join(this.folderTemp,'data')
+      fs.existsSync(this._foldertempdata) || fs.mkdirSync(this._foldertempdata)
+    }
+    return this._foldertempdata
   }
   static get folderCandidats(){
     if ( undefined === this._folderCandidats ) {

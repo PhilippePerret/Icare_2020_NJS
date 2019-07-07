@@ -103,14 +103,38 @@ class Signup {
   avec les documents.
 **/
 static create(uData) {
-  let signup = new Signup(uData)
-  signup.create()
-  return signup
+  return new Signup(uData).create()
 }
 
 
+/**
+  Méthode appelée (normalement par un mail) pour confirmer l'adresse
+  mail à l'inscription.
+  Le ticket qui appelle cette méthode est produit ci-dessous par la méthode
+  `makeTicketConfirmationMail`
+**/
+static confirmMail(data){
+  console.log("-> confirmMail")
+  let user_mail = data.user_mail
+    , candidate_id = data.candidate_id
+    , cpath = path.join(Icare.folderCandidats, candidate_id)
+
+  if ( fs.existsSync(cpath) ) {
+    let path_data = path.join(cpath,'udata.json')
+    let data = JSON.parse(fs.readFileSync(path_data,'utf-8'))
+    Object.assign(data,{mail_confirmed: true})
+    fs.writeFileSync(path_data, JSON.stringify(data))
+    Dialog.annonce("Merci, votre mail a été confirmé avec succès.")
+    return true
+  } else {
+    Dialog.error("Ce ticket est malheureusement périmé.")
+    return false
+  }
+}
+
 // ---------------------------------------------------------------------
 //  INSTANCE SIGNUP
+
 //  Pour gérer l'inscription en particulier
 constructor(uData){
   this.uData = uData
@@ -124,13 +148,22 @@ create(){
   this.makeCandidatureFolder()
   this.copyCandidatureFiles()
   this.makeDataFile()
+  this.annonceSite()
+  return this // pour retourner l'instance
 }
 
 makeTicketConfirmationMail(){
-  const Ticket = System.require('controllers/Tickets')
-  let hdata = {user_mail: this.uData.mail, operation:'confirmMail', candidature_id:this.uuid}
-  let code = JSON.stringify(hdata)
-  this.ticketConfirmationMail = new Ticket(code)
+  const Ticket = System.require('controllers/Ticket')
+  let hdata = {required:'controllers/user/signup', method:'confirmMail', user_mail:this.uData.mail, candidate_id:this.uuid}
+  this.ticketConfirmationMail = Ticket.create(hdata)
+}
+
+/**
+  Méthode pour annonce la nouvelle candidature
+**/
+annonceSite(){
+  const News = System.require('controllers/News')
+  News.create(`<strong>${this.uData.pseudo}</strong> dépose sa candidature.`,2,null)
 }
 
 /**
@@ -151,10 +184,11 @@ async sendMails(){
     , text: `Bonjour,\n\nNous avons fait bonne réception de votre candidature à l’atelier Icare.\n\nVotre numéro d'enregistrement est le : ${this.uuid}.\n\nVous serez informé${this.e_f} très prochainement de la décision prise par Phil d’accepter votre candidature.`
   })
   // Mail à l'user pour qu'il confirme son mail
+  var lienConf = this.ticketConfirmationMail.link(`Confirmer le mèl « ${this.uData.mail} »`)
   await Mail.send({
       to: this.formatedMailTo
     , subject: 'Confirmation de votre adresse mèl'
-    , text: `Bonjour ${this.uData.pseudo},\n\nMerci de confirmer votre mèl en cliquant sur le lien ci-dessous :\n\n<center><a href="http://www.atelier-icare.net?tck=${this.ticketConfirmationMail.id}">Confirmer le mèl « ${this.uData.mail} »</a></center>`
+    , text: `Bonjour ${this.uData.pseudo},\n\nMerci de confirmer votre mèl en cliquant sur le lien ci-dessous :\n\n<center>${lienConf}</center>`
   })
 }
 

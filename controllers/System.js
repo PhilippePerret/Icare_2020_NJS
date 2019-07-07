@@ -6,8 +6,13 @@ const path  = require('path')
 const System = {
   require(relpath){
     var fullpath = path.resolve(__dirname, `../${relpath}`)
-    console.log("fullpath : ", fullpath)
     return require(fullpath)
+  }
+
+  // Retourne le chemin absolu du path relatif +relpath+ d'où qu'on le
+  // demande.
+, pathFor(relpath) {
+    return path.resolve(__dirname, `../${relpath}`)
   }
 }
 

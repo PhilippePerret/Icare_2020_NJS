@@ -11,7 +11,8 @@
     "test":"nodemon app.js &",
     "posttest":"npm run open-google-for-fronttests",
     "open-google-for-fronttests": "open -a 'Google Chrome' 'http://localhost:3000/ftt'",
-    "watch-sass": "node-sass -w --recursive --incluce-path=lib/css/_sass/ lib/css/index.sass lib/css/all.css --output-style=compressed"
+    "watch-sass": "node-sass -r -w --output=lib/css --output-style=compressed lib/css/_sass/",
+    "watch-sass-all": "node-sass -w --recursive --incluce-path=lib/css/_sass_all/ lib/css/index.sass lib/css/all.css --output-style=compressed"
   },
   "nodemonConfig":{
     "ignore": [".git", "uploads/*", "tmp/*"]

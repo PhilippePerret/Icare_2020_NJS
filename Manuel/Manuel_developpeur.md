@@ -5,6 +5,7 @@
   * [Tester si l'user courant est icarien](#tests_if_current_icarien)
 * [Programmation générale](#general_programmation)
   * [Requérir des modules](#require_modules)
+  * [Online ou Offline](#know_if_online_offline)
 * [Page et contenu](#page_et_contenu)
   * [Afficher des messages utilisateur](#show_user_messages)
 * [Contenu textuel](#contenu_textuel)
@@ -13,6 +14,8 @@
   * [`get`, obtenir une des valeurs (colonnes) avec l'identifiant](#get_values_with_id})
   * [`getAll`, récupérer tous les enregistrement voulus dans une table](#get_all_values)
   * [`update`, actualiser des données](#update_data_in_db)
+* [Les fichiers et dossiers](#folders_and_files)
+  * [Travailler sur un fichier en le verrouillant](#lock_working_file)
 * [Les formulaires](#les_formulaires)
   * [Validation des formulaires](#valider_les_formulaires)
     * [Validateurs propres à l'application](#custom_form_validators)
@@ -23,6 +26,11 @@
   * [Envoyer un mail](#send_a_mail)
   * [Configuration des mails](#mail_configuration)
   * [Données de transmission](#mail_connexion_data)
+* [Les Tickets](#les_tickets)
+  * [Présentation des tickets](#presentation_des_tickets)
+  * [Créer un ticket](#creer_un_ticket)
+  * [Obtenir le lien du ticket](#get_ticket_link)
+* [Les Actualités](#les_news)
 
 ---------------------------------------------------------------------
 
@@ -59,6 +67,20 @@ else
 Pour requérir n'importe quel module sans se soucier le l'endroit d'où on le fait, le plus simple est d'utiliser `System.require` au lieu de `require`. On peut même ne pas mettre le `./`. Le path relatif que l'on transmet à `System.require` s'estime toujours depuis la racine du site, quel que soit l'endroit d'où on appelle la méthode.
 
 Ainsi, quel que soit le module dans lequel on se trouve, la commande `System.require('controllers/MonCont')` appellera toujours le contrôleur `MonCont` se trouvant dans le dossier `controllers` situé à la racine du site.
+
+### Online ou Offline {#know_if_online_offline}
+
+Pour savoir si on est en online ou en offline, on utilise :
+
+```javascript
+
+App.online // => true si online
+
+App.offline // => true si offline
+
+```
+
+Noter que cette propriété est définie par un middleware, donc on ne peut pas l'atteindre immédiatement dans le module main `app.js`.
 
 ---------------------------------------------------------------------
 
@@ -197,6 +219,36 @@ Par exemple :
 DB.update('icare_modules', 9, {titre: "Le nouveau titre du module #9"})
 
 ```
+
+---------------------------------------------------------------------
+
+## Les fichiers et dossiers {#folders_and_files}
+
+### Travailler sur un fichier en le verrouillant {#lock_working_file}
+
+Lorsque l'on doit travailler sur un fichier en le verrouillant — si, par exemple, il peut être modifié par deux sources — alors on peut utiliser la méthode pratique `File.execWithLock(path,function)` qui reçoit en premier ingrédient le chemin d'accès complet au fichier et en second argument le traitement qu'il faut appliquer.
+
+Deux méthodes très pratiques permettent de lire et d'écrire dans le fichier sans avoir à charger le package `fs`, les méthodes `write` et `read`. Il suffit :
+
+* de définir la méthode par `function(){...}` (et non pas `()=>{}`)
+* de les appeler avec `this` (qui correspond alors à la méthode `execWithLock`).
+
+Par exemple :
+
+```javascript
+
+File.execWithLock('path/to/mon/fichier', function(){
+  var contenu = this.read() // lit le contenu du fichier 'path/to/mon/fichier'
+  contenu += "J'ajoute du contenu."
+  this.write(contenu)
+})
+
+```
+
+Pendant toute cette opération, on ne pourra pas toucher au fichier. Si elle est exécutée en moins de 6 secondes, la procédure suivante qui doit modifier le fichier ensuite exécuté sur le fichier.
+
+> Noter que s'il s'agit d'un fichier JSON par exemple, il est plus pratique d'utiliser `contenu = require(fpath)` qui convertira automatiquement le contenu en valeur javascript.
+
 
 ---------------------------------------------------------------------
 
@@ -622,3 +674,145 @@ Les données de `host`, de `user` etc. à utiliser pour transmettre des mails do
 
 
 ```
+
+---------------------------------------------------------------------
+
+## Les Tickets {#les_tickets}
+
+### Présentation des tickets {#presentation_des_tickets}
+
+Les tickets permettent d'exécuter des opérations depuis l'extérieur du site. L'exemple type est la validation du mail, sa confirmation : l'utilisateur reçoit un mail contient un lien à cliquer pour confirmer son mail. Il le clique, cela appelle une adresse de type `http://monsite.net/tck/23GFH5DD4` qui joue le ticket d'identifiant `23GFH5DD4` qui lui permet de confirmer l'email.
+
+### Créer un ticket {#creer_un_ticket}
+
+Pour créer un ticket, il faut comprendre que celui-ci peut être constitué de deux manières différentes :
+
+* avec un *code brut* à évaluer. Si, par exemple, on voulait que le ticket ne fasse qu'afficher le message « Vous êtes revenu ! », il suffit de lui donner le code `Dialog.annonce("Vous êtes revenu !")`.
+* avec un *hash de données* qui permet des opérations plus complexes.
+
+Quelle que soit la forme du ticket, il sera créé avec :
+
+```javascript
+
+const Ticket = System.require('controllers/Ticket')
+let ticket = Ticket.create(codeOuData)
+
+```
+
+On peut se servir ensuite de l'identifiant du ticket, `ticket.id` ou des helpers de méthode, comme par exemple `ticket.link(...)` pour l'insérer dans un mail.
+
+#### Création à partir d'un code brut
+
+Il suffit d'envoyer le code brut à la méthode de création :
+
+```javascript
+
+const Ticket = System.require('controllers/Ticket')
+let code   = `fais ceci ou fais cela`
+let ticket = Ticket.create(code)
+
+let lien_mail = ticket.link("Jouer le ticket")
+
+```
+
+#### Création à partir d'un hash de données
+
+Pour créer un ticket avec un hash de données, il faut impérativement que cette table contiennent la propriété `code` qui doit être une **fonction existante**. Il faut **impérativement** que ce soit une fonction.
+
+* Cette fonction — *méthode de traitement* — recevra les données de ce ticket en premier argument.
+* Elle doit impérativement retourner `true` en cas de succès d'opération et `false` dans le cas contraire (le ticket ne sera pas détruit).
+
+Pour requérir un module avant d'appeler la méthode, on définit la propriété `required` dont la valeur est un chemin relatif utilisable par `System.require`. Par exemple `controllers/User`. **Cet objet requis sera mis dans la variable `Required`** qui sera utilisé pour trouver la *méthode de traitement*.
+
+
+```javascript
+
+{
+    required:'controllers/MonController'  // MonController mis dans `Required`
+  , method: 'fonctionAJouer'       // <= Required.fonctionAJouer sera invoquée
+}
+
+```
+
+On peut également, par ce biais, définir une date d'expiration avec la propriété `expireAt`.
+
+Toutes les autres propriétés dépendent de ce dont a besoin la méthode de traitement.
+
+Voyons par exemple le ticket qui permet de confirmer un mail :
+
+```javascript
+
+const Ticket = System.require('controller/Ticket')
+let dataTicket = {
+    required: 'controllers/user/signup' // Mets Signup dans Required
+  , method:   'confirmMail'             // appelle la méthode 'confirmMail' de
+                                        // Required donc de Signup, that's it!
+  , expireAt: Number(new Date()) + 10 * 3600 // expire dans 10 heures
+  , user_mail: uData.mail         // défini plus haut dans le code
+  , candidate_id: id_candidature  // idem
+}
+let ticket = Ticket.create(dataTicket)
+
+let lienMail = ticket.link(`confirmer votre mail ${uData.mail}`)
+
+```
+
+La méthode `confirmMail` définie dans le module `controllers/user/signup` (qui gère toutes l'inscription d'un icarien), recevra en premier argument les données envoyées (`dataTicket`), et pourra donc retrouver les données de candidature grâce à `candidate_id` et vérifier qu'il s'agit du bon candidat grâce à `user_mail` (si une confirmation est demandée à l'utilisateur).
+
+### Obtenir le lien du ticket {#get_ticket_link}
+
+Pour obtenir un lien à copier dans un mail, on utiliser la méthode `link` du ticket en lui transmettant le titre à utiliser :
+
+```javascript
+
+var ticket = Ticket.create(...)
+
+var lien = ticket.link("Jouer le ticket")
+
+```
+
+On peut transmettre en second argument des attributs qui seront ajoutés au mail.
+
+```javascript
+
+var lien = ticket.link("Jouer le ticket", {class:'maClasse', 'data-date-emit': Number(new Date())})
+
+```
+
+---------------------------------------------------------------------
+
+## Les Actualités {#les_news}
+
+```javascript
+
+News.create(user_id, message, status)
+
+```
+
+### Statuts des actualités
+
+```
+
+  -----------------------------------
+  | status  | Home  | Mail  | Mail  |
+  |         | page  | quoti | hebdo |
+  -----------------------------------
+  |    0    |   -   |   -   |   -   |
+  |    1    |   x   |   -   |   -   |
+  |    2    |   x   |   x   |   -   |
+  |    3    |   x   |   x   |   x   |
+  -----------------------------------
+
+```
+
+0
+: Une actualité qui ne doit être ni annoncée par mail ni placée sur la page d'accueil
+
+1
+: Une actualité placée sur la page d'accueil mais pas annoncée par mail.
+
+2
+: Une actualité placée sur la page d'accueil et envoyé seulement par le mail quotidien.
+
+3
+: Actualité placée sur la page d'ccueil
