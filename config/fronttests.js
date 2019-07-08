@@ -1,6 +1,9 @@
 'use strict'
 /**
-  Configuration des FrontTests
+  Configuration des FrontTests (back-end)
+
+  ATTENTION : ce module ne doit pas être confondu avec le module
+  `lib/fronttests/__config` qui sert en front-end
 
 **/
 module.exports = {

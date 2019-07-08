@@ -9,9 +9,9 @@ class AbsModule {
   // ---------------------------------------------------------------------
   //  CLASSE
 
-  static async module(moduleId) {
+  static async module(moduleId, colonnes) {
     var mod = new AbsModule(Number(moduleId))
-    await mod.getData()
+    await mod.getData(colonnes)
     return mod
   }
 
@@ -29,6 +29,7 @@ class AbsModule {
     if ( typeof data === 'object' ) {
       this.data = data
     } else {
+      this.data = {}
       this.id = data
     }
   }
@@ -36,10 +37,10 @@ class AbsModule {
   // ---------------------------------------------------------------------
   //  Propriétés fixes du module absolu
 
-  async getData(){
-    var retour = await DB.get('modules.absmodules', this.id)
+  async getData(colonnes){
+    var retour = await DB.get('icare_modules.absmodules', this.id, colonnes)
     this.data = retour
-    console.log("Module data : ", this.data)
+    // console.log("Module data : ", this.data)
   }
 
   get id()  { return this.data.id }

@@ -5,6 +5,9 @@ Dernier numéro de note : 0001
 * [Introduction, présentation](#introduction_presentation)
 * [Installation](#setup_fronttests_for_a_site)
   * [Chargement du middleware](#setting_the_middleware)
+  * [Configuration des tests](#configure_tests)
+    * [Configuration des tests en Back-end](#config_tests_for_back_end)
+    * [Configuration des tests en Front-end](#config_tests_for_front_end)
   * [Lancement des tests (chargement du panneau FrontTests)](#load_tests_panel)
 * [Messages de résultat](#resultats_messages)
 * [Tests sur le DOM et les DOM elements](#tester_le_dom)
@@ -40,6 +43,43 @@ Pour installer FrontTests, il suffit :
 > [1] Il faut avoir défini ce dossier comme le dossier des assets à l'aide de `app.use('/assets', express.static(__dirname + '/lib'))` placé avant ce use.
 
 > [2] Plus tard, lorsqu'on aura un vrai package, on pourra faire simplement `const FrontTests = require('fronttests')`.
+
+
+### Configuration des tests {#configure_tests}
+
+Il faut tout d'abord comprendre qu'on peut/doit configurer les tests à deux endroits : pour le back-end, dans le fichier `./config/fronttests.json` et pour le front-end dans le fichier `./lib/fronttests/__config`.
+
+#### Configuration des tests en Back-end {#config_tests_for_back_end}
+
+Pour le back-end, on configure donc les tests dans le fichier `config/fronttest.json` de l'application. C'est une table `JSON` qui peut définir :
+
+`checkIfLocal`
+: Méthode qui doit retourner true si on est en local et false dans le cas contraire.
+
+`folderMails`
+: Méthode qui doit retourner le path absolu du dossier des mails.
+: Note : en mode tests (i.e. en local), les mails ne sont pas envoyés, ils sont enregistrés dans ce dossier.
+
+`folderTickets`
+: Méthode qui retourne le path absolu du dossier des tickets.
+
+#### Configuration des tests en Front-end {#config_tests_for_front_end}
+
+On définit la configuration des tests en front-end (donc dans la page contenant les deux iframes) dans le fichier `./lib/fronttests/__config`. C'est également un fichier `JSON` qui définit les propriétés suivantes :
+
+`wishList`
+: La liste des paths relatifs (\*) des tests à jouer.
+: (\*) depuis le dossier `lib/fronttests/__app_tests__/`
+
+`fail_fast`
+: Si cette propriété est mise à `true`, les tests s'interrompent au premier échec.
+
+`runAtLaunch`
+: Mettre à true si on veut que les tests soient lancés dès le chargement de la page.
+
+`runAllAtLaunch`
+: Mettre à true pour que tous les tests de la `wishList` ci-dessus soient lancés.
+: `runAtLaunch` est prioritaire sur cette définission. Il faut la supprimer ou la mettre à false pour pouvoir lancer tous les tests.
 
 ### Lancement des tests {#load_tests_panel}
 

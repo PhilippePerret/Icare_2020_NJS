@@ -4,18 +4,21 @@
   "description": "Site de l'Atelier Icare en version node.js",
   "main": "app.js",
   "scripts": {
-    "--test": "mocha --full-trace=false ./tests/**/*.test.js --exit",
     "--test": "MODE_TEST=true node ./app",
     "start-dev": "nodemon app.js",
-    "start":"node .",
-    "test":"nodemon app.js &",
-    "posttest":"npm run open-google-for-fronttests",
+    "start": "node .",
+    "test": "nodemon app.js &",
+    "posttest": "npm run open-google-for-fronttests",
     "open-google-for-fronttests": "open -a 'Google Chrome' 'http://localhost:3000/ftt'",
     "watch-sass": "node-sass -r -w --output=lib/css --output-style=compressed lib/css/_sass/",
     "watch-sass-all": "node-sass -w --recursive --incluce-path=lib/css/_sass_all/ lib/css/index.sass lib/css/all.css --output-style=compressed"
   },
-  "nodemonConfig":{
-    "ignore": [".git", "uploads/*", "tmp/*"]
+  "nodemonConfig": {
+    "ignore": [
+      ".git",
+      "uploads/*",
+      "tmp/*"
+    ]
   },
   "repository": {
     "type": "git",
@@ -33,6 +36,7 @@
     "cookie-parser": "^1.4.4",
     "express": "^4.17.1",
     "express-session": "^1.16.2",
+    "express-zip": "^2.0.1",
     "multer": "^1.4.1",
     "mysql-easier": "^2.1.0",
     "nodemon": "^1.19.1",

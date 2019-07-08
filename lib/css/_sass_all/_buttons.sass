@@ -1,16 +1,24 @@
 
-input[type="submit"].btn, button.btn
+a.btn, input[type="submit"].btn, button.btn
   border: 1px solid
   border-radius: 4px
   &:not(.main):not(.small)
     padding: 2px 8px
+  &.small
+    padding: 1px 4px
+    font-size: 9pt
   &.main
     background-color: #77f777
-    padding: 8px 18px
     border-color: teal
     color: teal
-    font-size: 14pt
+    &:not(.small)
+      padding: 8px 18px
+      font-size: 14pt
 
+a, input[type="submit"], button
+  &.warning
+    background-color: red
+    color: white
 
 .small-tool-btn
   font-size:  9pt

@@ -14,6 +14,23 @@ const System = {
 , pathFor(relpath) {
     return path.resolve(__dirname, `../${relpath}`)
   }
+
+, removeFolder(path){
+    return new Promise( (ok,ko) => {
+      glob(`${path}/*`, async (err, files) => {
+        for ( var file of files ) {
+          if ( fs.statSync(file).isDirectory() ){
+            await this.removeFolder(file)
+            fs.rmdir(file, err=>{if (err){throw Error(err)} })
+          } else {
+            fs.unlink(file, err=>{if (err){throw Error(err)}})
+          }
+        }
+        fs.rmdir(path, err=>{if (err){throw Error(err)} })
+        ok()
+      })
+    })
+}
 }
 
 module.exports = System

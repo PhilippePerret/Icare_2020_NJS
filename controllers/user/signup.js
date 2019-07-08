@@ -131,6 +131,30 @@ static confirmMail(data){
   }
 }
 
+/**
+  Méthode appelée par l'administration pour valider une candidature
+  @param {String} cid IDentifiant de la candidature (i.e. non du dossier dans
+                      le dossier tmp/candidatures)
+**/
+static async valider_candidature(cid){
+  Dialog.annonce("Je dois valider la candidature")
+  let pathData = path.join(Icare.folderCandidats, cid, 'udata.json')
+  let candidat = new Signup(require(pathData))
+  await candidat.validate()
+}
+/**
+  Méthode appelée par l'administration pour refuser une candidature
+
+  @param {String} cid IDentifiant de la candidature (i.e. non du dossier dans
+                      le dossier tmp/candidatures)
+**/
+static async refuser_candidature(cid){
+  let pathData = path.join(Icare.folderCandidats, cid, 'udata.json')
+  let candidat = new Signup(require(pathData))
+  await candidat.invalidate()
+}
+
+
 // ---------------------------------------------------------------------
 //  INSTANCE SIGNUP
 
@@ -143,13 +167,43 @@ constructor(uData){
   Création du dossier complet de candidature
 **/
 create(){
+  var id = this.uData['token'].replace(/-/g,'').toUpperCase()
+  Object.assign(this.uData, {
+      id: id
+    , zipfile: `${id}.zip`
+  })
   this.makeTicketConfirmationMail()
   this.makeCandidatureFolder()
   this.copyCandidatureFiles()
+  this.makeZipFile()
   this.makeDataFile()
   this.annonceSite()
   return this // pour retourner l'instance
 }
+
+// Pour valider le candidat
+validate(){
+  // Il faut vérifier qu'il ait bien confirmé son mail
+
+  // Il faut le créer dans la base de données
+  // INSERT
+
+  // Il faut lui envoyer un mail d'annonce
+
+  // Il faut créer une actualité
+
+  // On peut détruire le dossier de candidature
+
+}
+
+// Pour invalider le candidat
+// Noter qu'un raison lui a été envoyée par mail.
+async invalidate(){
+
+  // On peut détruire le dossier de candidature
+  await this.removeFolder()
+}
+
 
 makeTicketConfirmationMail(){
   const Ticket = System.require('controllers/Ticket')
@@ -189,6 +243,13 @@ async sendMails(){
     , subject: 'Confirmation de votre adresse mèl'
     , text: `Bonjour ${this.uData.pseudo},\n\nMerci de confirmer votre mèl en cliquant sur le lien ci-dessous :\n\n<center>${lienConf}</center>`
   })
+}
+
+/**
+  Pour détruire définitivement le dossier de candidature
+**/
+removeFolder(){
+  System.removeFolder(this.folderCandidature)
 }
 
 get formatedMailTo(){
@@ -253,6 +314,12 @@ copyCandidatureFiles(){
     let dst_ext = this.pathTo(`extraits${path.extname(name_ext)}`)
     fs.copyFileSync(src_ext, dst_ext)
   }
+}
+
+// Fabrication du fichier ZIP contenant tous les documents transmis
+// pour la présentation.
+makeZipFile(){
+
 }
 
 // Création du fichier qui contient toutes les informations

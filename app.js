@@ -182,12 +182,10 @@ app.get('/', function (req, res) {
 .get('/bureau(/:section)?', function(req, res){
   res.render('gabarit', {place: 'bureau'})
 })
-.get('/admin(/:section)', async function(req, res){
+.get('/admin(/:section)', function(req, res){
   if ( User.current && User.current.isAdmin ){
-    if ( req.params.section === 'icariens') {
-      await User.getAllIcariens()
-    }
-    res.render('gabarit', {place: 'admin', section:req.params.section})
+    const Admin = System.require('controllers/Admin')
+    Admin[req.params.section](req,res)
   } else if ( ! User.current ) {
     Dialog.action_required('Merci de vous identifier pour rejoindre cette section.')
     res.render('gabarit', {place:'login', route_after:`/admin/${req.params.section}`})
