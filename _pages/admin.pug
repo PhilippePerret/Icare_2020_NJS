@@ -3,6 +3,19 @@ html
   include admin/head
   body(class="admin")
     include admin/header
+    //- Le message flash à afficher (if any)
+    if Dialog.message
+      div.flash
+        != Dialog.message
+
     section#content
-      //- include includes/places/admin
+      case section
+        when 'overview'
+          include admin/section/overview
+        when 'dashboard'
+          include admin/section/dashboard
+        when 'icariens'
+          include admin/section/icariens
+        when 'modules'
+          include admin/section/modules
     include admin/footer

@@ -20,7 +20,7 @@ const Admin = {
     // On relève les candidatures, notamment pour faire des objets
     // qui vont permettre d'avoir toutes les informations
     // Cf. la [Classe Candidat] plus bas dans le fichier
-    let candidats = await this.candidatures()
+    await this.getCandidatures()
 
   }
 
@@ -58,39 +58,52 @@ const Admin = {
   **/
 
 , watchers(){
-    return "<p>Marion nous prend la tête, mais on aime bien.</p>"
+
   }
-, async candidatures(){
-    if ( undefined === this._candidats ) {
-      this._candidats = []
-      var folders = glob.sync(`${Icare.folderCandidats}/*`)
-      if ( folders.length ) {
-        for ( var folder of folders ) {
-          var candidat = new Candidat(require(path.join(folder,'udata.json')))
-          // Une table avec toutes les données nécessaires à l'affichage
-          var data_candidat = await candidat.getData()
-          this._candidats.push(data_candidat)
-        }
-      } else {
-        this._candidats = false
+  /**
+    Méthode qui relève les candidats à l'atelier en fouillant le dossier
+    temporaire tmp/candidats
+  **/
+, async getCandidatures(){
+    this._candidats = []
+    var folders = glob.sync(`${Icare.folderCandidats}/*`)
+    if ( folders.length ) {
+      for ( var folder of folders ) {
+        // console.log("--- Traitement du dossier candidature : ", folder)
+        var candidat = new Candidat(require(path.join(folder,'udata.json')))
+        // Une table avec toutes les données nécessaires à l'affichage
+        var data_candidat = await candidat.getData()
+        // console.log("Données du candidat : ", data_candidat)
+        this._candidats.push(data_candidat)
       }
     }
-    return this._candidats
+    console.log("---- À la fin, this._candidats = ", this._candidats)
   }
 
 , async valider_candidature(request, response){
-    let Signup = System.require('controllers/user/signup')
+    let Signup = Sys.reqController('user/signup')
     await Signup.valider_candidature(request.query.id)
     redirect(request.route.path)
   }
 
 , async refuser_candidature(request, response){
-    let Signup = System.require('controllers/user/signup')
+    let Signup = Sys.reqController('user/signup')
     await Signup.refuser_candidature(request.query.id)
     redirect(request.route.path)
   }
 
 }// Admin
+
+Object.defineProperties(Admin,{
+  candidats:{
+    get(){
+      if ( undefined === this._candidats ) {
+        throw Error("Il faut appeler (en asynchrone) la méthode Admin.getCandidatures() avant d'appeler les candidats.")
+      }
+      return this._candidats
+    }
+  }
+})
 
 
 /**

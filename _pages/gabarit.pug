@@ -1,9 +1,7 @@
 doctype html
 html
   include includes/layout/head
-  body(
-    class = route=='/' ? "home":""
-    )
+  body(class = route=='/' ? "home":"")
     section#content
       include includes/layout/header
       case place
@@ -15,8 +13,6 @@ html
           include includes/places/bureau
         when 'cul_de_sac'
           include includes/places/cul_de_sac
-        when 'admin'
-          include includes/places/admin
         when 'aide'
           include includes/places/aide
         when 'modules'
