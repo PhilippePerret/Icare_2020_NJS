@@ -13,21 +13,15 @@ const Admin = {
     |
     |
   **/
-  async overview(request, response){
-    response.redirect('/admin/dashboard')
-  }
+  async initOverview(){
+    // On relève tous les icariens
+    await User.getAllIcariens()
 
-, async dashboard(request, response){
     // On relève les candidatures, notamment pour faire des objets
     // qui vont permettre d'avoir toutes les informations
     // Cf. la [Classe Candidat] plus bas dans le fichier
-    var candidats = await this.candidatures()
-    response.render('gabarit',{place:'admin',section:'dashboard', candidatures:candidats})
-  }
+    let candidats = await this.candidatures()
 
-, async icariens(request, response) {
-    await  User.getAllIcariens()
-    response.render('gabarit',{place:'admin',section:'icariens'})
   }
 
   /**

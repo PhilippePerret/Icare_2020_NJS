@@ -32,20 +32,7 @@ global.Icare  = Sys.require('controllers/Icare')
 global.User   = Sys.reqModel('User')
 const Mail    = Sys.require('controllers/Mail')
 
-global.Dialog = class {
-  static init() { delete this._message }
-  static get message(){return this._message}
-  static set message(v){this._message = v}
-  static action_required(msg){
-    this.message = `<div class="action-required">${msg}</div>`
-  }
-  static annonce(msg){
-    this.message = `<div class="annonce">${msg}</div>`
-  }
-  static error(msg){
-    this.message = `<div class="error">${msg}</div>`
-  }
-}
+global.Dialog = Sys.reqController('Dialog')
 
 // Usings
 // Pour les sessions
@@ -67,10 +54,11 @@ app.use(express.urlencoded({ extended: false }))
 app.use(cookieParser('ATELIERICARECOOKIES'))
 app.use(flash())
 
+// Pour définir la route des css, js et autres imagines
 app.use('/assets', express.static(__dirname + '/lib'))
 
-// Settings
-app.set('views', './pages')
+// Engin de rendu de vue
+app.set('views', './_pages')
 app.set('view engine', 'pug')
 
 
@@ -80,23 +68,8 @@ global.PUG = require('pug')
 // Reconnecter l'auteur qui s'est identifié (if any)
 app.use(User.reconnect)
 
-// middleware
-app.use((req, res, next) => {
-  Dialog.init()
-  var msg = req.flash('annonce')
-  if ( msg.length ){
-    Dialog.annonce(msg.join(''))
-  }
-  msg = req.flash('action_required')
-  if ( msg.length ) {
-    Dialog.action_required(msg.join())
-  }
-  msg = req.flash('error')
-  if ( msg.length ) {
-    Dialog.error(msg.join())
-  }
-  next()
-})
+// Traitement des messages flash
+app.use(Dialog.dispatchFlash.bind(Dialog))
 
 app.use((req,res,next) => {
   // res.locals.request = req
@@ -112,16 +85,18 @@ app.use((req,res,next) => {
   next()
 })
 
-const FrontTests = require('./lib/fronttests/app_middleware')
+global.FrontTests = require('./lib/fronttests/app_middleware')
 app.use('/ftt(/:action)?', FrontTests.run)
 app.get('/fttajax', FrontTests.ajax.bind(FrontTests))
 
 // Router pour le bureau
-app.use('/bureau', Sys.reqRouter('bureau'))
+app.use('/bureau',  Sys.reqRouter('bureau'))
+app.use('/signup',  Sys.reqRouter('signup'))
+app.use('/admin',   Sys.reqRouter('admin'))
+
+// Router pour l'inscription
 
 app.get('/', function (req, res) {
-  // res.send('Salut tout le monde !')
-  // console.log("req.session.user_id : ", req.session.user_id)
   res.render('gabarit', {place: 'home'})
 })
 .get('/tck/:ticket_id', function(req,res){
@@ -131,7 +106,7 @@ app.get('/', function (req, res) {
 })
 .get('/login', function(req,res){
   if ( ! Dialog.message ) Dialog.action_required("Merci de vous identifier.")
-  res.render('gabarit', {place: 'login'})
+  res.render('gabarit', {place: 'login', route_after:req.query.ra||''})
 })
 .post('/login', function(req, res){
   User.existsAndIsValid(req, res, {mail:req.body._umail_, password:req.body._upassword_, route_after:req.body.route_after})
@@ -143,35 +118,7 @@ app.get('/', function (req, res) {
     delete req.session.session_id
     delete User.current
   }
-  // TODO Un message pour dire au revoir
   res.redirect('/')
-})
-.get('/signup', async function(req,res){
-  var token = uuidv4()
-  req.session.form_token = token
-  res.render('gabarit', {place:'signup', token:token, action:'formulaire'})
-})
-.get('/signup/documents', function(req,res){
-  res.render('gabarit', {place:'signup', action:'documents'})
-})
-.get('/signup/explication', function(req,res){
-  res.render('gabarit', {place:'signup', action:'explication'})
-})
-.post('/signup', upload.any(), async function(req, res){
-  FrontTests.checkFields(req)
-  const Signup = require('./controllers/user/signup')
-  var signup = await Signup.isValid(req, res)
-  if ( signup ) {
-    res.render('gabarit', {place:'signup', action:'confirmation', candidature_id:signup.uuid })
-  } else {
-    var token = uuidv4()
-    req.session.form_token = token
-    Dialog.error(req.flash('error'))
-    res.render('gabarit', {place:'signup', token: token, action:'formulaire'})
-  }
-})
-.get('/bureau/(:section)?', function(req,res){
-  res.render('gabarit', {place:'bureau', messages: req.flash('info')})
 })
 .get('/modules', async function(req, res){
   global.AbsModule = require('./models/AbsModule')
@@ -180,20 +127,6 @@ app.get('/', function (req, res) {
 })
 .get('/absmodule/:module_id/:action', function(req,res){
   res.render('gabarit', {place:'modules', action:req.params.action, module_id:req.params.module_id})
-})
-.get('/bureau(/:section)?', function(req, res){
-  res.render('gabarit', {place: 'bureau'})
-})
-.get('/admin(/:section)', function(req, res){
-  if ( User.current && User.current.isAdmin ){
-    const Admin = System.require('controllers/Admin')
-    Admin[req.params.section](req,res)
-  } else if ( ! User.current ) {
-    Dialog.action_required('Merci de vous identifier pour rejoindre cette section.')
-    res.render('gabarit', {place:'login', route_after:`/admin/${req.params.section}`})
-  } else {
-    res.render('gabarit', {place:'cul_de_sac'})
-  }
 })
 .get('/aide(/:section)?', function(req,res){
   res.render('gabarit', {place:'aide', question:req.session.question, section:req.params.section})

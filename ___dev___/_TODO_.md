@@ -1,5 +1,15 @@
 # Todo list
 
+* Rationnaliser, dans le code et dans la documentation, l'utilisation de Dialog.
+En fait, il faudrait passer tout par là, sans avoir à utiliser flash
+
+* Rationnaliser les routes avec les router (comme pour bureau et signup)
+
+* [SIGNUP]
+  - Quand la confirmation du mail est mauvaise (ou vide ?), elle est remplie correctement par le programme
+    à l'affichage suivant (-> tester)
+  - enregistrer les réponses au questionnaire dans le fichier json de la candidature
+
 * Supprimer sur le bureau la candidature supprimée ou validée (peut-être qu'il suffit de rediriger la page)
 * Tester la route `/admin/download/<path fichier>` qui permet à l'administrateur de télécharger des documents
 

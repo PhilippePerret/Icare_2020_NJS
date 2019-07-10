@@ -1,0 +1,30 @@
+if App.offline
+  - phil = Sys.require('private/secret/phil.json')
+  script(type="text/javascript")
+    = `const mailAdmin = '${phil.mail}';`
+    |
+    = `const pwdAdmin = '${phil.password}';`
+    |
+    | function IdentifyAdmin(){
+    |   document.querySelector('input[name="_umail_"]').value = mailAdmin;
+    |   document.querySelector('input[name="_upassword_"]').value = pwdAdmin;
+    |   return false
+    | }
+    
+h1 Identification
+
+form(id="login_form" method="POST" action="/login")
+  fieldset
+    legend Identification
+    input(type="hidden" name="route_after", value=route_after)
+    div.row
+      label Votre mail
+      input(type="text" name="_umail_")
+    div.row
+      label Votre mot de passe
+      input(type="password" name="_upassword_")
+    if App.offline
+      div.row
+        button(onclick="return IdentifyAdmin()") S'identifier en administrateur
+    div.buttons
+      input(type="submit" value="S’identifier" class="btn main")

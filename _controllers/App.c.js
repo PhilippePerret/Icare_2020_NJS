@@ -9,6 +9,7 @@
 const App = {
 
 }
+
 Object.defineProperties(App,{
 
   folder:{ get(){return APP_PATH} }
@@ -24,6 +25,7 @@ Object.defineProperties(App,{
     get(){return this._offline}
   , set(v){this._offline = v}
   }
+
 , url:{ get(){return this.config.url} }
 
   // File ./config.app.json
@@ -33,6 +35,19 @@ Object.defineProperties(App,{
         this._config = System.require('config/app') || {}
       }
       return this._config
+    }
+  }
+
+, PhilData:{
+    get(){
+      console.log("offline = ", this.offline)
+      if ( this.offline ) {
+        let phil = Sys.require('private/secret/phil.json')
+        console.log("phil = ", phil)
+        return phil
+      } else {
+        throw Error("Impossible d'obtenir les données administrateur par ce biais.")
+      }
     }
   }
 })

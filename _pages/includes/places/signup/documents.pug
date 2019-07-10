@@ -1,3 +1,5 @@
+include ../../mixins/links
+
 h2 Le dossier de candidature
 
 div#document_presentation
@@ -5,7 +7,10 @@ div#document_presentation
   h4 Document de présentation
   p
     | Votre document de présentation comme son nom l'indique sert essentiellement
-    | à vous présenter à nous, afin de mieux adapter l'apprentissage à ce que vous
+    | à vous présenter à nous lors du 
+    |
+    a(href="/signup") dépôt de votre candidature
+    |, afin de mieux adapter l'apprentissage à ce que vous
     | êtes et ce que vous pouvez déjà connaitre en matière de narration ou de dramaturgie.
   p
     | Ce document débute donc par la mention de vos nom, prénom, coordonnées ainsi que les informations d'identité que vous jugerez opportunes d'indiquer.
@@ -22,12 +27,16 @@ div#document_presentation
   p
     | Dans cette partie, vous pouvez également ajouter tout commentaire qu'il vous semblerait important de mentionner.
 
-  
+  +signupLink(!User.current)
+
 div#lettre_motivation
 
   h4 Lettre de motivation  
   p
-    | Dans votre lettre de motivation, vous pouvez parler de ce qui vous pousse à vouloir intégrer l'atelier. Quel est votre but&nbsp;? Cherchez-vous à vous perfectionner pour devenir professionnel(le) ou cherchez-vous plus modestement à vous améliorer pour savoir mieux raconter vos histoires&nbsp;? À quel problème vous confrontez-vous, que vous pensez pouvoir résoudre en rejoignant l'atelier&nbsp;?
+    | Dans la lettre de motivation que vous devez joindre lors du 
+    |
+    a(href="/signup") dépôt de votre candidature
+    |, vous pouvez parler de ce qui vous pousse à vouloir intégrer l'atelier. Quel est votre but&nbsp;? Cherchez-vous à vous perfectionner pour devenir professionnel(le) ou cherchez-vous plus modestement à vous améliorer pour savoir mieux raconter vos histoires&nbsp;? À quel problème vous confrontez-vous, que vous pensez pouvoir résoudre en rejoignant l'atelier&nbsp;?
 
   p
     | En d'autres termes, comment définiriez-vous vos espoirs en matière d'apprentissage de l'écriture, en général et au sein de l'atelier en particulier&nbsp;?
@@ -37,7 +46,8 @@ div#lettre_motivation
 
   p
     | Vous pouvez enfin parler de ce que vous attendez et espérez, de façon très générale ou de façon très concrète, d'un atelier comme l'Atelier Icare.
-
+  
+  +signupLink(!User.current)
 
 div#extraits 
 
@@ -45,6 +55,7 @@ div#extraits
   p
     | Dans le formulaire de dépôt de votre candidature, vous pouvez également joindre à votre dossier l’extrait d'un de vos travaux d’écriture (ou le projet complet s’il n’excède pas 5 pages).
 
+  +signupLink(!User.current)
 
 div
   

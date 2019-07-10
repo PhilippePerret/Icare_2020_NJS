@@ -20,8 +20,8 @@ section#header
     if User.current && User.current.isIcarien
       +mainLink('bureau')
     +mainLink('modules')
-    if User.current && User.current.isAdmin
-      +mainLink('admin')
+    //- if User.current && User.current.isAdmin
+    +mainLink('admin')
 
     if User.current
       a(href="/logout").log Se déconnecter

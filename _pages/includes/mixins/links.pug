@@ -1,0 +1,13 @@
+//- 
+  Pour pouvoir utiliser les méthodes de ce mixin, il faut l'inclure
+  dans la page à l'aide de (en haut de page) :
+    include ../..../mixins/links
+  Puis de placer `+<methode>(<params>)` dans le code
+  Par exemple `+signupLink(!User.current)` pour inscrire le lien pour rejoindre
+  le formulaire de candidature.
+  
+//- Lien pour rejoindre le formulaire de candidature
+mixin signupLink(afficher)
+  if afficher
+    div.right.air
+      a(href="/signup") 📝 S’inscrire
