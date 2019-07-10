@@ -1,6 +1,5 @@
 # Todo list
 
-* Inscription : faire un fichier zip avec les documents transmis (lui donner comme path `uploads/<id candidature>.zip`)
 * Supprimer sur le bureau la candidature supprimée ou validée (peut-être qu'il suffit de rediriger la page)
 * Tester la route `/admin/download/<path fichier>` qui permet à l'administrateur de télécharger des documents
 

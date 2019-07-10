@@ -5,6 +5,8 @@
   * [Tester si l'user courant est icarien](#tests_if_current_icarien)
 * [Programmation générale](#general_programmation)
   * [Requérir des modules](#require_modules)
+  * [Organisation des routers, contrôleurs et modèles](#organisation_routers_ctrl_et_models)
+  * [Fonctionnement des modèles et contrôleurs](#fonctionnement_models_et_controllers)
   * [Online ou Offline](#know_if_online_offline)
 * [Page et contenu](#page_et_contenu)
   * [Afficher des messages utilisateur](#show_user_messages)
@@ -68,6 +70,50 @@ else
 Pour requérir n'importe quel module sans se soucier le l'endroit d'où on le fait, le plus simple est d'utiliser `System.require` au lieu de `require`. On peut même ne pas mettre le `./`. Le path relatif que l'on transmet à `System.require` s'estime toujours depuis la racine du site, quel que soit l'endroit d'où on appelle la méthode.
 
 Ainsi, quel que soit le module dans lequel on se trouve, la commande `System.require('controllers/MonCont')` appellera toujours le contrôleur `MonCont` se trouvant dans le dossier `controllers` situé à la racine du site.
+
+### Organisation des routers, contrôleurs et modèles {#organisation_routers_ctrl_et_models}
+
+Certaines conventions permettent de faciliter grandement le travail. Elles existent pour les routeurs, les contrôleurs et les modèles.
+
+Dossier
+: Les routers, contrôleurs et modèles doivent être placés dans leur dossiers respectifs : `_routers`, `_controllers` et `_models`.
+
+Nom générique
+: Ces routers, contrôleurs et modèles doivent avoir un nom générique, caractéristique.
+: Par exemple `Bureau` ou `Admin`.
+
+Nom du fichier
+: Le nom de leur fichier doit être suivi par la marque de leur nature, c'est-à-dire respectivement : `<chose>.r.js` (`r` pour `router`), `<chose>.c.js` (`c` pour `controller`) et `<chose>.m.js` (`m` pour `model`).
+: Par exemple : `Bureau.r.js` (router du Bureau), `User.m.js` (modèle d'user), etc.
+
+Require
+: Pour requérir ces modules, si les conventions précédentes sont respectées, il suffit d'utiliser les méthodes respectives `Sys.reqRouter`, `Sys.reqController` et `Sys.reqModel` en mettant en argument le *nom générique* du module.
+: Par exemple : `const Bureau = Sys.reqController('Bureau')`
+: Noter qu'on n'indique aucune extension, juste le *nom générique*.
+
+### Fonctionnement des modèles et contrôleurs {#fonctionnement_models_et_controllers}
+
+Comme je veux que les contrôleurs et les modèles soient séparés (respectivement dans les dossiers `_controllers` et `_models`), mais que je ne veux pas que ce soit deux objets différents qui soient invoqués suivant qu'on fasse appel au contrôleur ou au modèle, il faut trouver le moyen d'inclure les méthodes de l'un dans l'autre.
+
+Par exemple, dans `_models/User.m.js` est défini le *modèle* `User` tandis que dans `_controllers/User.c.js` est défini le *contrôleur* `UserController`. Mais je veux toujours faire appel à la seule classe `User` même pour invoquer les méthodes de `UserController`.
+
+Pour se faire, il suffit, à la fin de la définition du modèle, d'ajouter :
+
+```javascript
+
+Object.assign(<NomModel>, Sys.reqController('<NomModel>'))
+
+```
+
+Par exemple :
+
+```javascript
+
+Object.assign(User, Sys.reqController('User'))
+
+```
+
+> Noter qu'aucun contrôle de collision n'est effectué ici et que les méthodes du modèle seront inévitablement écrasées par les méthodes du contrôleur qui porteraient le même nom…
 
 ### Online ou Offline {#know_if_online_offline}
 

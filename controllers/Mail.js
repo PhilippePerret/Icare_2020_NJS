@@ -20,7 +20,7 @@ let MAIL_CONFIG
 const MAIL_CONFIG_PATH = path.resolve(__dirname,'../config/mail.js')
 if (fs.existsSync(MAIL_CONFIG_PATH)){
   MAIL_CONFIG = require(MAIL_CONFIG_PATH)
-  console.log("Configuration des mails : ", MAIL_CONFIG)
+  // console.log("Configuration des mails : ", MAIL_CONFIG)
 }
 
 

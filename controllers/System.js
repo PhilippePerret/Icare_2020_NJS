@@ -9,6 +9,28 @@ const System = {
     return require(fullpath)
   }
 
+  /**
+    Requérir un router
+    ------------------
+    Par convention, un router doit s'appeler '<chose>_router.js'. Il suffit
+    d'envoyer '<chose>' à cette méthode pour qu'elle trouve le router
+
+    Produit une erreur fatal si le router n'existe pas.
+
+    @param {String} which   L'objet du router
+    @return {Router} Un routeur Express
+
+  **/
+, reqRouter(which){
+    return this.require(`_routers/${which}.r.js`)
+  }
+, reqController(which){
+    return this.require(`_controllers/${which}.c.js`)
+  }
+, reqModel(which){
+  return this.require(`_models/${which}.m.js`)
+  }
+
   // Retourne le chemin absolu du path relatif +relpath+ d'où qu'on le
   // demande.
 , pathFor(relpath) {

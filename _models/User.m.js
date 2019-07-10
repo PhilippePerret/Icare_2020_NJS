@@ -228,4 +228,17 @@ User.REDIRECTIONS_AFTER_LOGIN = {
   9: {hname:'Tableau de bord',   route:'admin/dashboard', admin:true}
 }
 
+/**
+  Distribut toutes les méthodes de User.controller (UserController) dans User
+**/
+// for ( var meth in User.controller ) {
+//   if ( undefined === User[meth] ) {
+//     User[meth] = User.controller[meth].bind(User.controller)
+//   } else {
+//     new Error(`Erreur systématique : la méthode "${meth}" (contrôleur) est déjà connue du modèle User. Il faut lui donner un autre nom.`)
+//   }
+// }
+Object.assign(User, Sys.reqController('User'))
+
+
 module.exports = User

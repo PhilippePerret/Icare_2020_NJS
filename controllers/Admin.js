@@ -13,8 +13,11 @@ const Admin = {
     |
     |
   **/
+  async overview(request, response){
+    response.redirect('/admin/dashboard')
+  }
 
-  async dashboard(request, response){
+, async dashboard(request, response){
     // On relève les candidatures, notamment pour faire des objets
     // qui vont permettre d'avoir toutes les informations
     // Cf. la [Classe Candidat] plus bas dans le fichier
@@ -81,13 +84,13 @@ const Admin = {
     return this._candidats
   }
 
-, valider_candidature(request, response){
+, async valider_candidature(request, response){
     let Signup = System.require('controllers/user/signup')
     await Signup.valider_candidature(request.query.id)
     redirect(request.route.path)
   }
 
-, refuser_candidature(request, response){
+, async refuser_candidature(request, response){
     let Signup = System.require('controllers/user/signup')
     await Signup.refuser_candidature(request.query.id)
     redirect(request.route.path)

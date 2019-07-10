@@ -25,11 +25,12 @@ global.DB = require('./config/mysql') // DB.connexion
 
 global.APP_PATH = __dirname
 global.System = require('./Controllers/System')
+global.Sys = System // raccourci
 System.require('controllers/Date') // extension
-global.App    = System.require('controllers/App')
-global.Icare  = System.require('controllers/Icare')
-global.User   = System.require('models/User')
-const Mail    = System.require('controllers/Mail')
+global.App    = Sys.reqController('App')
+global.Icare  = Sys.require('controllers/Icare')
+global.User   = Sys.reqModel('User')
+const Mail    = Sys.require('controllers/Mail')
 
 global.Dialog = class {
   static init() { delete this._message }
@@ -115,7 +116,8 @@ const FrontTests = require('./lib/fronttests/app_middleware')
 app.use('/ftt(/:action)?', FrontTests.run)
 app.get('/fttajax', FrontTests.ajax.bind(FrontTests))
 
-
+// Router pour le bureau
+app.use('/bureau', Sys.reqRouter('bureau'))
 
 app.get('/', function (req, res) {
   // res.send('Salut tout le monde !')
