@@ -14,14 +14,20 @@ const Admin = {
     |
   **/
   async initOverview(){
+    console.log("-> Admin.initOverview")
     // On relève tous les icariens
-    await User.getAllIcariens()
+    await User.getAll()
 
     // On relève les candidatures, notamment pour faire des objets
     // qui vont permettre d'avoir toutes les informations
     // Cf. la [Classe Candidat] plus bas dans le fichier
     await this.getCandidatures()
 
+    console.log("<- Admin.initOverview")
+  }
+
+, async setIcariensSorted(){
+    this.icariens_sorted = await User.allSortedBy('status')
   }
 
   /**

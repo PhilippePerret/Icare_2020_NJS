@@ -21,6 +21,7 @@ router
   res.render('admin', {section_name:'Tableau de bord', section:'dashboard'})
 })
 .get('/icariens', async function(req,res){
+  await Admin.setIcariensSorted()
   res.render('admin', {section_name: 'Icariens', section:'icariens'})
 })
 .get('/:action', async function(req, res){

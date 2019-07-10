@@ -32,15 +32,71 @@ class User {
     retourne les icariens et seulement les icariens, sous forme d'instances
     User
   **/
-  static get allIcariens(){
-    return this._allicariens
+  static get all(){
+    return this._all
   }
-  static async getAllIcariens(){
+  /**
+    Retourne la liste de tous les icariens, classés suivant la clé +sortKey+
+    @param {String} sortKey Une clé de classement, soit existante comme par exemple
+                            'status' qui met d'abord les icariens en activité,
+                            puis ceux en pause, etc.
+                            Soit une propriété comme la date d'inscription par
+                            exemple.
+  **/
+  static async allSortedBy(sortKey) {
+    console.log("-> User.allSortedBy", sortKey)
+    var allIc = await this.getAll()
+    switch (sortKey) {
+      case 'status':
+        // On doit classer les icariens de cette manière :
+        // - les icariens en activité (clé 'actif')
+        // - les icariens en pause (clé 'en_pause')
+        // - les icariens à l'arrêt (clé 'inactif')
+        // - les icariens supprimés (clé 'killed')
+
+        // L'indice dans la liste +listes+ ci-dessous correspond à la
+        // valeur de user.statut, sauf pour killed
+        var listes = [
+          [], // juste inscrit
+          [], // validé mais en attente de démarrage
+          [], // actif
+          [], // en pause
+          [], // inactif
+          [], // ancien
+          [], // killed (pas par le statut)
+        ]
+
+        for ( var icarien of allIc ) {
+          if ( icarien.statut < 6 ) {
+            listes[icarien.statut].push(icarien)
+          } else { // killed
+            listes[6].push(icarien)
+          }
+        }
+        // Pour la clarté
+        console.log("<- User.allSortedBy", sortKey)
+        return {
+            candidats:  listes[0] // impossible, maintenant
+          , demarrage:  listes[1]
+          , actifs:     listes[2]
+          , en_pause:   listes[3]
+          , inactifs:   listes[4]
+          , anciens:    listes[5]
+          , destroyed:  listes[6]
+        }
+      default:
+
+    }
+  }
+  static async getAll(){
+    console.log("-> User.getAll")
     var res = await DB.getAll('icare_users.users', '*', (rec) => {
       return parseInt(rec.options.substr(16,1),10) > 1 && parseInt(rec.options.substr(0,1),10) < 1
     })
-    this._allicariens = res.map(duser => new User(duser))
-    return this._allicariens
+    this._all = res.map(duser => new User(duser))
+    console.log("User.all = ", this._all)
+    console.log("<- User.getAll")
+    return this._all
   }
 
   // ---------------------------------------------------------------------
@@ -74,6 +130,7 @@ class User {
   get isEnPause() { return this.statut == 3 }
   get isInactif() { return this.statut == 4 }
   get isAncien()  { return this.statut == 5 }
+
 
   // True si l'icarien ne veut recevoir aucun mail du tout
   get noMails(){ return this.bitOption(17) === 1}

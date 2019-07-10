@@ -131,6 +131,10 @@ app.get('/', function (req, res) {
 .get('/fronttests', function(req,res){
   res.sendFile(__dirname+'/lib/fronttests/html/fronttests.html')
 })
+.get('*', function(req,res){
+  Dialog.error("Cette route est inconnue du site…")
+  res.redirect('/')
+})
 
 var server = app.listen(process.env.ALWAYSDATA_HTTPD_PORT||3000, process.env.ALWAYSDATA_HTTPD_IP, function () {
   console.log('Example app started!')

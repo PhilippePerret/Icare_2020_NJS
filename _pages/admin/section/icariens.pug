@@ -1,6 +1,43 @@
 div.explication
   | Cette partie présente la liste complète des icariens avec toutes les informations les concernant.
 
-
-each icarien in User.allIcariens
+h2 
+  | Icariens actifs
+  = ` (${Admin.icariens_sorted.actifs.length})`
+each icarien in Admin.icariens_sorted.actifs
   include ../templates/icarien_card
+
+h2 
+  | Icariens en pause
+  = ` (${Admin.icariens_sorted.en_pause.length})`
+if Admin.icariens_sorted.en_pause.length
+  each icarien in Admin.icariens_sorted.en_pause
+    include ../templates/icarien_card
+
+h2 
+  | Icariens en attente de démarrage
+  = ` (${Admin.icariens_sorted.demarrage.length})`
+if Admin.icariens_sorted.demarrage.length
+  each icarien in Admin.icariens_sorted.demarrage
+    include ../templates/icarien_card
+  
+h2 
+  | Icariens inactif
+  = ` (${Admin.icariens_sorted.inactifs.length})`
+if Admin.icariens_sorted.inactifs.length
+  each icarien in Admin.icariens_sorted.inactifs
+    include ../templates/icarien_card
+
+h2 
+  | Anciens icariens
+  = ` (${Admin.icariens_sorted.anciens.length})`
+if Admin.icariens_sorted.anciens.length
+  each icarien in Admin.icariens_sorted.anciens
+    include ../templates/icarien_card
+
+h2 
+  | Icariens radiés
+  = ` (${Admin.icariens_sorted.destroyed.length})`
+if Admin.icariens_sorted.destroyed.length
+  each icarien in Admin.icariens_sorted.destroyed
+    include ../templates/icarien_card
