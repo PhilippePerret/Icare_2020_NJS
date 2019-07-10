@@ -156,18 +156,18 @@ div.icare
         await user.setSession(req.session.id.replace(/\-/g,'').substring(0,32))
         req.session.user_id     = user.id
         req.session.session_id  = user.sessionId
-        req.flash('annonce', `Bienvenue à l'atelier, ${user.pseudo} !`)
+        Dialog.annonce(`Bienvenue à l'atelier, ${user.pseudo} !`)
         res.redirect(data.route_after || user.redirectionAfterLogin)
       } else {
         // LE MAIL A ÉTÉ TROUVÉ, MAIS LE MOT DE PASSE NE CORRESPOND PAS
         // done("Inconnu au bataillon", null)
-        req.flash('error', "Je ne connais aucun icarien avec ce mot de passe. Merci de ré-essayer.")
+        Dialog.error("Je ne connais aucun icarien avec ce mot de passe. Merci de ré-essayer.")
         res.redirect('/login')
       }
     } else {
       // console.error("Je ne connais pas ce gugusse.")
       // LE MAIL N'A PAS ÉTÉ TROUVÉ
-      req.flash('error', "Je ne connais aucun icarien avec ce mail. Merci de ré-essayer.")
+      Dialog.error("Je ne connais aucun icarien avec ce mail. Merci de ré-essayer.")
       res.redirect('/login')
       // done("Inconnu au bataillon", null)
     }

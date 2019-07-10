@@ -4,9 +4,9 @@ html
   body(class="admin")
     include admin/header
     //- Le message flash à afficher (if any)
-    if Dialog.message
+    if Dialog.hasMessages()
       div.flash
-        != Dialog.message
+        != Dialog.getMessages()
 
     section#content
       case section

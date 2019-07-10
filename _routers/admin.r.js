@@ -25,7 +25,6 @@ router
 })
 .get('/:action', async function(req, res){
   Dialog.action_required("Je dois accomplir l'action " + req.params.action)
-  req.flash('annonce', "Je dois accomplir l'action " + req.params.action)
   res.redirect('/admin')
 })
 

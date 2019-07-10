@@ -18,11 +18,10 @@ const UserCtrl = {
     if ( User.admin() ) {
       next()
     } else {
+      Dialog.action_required(`Désolé mais cette section est réservée à l'administration.`)
       if ( User.current ) {
-        req.flash('error', `Désolé mais cette section est réservée à l'administration.`)
         res.redirect('/')
       } else {
-        req.flash('action', `Désolé mais cette section est réservée à l'administration. Merci de vous identifier.`)
         res.redirect(`/login?ra=${req.originalUrl}`)
       }
     }

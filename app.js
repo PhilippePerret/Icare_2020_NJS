@@ -1,5 +1,4 @@
 const express = require('express')
-const flash = require('connect-flash');
 const app = express()
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
@@ -17,11 +16,6 @@ global.glob = require('glob')
 // Mes objets et middlewares
 global.DB = require('./config/mysql') // DB.connexion
 
-// async function essaiDB(){
-//   var res = await DB.query("SELECT * FROM users WHERE id = ?", [1], 'icare_users')
-//   console.log("Essai mySql = ", res)
-// }
-// essaiDB()
 
 global.APP_PATH = __dirname
 global.System = require('./Controllers/System')
@@ -32,8 +26,6 @@ global.Icare  = Sys.require('controllers/Icare')
 global.User   = Sys.reqModel('User')
 const Mail    = Sys.require('controllers/Mail')
 
-global.Dialog = Sys.reqController('Dialog')
-
 // Usings
 // Pour les sessions
 app.use(session({
@@ -42,6 +34,10 @@ app.use(session({
   saveUninitialized: true,
   cookie: { secure: false }
 }))
+
+global.Dialog = Sys.reqController('Dialog')
+Dialog.session = session
+
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }))
 // parse application/json
@@ -52,7 +48,6 @@ app.use(bodyParser.json())
 app.use(express.urlencoded({ extended: false }))
 
 app.use(cookieParser('ATELIERICARECOOKIES'))
-app.use(flash())
 
 // Pour définir la route des css, js et autres imagines
 app.use('/assets', express.static(__dirname + '/lib'))
@@ -67,9 +62,6 @@ global.PUG = require('pug')
 // Middleware
 // Reconnecter l'auteur qui s'est identifié (if any)
 app.use(User.reconnect)
-
-// Traitement des messages flash
-app.use(Dialog.dispatchFlash.bind(Dialog))
 
 app.use((req,res,next) => {
   // res.locals.request = req
@@ -113,7 +105,7 @@ app.get('/', function (req, res) {
 })
 .get('/logout', function(req,res){
   if ( User.current ) {
-    req.flash('annonce', `À bientôt, ${User.current.pseudo} !`)
+    Dialog.annonce(`À bientôt, ${User.current.pseudo} !`)
     delete req.session.user_id
     delete req.session.session_id
     delete User.current
@@ -148,15 +140,5 @@ var server = app.listen(process.env.ALWAYSDATA_HTTPD_PORT||3000, process.env.ALW
   console.log("Je quitte l'application.")
   DB.stop()
 })
-
-// var dataMessage = {
-//     to: 'philippe.perret@yahoo.fr'
-//   , subject:'Un essai de message total'
-//   , text: 'Ça, c’est l’été ?…'
-//   , html: '<p>Ça, c’est l’été ?…</p><div style="background-color:teal;height:8px;"></div>'
-//   , BCC: 'phil@atelier-icare.net'
-// }
-// // Mail.send(dataMessage)
-
 
 module.exports = server
