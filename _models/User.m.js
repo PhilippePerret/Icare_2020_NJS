@@ -118,6 +118,7 @@ class User {
 
   get id(){return this.data.id}
   get mail(){return this.data.mail}
+  set mail(v){this.data.mail = v}
   get pseudo(){return this.data.pseudo}
   get options(){return this.data.options}
   get sexe(){return this.data.sexe}
@@ -125,6 +126,7 @@ class User {
   set sessionId(v){ this.data.session_id = v}
   get cpassword(){return this.data.cpassword}
   get salt(){return this.data.salt}
+  set salt(v){return this.data.salt = v}
 
   // ---------------------------------------------------------------------
   //  Statut/état de l'icarien
@@ -221,9 +223,14 @@ div.icare
 
   // On vérifie que le mot de passe soit correct
   authenticatePassword(password){
+    return this.cryptedGivenPassword(password) === this.cpassword
+  }
+
+  // Retourne le mot de passe donné, crypté
+  cryptedGivenPassword(password){
     return require('crypto').createHash('md5')
             .update(`${password}${this.mail}${this.salt}`)
-            .digest("hex") === this.cpassword
+            .digest("hex")
   }
 
   // ATTENTION = MÉTHODE DE CLASSE

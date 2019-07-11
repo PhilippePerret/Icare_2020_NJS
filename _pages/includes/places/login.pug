@@ -1,13 +1,30 @@
 if App.offline
   - phil = Sys.require('private/secret/phil.json')
+  - actif = Sys.require('private/secret/actif.json')
+  - inactif = Sys.require('private/secret/inactif.json')
   script(type="text/javascript")
-    = `const mailAdmin = '${phil.mail}';`
+    = `const mailAdmin = '${phil.mail}', pwdAdmin = '${phil.password}';`
     |
-    = `const pwdAdmin = '${phil.password}';`
+    |
+    = `const mailActif='${actif.mail}', pwdActif='${actif.password}';`
+    |
+    |
+    = `const mailInactif='${inactif.mail}', pwdInactif='${inactif.password}';`
+    |
     |
     | function IdentifyAdmin(){
     |   document.querySelector('input[name="_umail_"]').value = mailAdmin;
     |   document.querySelector('input[name="_upassword_"]').value = pwdAdmin;
+    |   return false
+    | }
+    | function IdentifyActif(){
+    |   document.querySelector('input[name="_umail_"]').value = mailActif;
+    |   document.querySelector('input[name="_upassword_"]').value = pwdActif;
+    |   return false
+    | }
+    | function IdentifyInactif(){
+    |   document.querySelector('input[name="_umail_"]').value = mailInactif;
+    |   document.querySelector('input[name="_upassword_"]').value = pwdInactif;
     |   return false
     | }
     
@@ -25,6 +42,11 @@ form(id="login_form" method="POST" action="/login")
       input(type="password" name="_upassword_")
     if App.offline
       div.row
-        button(onclick="return IdentifyAdmin()") S'identifier en administrateur
+        div
+          button(onclick="return IdentifyAdmin()") S'identifier en administrateur
+        div
+          button(onclick="return IdentifyActif()") S'identifier comme Actif
+        div
+          button(onclick="return IdentifyInactif()") S'identifier comme Inactif
     div.buttons
       input(type="submit" value="S’identifier" class="btn main")
