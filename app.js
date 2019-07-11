@@ -89,7 +89,7 @@ app.use('/admin',   Sys.reqRouter('admin'))
 // Router pour l'inscription
 
 app.get('/', function (req, res) {
-  res.render('gabarit', {place: 'home'})
+  res.render('home')
 })
 .get('/tck/:ticket_id', function(req,res){
   let Ticket = System.require('controllers/Ticket')
