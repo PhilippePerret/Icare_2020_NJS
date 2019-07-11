@@ -181,9 +181,15 @@ Date.formate([format[, date]])
 
 ```
 
+Noter que le format est donné en premier. Pour le format par défaut, mettre `null` ou `undefined` comme valeur. Cela par du principe qu'on utilise la méthode plus souvent pour formater le temps courant (ce qui est faux, en vrai, dans la vraie vie…).
+
 Le format utilise :
 
 ```
+  F     Pour : jour sur 2 chiffres, mois sur 2 chiffres, années sur 4 chiffres
+  T     Pour le temps : h:mm
+        Par exemple, "le F à T" retournera quelque chose comme :
+        "le 20 07 2019 à 3:45"
   JJ    Jour sur deux chiffres
   J     Jour en un ou deux chiffres
   MM    Mois sur deux chiffres

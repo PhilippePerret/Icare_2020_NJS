@@ -11,7 +11,7 @@
     "posttest": "npm run open-google-for-fronttests",
     "open-google-for-fronttests": "open -a 'Google Chrome' 'http://localhost:3000/ftt'",
     "google": "open -a 'Google Chrome' 'http://localhost:3000'",
-    "firefox": "open -a Firefox 'http://localhost:3000'", 
+    "firefox": "open -a Firefox 'http://localhost:3000'",
     "watch-sass": "node-sass -r -w --output=lib/css --output-style=compressed lib/css/_sass/",
     "watch-sass-all": "node-sass -w --recursive --incluce-path=lib/css/_sass_all/ lib/css/index.sass lib/css/all.css --output-style=compressed"
   },
@@ -33,6 +33,8 @@
   },
   "homepage": "https://github.com/PhilippePerret/Icare_2020_NJS#readme",
   "dependencies": {
+    "ph-math": "^1.0.0",
+    "ph-array": "^1.0.0",
     "body-parser": "^1.19.0",
     "connect-flash": "^0.1.1",
     "cookie-parser": "^1.4.4",
@@ -44,6 +46,7 @@
     "nodemon": "^1.19.1",
     "passport": "^0.4.0",
     "passport-local": "^1.0.0",
+    "paypal-rest-sdk": "^1.8.1",
     "pug": "^2.0.4",
     "smtp-client": "^0.3.1",
     "uuid": "^3.3.2"

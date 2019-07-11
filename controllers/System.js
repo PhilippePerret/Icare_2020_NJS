@@ -30,7 +30,12 @@ const System = {
 , reqModel(which){
   return this.require(`_models/${which}.m.js`)
   }
-
+, reqSecret(which){
+    // Noter que contrairement aux autres méthodes, ici, il faut donner le
+    // nom du fichier exact, pour que le `require` transforme les fichiers
+    // JSON en données.
+    return this.require(`private/secret/${which}`)
+  }
   // Retourne le chemin absolu du path relatif +relpath+ d'où qu'on le
   // demande.
 , pathFor(relpath) {

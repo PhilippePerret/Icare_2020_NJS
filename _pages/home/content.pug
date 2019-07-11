@@ -5,7 +5,18 @@ section#content
     div.small L’écriture dans tous ses états
 
   hr.big
+
+  //- 
+    |
+    | ICI ON PEUT METTRE DU CODE POUR GAGNER DU TEMPS
+    | PAR EXEMPLE POUR METTRE UNE ADRESSE À ATTEINDRE TOUT DE SUITE
+    |
+  if App.offline
+    div
+      a(href="/paiement") Section de paiement
     
+  //----------------------------------------------------------------------
+  
   fieldset#news
     legend Dernières activités
     include ../includes/elements/last_news.html

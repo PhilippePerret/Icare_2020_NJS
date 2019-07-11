@@ -81,10 +81,11 @@ global.FrontTests = require('./lib/fronttests/app_middleware')
 app.use('/ftt(/:action)?', FrontTests.run)
 app.get('/fttajax', FrontTests.ajax.bind(FrontTests))
 
-// Router pour le bureau
-app.use('/bureau',  Sys.reqRouter('bureau'))
-app.use('/signup',  Sys.reqRouter('signup'))
-app.use('/admin',   Sys.reqRouter('admin'))
+// === ROUTERS ===
+app.use('/bureau',    Sys.reqRouter('bureau'))
+app.use('/signup',    Sys.reqRouter('signup'))
+app.use('/admin',     Sys.reqRouter('admin'))
+app.use('/paiement',  Sys.reqRouter('paypal'))
 
 // Router pour l'inscription
 
@@ -113,7 +114,7 @@ app.get('/', function (req, res) {
   res.redirect('/')
 })
 .get('/modules', async function(req, res){
-  global.AbsModule = require('./models/AbsModule')
+  global.AbsModule = Sys.reqModel('AbsModule')
   await AbsModule.getAllModules()
   res.render('gabarit', {place: 'modules'})
 })
@@ -131,10 +132,10 @@ app.get('/', function (req, res) {
 .get('/fronttests', function(req,res){
   res.sendFile(__dirname+'/lib/fronttests/html/fronttests.html')
 })
-.get('*', function(req,res){
-  Dialog.error("Cette route est inconnue du site…")
-  res.redirect('/')
-})
+// .get('*', function(req,res){
+//   Dialog.error("Cette route est inconnue du site…")
+//   res.redirect('/')
+// })
 
 var server = app.listen(process.env.ALWAYSDATA_HTTPD_PORT||3000, process.env.ALWAYSDATA_HTTPD_IP, function () {
   console.log('Example app started!')

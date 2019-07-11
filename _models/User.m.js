@@ -2,6 +2,7 @@
 
 // const DB = require('../config/mysql')
 
+const Watcher = Sys.reqModel('Watcher')
 
 class User {
 
@@ -99,8 +100,15 @@ class User {
     return this._all
   }
 
-  // ---------------------------------------------------------------------
-  //  INSTANCE
+  /**
+    |
+    |
+    |   INSTANCE USER
+    |
+    |
+    |
+  **/
+
   constructor(data){
     this.data = data
   }
@@ -113,23 +121,24 @@ class User {
   get pseudo(){return this.data.pseudo}
   get options(){return this.data.options}
   get sexe(){return this.data.sexe}
-  get is_homme(){return this.sexe === 'H'}
-  get is_femme(){return this.sexe === 'F'}
   get sessionId(){ return this.data.session_id}
   set sessionId(v){ this.data.session_id = v}
   get cpassword(){return this.data.cpassword}
   get salt(){return this.data.salt}
 
   // ---------------------------------------------------------------------
-  //  Statut de l'icarien
-  get isAdmin(){
-    return this.bitOption(0) > 0
-  }
+  //  Statut/état de l'icarien
+
+  get is_homme(){return this.sexe === 'H'}
+  get is_femme(){return this.sexe === 'F'}
+  get isAdmin() { return this.bitOption(0) > 0 }
   get isIcarien() { return this.statut > 1  }
   get isActif()   { return this.statut == 2 }
   get isEnPause() { return this.statut == 3 }
   get isInactif() { return this.statut == 4 }
   get isAncien()  { return this.statut == 5 }
+  // Renvoie true si l'icarien à un paiement à honnorer
+  hasPaiement(){ return this.checkIfPaiement() }
 
 
   // True si l'icarien ne veut recevoir aucun mail du tout
@@ -141,8 +150,31 @@ class User {
   // ---------------------------------------------------------------------
   //  Propriétés volatiles
 
-  get grade(){ return this.bitOption(1) }
-  get statut(){return this.bitOption(16)}
+  get grade() { return this.bitOption(1)  }
+  get statut(){ return this.bitOption(16) }
+  /**
+    |
+    | Retourne les watchers courant de l'icare
+    @return {Array} Liste d'instances Watcher
+    | -----------------------------------------
+    @warning
+      Il faut impérativement appeler la méthode 'await this.getWatchers()'
+      avant de faire appel à cette propriété.
+  **/
+  get watchers(){ return this._watchers }
+  // Retourne la liste des instances Watcher de l'user courant
+  // Attention : bien noter que c'est une méthode, pas une propriété
+  async getWatchers(){
+    var res = await DB.getWhere('icare_hot.watchers', {user_id: this.id})
+    this._watchers = res.map( dataW => new Watcher(dataW))
+  }
+
+  /**
+    @return {Watcher} Le watcher du prochain paiement, s'il n'est pas
+                      courant.
+  **/
+  get nextPaiement(){ return this._nextPaiement }
+
 
   // ---------------------------------------------------------------------
   //  Préférences volatiles
@@ -259,6 +291,41 @@ div.icare
     next()
   }
 
+
+  /**
+    |
+    |
+    | private
+    |
+    | Cette partie contient toutes les méthodes qui servent à d'autres
+    | méthodes publiques plus haut. Voir l'exemple avec la première, qui
+    | permet de définir la propriété-méthode hasPaiement() de l'icarien.
+    |
+    |
+  **/
+
+  async hasPaiementFutur(){
+    if ( undefined === this._nextPaiement ) await this.checkIfPaiement()
+    return !!(this.nextPaiement instanceof(Watcher))
+  }
+
+  // Retourne true si l'icarien a un paiement à effectuer
+  async checkIfPaiement(){
+    await this.getWatchers()
+    this._nextPaiement = null // pour savoir s'il est défini
+    for ( var watcher of this.watchers ) {
+      if ( watcher.processus === 'paiement' ) {
+        // C'est peut-être un paiement dans le futur
+        if ( watcher.triggered * 1000 < Date.now() ) {
+          return true
+        } else {
+          // On enregistre le paiement comme prochain paiement futur
+          this._nextPaiement = watcher
+        }
+      }
+    }
+    return false // pas de paiement pour le moment
+  }
 }
 
 class Admin extends User {

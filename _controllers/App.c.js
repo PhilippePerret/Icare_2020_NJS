@@ -26,7 +26,13 @@ Object.defineProperties(App,{
   , set(v){this._offline = v}
   }
 
-, url:{ get(){return this.config.url} }
+, currentUrl:{get(){
+    return this.online ? this.url : 'localhost:3000'
+  }}
+  
+, url:{ get(){
+    return this.config.url
+  }}
 
   // File ./config.app.json
 , config:{

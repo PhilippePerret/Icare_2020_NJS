@@ -54,12 +54,48 @@ class MyMySql {
   **/
   static async getAll(table, columns, filtre) {
     if ( undefined === columns || columns == '*') columns = '*'
+    else if ( ! Array.isArray(columns) ) columns = String(columns)
     else columns = columns.join(', ')
     var request = `SELECT ${columns} FROM ${table}`
     var res = await this.processQuery(request)
     if ( undefined !== filtre ) {
       res = res.filter(filtre)
     }
+    return res
+  }
+  /**
+    Retourne toutes les données des colonnes +columns+ de la table +table+
+    répondant à la clause WHERE définie par l'object +where+.
+    @param {String} table   La table ou la base de données et la table
+    @param {Object} where   La définition de la clause where.
+                            Par exemple where = {user_id: 12, status: 3}
+    @param {Array} columns  Colonnes à retourner. Soit rien, soit '*', soit
+                            une liste de colonnes qui doivent exister.
+    @param {Object} options Sert à définir par exemple le nombre (:limit), la
+                            clé de classement (:order_by).
+  **/
+  static async getWhere(table, where, columns, options) {
+    let cols = [] // colonnes de la condition where
+      , vals = [] // valeurs de la condition where
+    for ( var k in where ) {
+      cols.push(k)
+      vals.push(where[k])
+    }
+    cols = cols.map( col => `${col} = ?`).join(' AND ')
+
+    // Les colonnes à retourner
+    // ------------------------
+    if ( undefined === columns || columns == '*') columns = '*'
+    else if ( ! Array.isArray(columns) ) columns = String(columns)
+    else columns = columns.join(', ')
+
+    var request = `SELECT ${columns} FROM ${table} WHERE ${cols}`
+
+    if ( options ) {
+      if ( options.order_by ) request += ` ORDER BY ${options.order_by}`
+      if ( options.limit    ) request += ` LIMIT ${options.limit}`
+    }
+    var res = await this.processQuery(request, vals)
     return res
   }
 

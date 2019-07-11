@@ -2,7 +2,7 @@
 const path = require('path')
 
 // On a toujours besoin des données modules
-const AbsModule = System.require('models/AbsModule')
+const AbsModule = Sys.reqModel('AbsModule')
 
 const Admin = {
 
