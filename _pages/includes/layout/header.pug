@@ -1,10 +1,9 @@
 - 
   DATA_PLACES = {
-     home: ['Accueil','/'],
-     aide: ['Aide', '/aide'],
-     modules: ['Modules d’apprentissage', '/modules'],
-     bureau: ['Votre bureau', '/bureau'],
-     admin: ['Administration', '/admin/overview']
+     home: ['accueil','/'],
+     aide: ['aide', '/aide'],
+     bureau: ['votre bureau', '/bureau'],
+     admin: ['administration', '/admin/overview']
   }
 mixin mainLink(place_id)
   - [name, route] = DATA_PLACES[place_id]
@@ -19,25 +18,23 @@ section#header
     +mainLink('aide')
     if User.current && User.current.isIcarien
       +mainLink('bureau')
-    +mainLink('modules')
-    //- if User.current && User.current.isAdmin
-    +mainLink('admin')
+    if User.current && User.current.isAdmin
+      +mainLink('admin')
 
     if User.current
       a(href="/logout").log Se déconnecter
     else
       a(href="/login").log S’identifier
       a(href="/signup",id="btn-signup").log S’inscrire
-  //- On indique l'utilisateur de la session
-  if User.current
-    div.session-owner= `Session de ${User.current.pseudo}`
+  //- //- On indique l'utilisateur de la session
+  //- if User.current
+  //-   div.session-owner= `Session de ${User.current.pseudo}`
   
   //- 
-      TITRE DU SITE
-      
-  div#site_name ATELIER ICARE
-
-  //- Le message flash à afficher (if any)
-  if Dialog.hasMessages()
-    div.flash
-      != Dialog.getMessages()
+    |
+    |  TITRE DU SITE
+    |
+    |  
+  div#site_name 
+    img(src="/assets/img/papillon_logo.png")
+    a(href="/") ATELIER ICARE

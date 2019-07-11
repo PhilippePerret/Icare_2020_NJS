@@ -1,9 +1,13 @@
 doctype html
 html
   include includes/layout/head
-  body(class = route=='/' ? "home":"")
+  body
+    include includes/layout/header
+    //- Le message flash à afficher (if any)
+    if Dialog.hasMessages()
+      div.flash
+        != Dialog.getMessages()
     section#content
-      include includes/layout/header
       case place
         when 'login'
           include includes/places/login

@@ -1,11 +1,12 @@
 body
   font-family: Avenir
   font-size: 11.2pt
-  padding: 2em
+  padding: 0
+  margin: 0
   border-radius: 1em
-  background-color: steelblue // nouvelle couleur de base du site
+  // background-color: steelblue // nouvelle couleur de base du site
   &:not(.home):not(.admin)
-    max-width: 640px
+    max-width: 840px
   &.home
     max-width: 900px
 
@@ -13,33 +14,50 @@ body
   section#content
     padding: 2em
     background-color: #EFEFEF
+    min-height: 500px
 
 section#header
   font-size: 0.8em
+  background-color: #b8d88e
+  padding: 8px 8px 8px 3em
 
   div#site_name
     font-family: serif
     font-size: 20pt
+    a
+      color: #2e8b57 // seagreen
+      vertical-align: middle
+    img
+      width: 44px
+      vertical-align: middle
+      margin-right: 9px
 
 section#footer
   margin-top: 4em
   font-size: 0.7em
 
+nav#main-rubriques
+  // text-align: right
+  float: right
+
 // Tous les blocs de navigation (liens) qui contiennent des liens pour
 // se rendre dans un endroit spécifique de l'atelier
 nav.places
   a:link, a:visited, a:hover, a:active
+    border: 1px solid
+    border-radius: 4px
     font-family: Arial
     font-size: 9pt
-    color: #000099
+    color: steelblue
     margin-left: 0.5em
     text-decoration: none
     font-variant: small-caps
     padding: 1px 8px 2px
-    border: 1px solid
     &.selected
-      background-color: #000099
+      background-color: steelblue
       color: white
+      border-color: steelblue
     &:hover
-      background-color: #009900
+      background-color: steelblue
       color: white
+      border-color: steelblue

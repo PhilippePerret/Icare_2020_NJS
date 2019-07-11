@@ -7,7 +7,7 @@ const UserCtrl = {
     if ( User.current ) {
       next()
     } else {
-      req.flash('error', "Désolé mais vous n'êtes pas autorisé à rejoindre cette section.")
+      Dialog.error("Désolé mais vous n'êtes pas autorisé à rejoindre cette section.")
       res.redirect('/login')
     }
   }
