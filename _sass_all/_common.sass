@@ -16,19 +16,36 @@ a, a:link, a:visited
 .hidden
   display: none
 
-.bold
-  font-weight: bold
-
 .small
   font-size: 0.85em
-
 .tiny, .mini
   font-size: 0.71em
 
+.bold
+  font-weight: bold
 .discret
   opacity: 0.4
   &:hover
     opacity: 1
+
+.pad1
+  padding: 1em !important
+.pad2
+  padding: 2em !important
+.pad3
+  padding: 3em !important
+
+.mg1
+  margin: 1em !important
+.mg2
+  margin: 2em !important
+.mg3
+  margin: 3em !important
+
+// Pour qu'un bloc contienne des liens qui seront en display block
+.blocklinks
+  a
+    display: block
 
 fieldset
   border: 1px solid #cccccc
