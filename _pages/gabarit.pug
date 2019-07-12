@@ -3,10 +3,10 @@ html
   include includes/layout/head
   body
     include includes/layout/header
-    //- Le message flash à afficher (if any)
-    if Dialog.hasMessages()
-      div.flash
-        != Dialog.getMessages()
+
+    //- Les messages flash à afficher (if any)
+    != Dialog.flashMessages()
+
     section#content
       case place
         when 'login'

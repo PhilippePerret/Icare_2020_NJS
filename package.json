@@ -12,8 +12,8 @@
     "open-google-for-fronttests": "open -a 'Google Chrome' 'http://localhost:3000/ftt'",
     "google": "open -a 'Google Chrome' 'http://localhost:3000'",
     "firefox": "open -a Firefox 'http://localhost:3000'",
-    "watch-sass": "node-sass -r -w --output=lib/css --output-style=compressed lib/css/_sass/",
-    "watch-sass-all": "node-sass -w --recursive --incluce-path=lib/css/_sass_all/ lib/css/index.sass lib/css/all.css --output-style=compressed"
+    "watch-sass": "node-sass -r -w --output=lib/css --output-style=compressed _sass/",
+    "watch-sass-all": "node-sass -w --recursive --incluce-path=_sass_all/ _sass_all/index.sass lib/css/all.css --output-style=compressed"
   },
   "nodemonConfig": {
     "ignore": [

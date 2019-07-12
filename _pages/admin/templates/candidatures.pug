@@ -1,33 +1,11 @@
 //- if candidatures
 if Admin.candidats
   - console.log("Admin.candidats = ", Admin.candidats)
-  div= `Nombre de candidatures : ${Admin.candidats.length}`
+  div.mini
+    | Nombre de candidatures :
+    |
+    span.bold= Admin.candidats.length
   each candidat in Admin.candidats
-    div.candidature.watcher
-      div.titre Validation de candidature
-      div.content.opened
-        div.pseudo= candidat.pseudo
-        div.mail
-          - mailFrom = encodeURI('phil@atelier-icare.net')
-          - subject  = encodeURI('[ICARE] Votre candidature')
-          -
-            mailto = `${candidat.mail}?from=phil@atelier-icare.net&subject=[ICARE] Votre candidature`
-            mailto = encodeURI(mailto)
-          a(href=`mailto:${mailto}` class="small") [lui écrire]
-        div.id= `ID #${candidat.id}`
-        
-        div.ope
-          div.module
-            | Module : 
-            |
-            != `${candidat.module.name} (#${candidat.module.id})`
-            |
-        div.button
-          a(href=`/admin/refuser_candidature?id=${candidat.id}` class="btn warning discret small") Refuser
-        div.footer
-          div.cols1et2
-            a(href=`/admin/download?zf[]=${candidat.presentation}&zf[]=${candidat.motivation}`) Documents de présentation
-          div.col3.right
-            a(href=`/admin/valider_candidature?id=${candidat.id}` class="btn main small") Valider la candidature
+    include ../../watchers/candidature
 else
   div Aucune candidature n'est à étudier.

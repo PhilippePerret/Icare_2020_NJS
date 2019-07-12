@@ -10,6 +10,7 @@
   * [Online ou Offline](#know_if_online_offline)
 * [Page et contenu](#page_et_contenu)
   * [Afficher des messages utilisateur](#show_user_messages)
+  * [Afficher dans des « grids »](#display_in_grids)
 * [Contenu textuel](#contenu_textuel)
   * [Insérer du code HTML dans la page](#insert_html_code_in_page)
   * [Dates formatées](#formated_dates)
@@ -147,6 +148,33 @@ Les méthodes utilisables sont les suivants :
 
 `Dialog.error("message d'erreur")`
 : Pour signaler une erreur.
+
+
+### Afficher dans des « grids » {#display_in_grids}
+
+Une classe générique `grid6x4` permet de disposer facilement du contenu dans une grille de 6 colonnes sur 4 rangées.
+
+```html
+
+div.grid6x4
+
+```
+
+Ensuite, on doit définir par les classes le nombre et le choix des colonnes et des rangées. C'est extrèmement simple : si l'on veut qu'un div s'étendent sur de la colonne 2 à la colonne 4 et de la rangée 2 à la rangée 3, il suffit de faire :
+
+* colonnes 2 à 4 => `cols2a4`
+* rangées 2 à 3 => `rows2a3`
+
+D'où :
+
+```html
+
+div.grid6x4
+  div.cols2a4.rows2a3
+
+```
+
+> Pour le moment 1/ on ne peut utiliser que des `div` (mais ce serait hyper simple de changer) et 2/ il n'existe que le patron 6 par 4, qui permet une grand souplesse, mais on pourrait aussi en imaginer d'autres au besoin.
 
 ---------------------------------------------------------------------
 

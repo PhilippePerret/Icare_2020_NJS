@@ -1,2 +1,8 @@
 section#footer
   a(href="/") [accueil]
+  if locals.worker
+    div
+      | Process ID
+      |
+      = worker.id
+    

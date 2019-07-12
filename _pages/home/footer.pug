@@ -1,2 +1,7 @@
 section#footer
-  div [pied de page]
+  if locals.worker
+    div
+      | Process ID
+      |
+      = worker.id
+  

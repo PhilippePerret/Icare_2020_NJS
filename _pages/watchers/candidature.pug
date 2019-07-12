@@ -1,0 +1,26 @@
+div.candidature.watcher
+  div.titre Validation de candidature
+  div.content.opened
+    div.pseudo= candidat.pseudo
+    div.mail
+      - mailFrom = encodeURI('phil@atelier-icare.net')
+      - subject  = encodeURI('[ICARE] Votre candidature')
+      -
+        mailto = `${candidat.mail}?from=phil@atelier-icare.net&subject=[ICARE] Votre candidature`
+        mailto = encodeURI(mailto)
+      a(href=`mailto:${mailto}` class="small") [lui écrire]
+    div.id= `ID #${candidat.id}`
+    
+    div.ope
+      div.module
+        | Module : 
+        |
+        != `${candidat.module.name} (#${candidat.module.id})`
+        |
+    div.button
+      a(href=`/admin/refuser_candidature?id=${candidat.id}` class="btn warning discret small") Refuser
+    div.footer.grid6x4
+      div.cols1a3.row1
+        a(href=`/admin/download?zf[]=${candidat.presentation}&zf[]=${candidat.motivation}`) Documents de présentation
+      div.cols4a6.row1.right
+        a(href=`/admin/valider_candidature?id=${candidat.id}` class="btn main small") Valider la candidature

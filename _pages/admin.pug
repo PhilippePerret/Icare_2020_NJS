@@ -1,13 +1,9 @@
 doctype html
 html
-  include admin/head
+  include admin/layout/head
   body(class="admin")
-    include admin/header
-    //- Le message flash à afficher (if any)
-    if Dialog.hasMessages()
-      div.flash
-        != Dialog.getMessages()
-
+    include admin/layout/header
+    != Dialog.flashMessages()
     section#content
       case section
         when 'overview'
@@ -18,4 +14,4 @@ html
           include admin/section/icariens
         when 'modules'
           include admin/section/modules
-    include admin/footer
+    include admin/layout/footer

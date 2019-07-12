@@ -6,19 +6,23 @@ const Watcher = Sys.reqModel('Watcher')
 
 class User {
 
-  // L'utilisateur courant
-  static get current(){ return this._current}
-  static set current(v){this._current = v}
-
   // Retourne true s'il y a un user courant et que c'est un administrateur
   static admin(){
-    return this.current && this.current.isAdmin
+    throw Error("User.admin() ne doit pas être utilisé. Utiliser `req.user.isAdmin()` ou `User.currentIsAdmin(req.user)`")
+  }
+  // Retourne true si l'user courant est administrateur
+  // @usage: if ( User.currentIsAdmin(req.user) ) { ... }
+  static currentIsAdmin(u){
+    return u && u.isAdmin
   }
 
   // Retourne true si l'user identifié est icarien
   // Pour utiliser `if User.icarien()` dans le code
   static icarien(){
-    return this.current && this.current.isIcarien
+    throw Error("User.admin() ne doit pas être utilisé. Utiliser `req.user.isIcarien` (ou User.currentIsIcarien(req.user))")
+  }
+  static currentIsIcarien(u){
+    return u && u.isIcarien
   }
 
   /**
@@ -131,9 +135,9 @@ class User {
   // ---------------------------------------------------------------------
   //  Statut/état de l'icarien
 
-  get is_homme(){return this.sexe === 'H'}
-  get is_femme(){return this.sexe === 'F'}
-  get isAdmin() { return this.bitOption(0) > 0 }
+  get is_homme()  {return this.sexe === 'H'}
+  get is_femme()  {return this.sexe === 'F'}
+  get isAdmin()   { return this.bitOption(0) > 0 }
   get isIcarien() { return this.statut > 1  }
   get isActif()   { return this.statut == 2 }
   get isEnPause() { return this.statut == 3 }
@@ -280,26 +284,6 @@ div.icare
 
 
   /**
-    Pour reconnecter l'user, if any, à chaque rechargement de page
-  **/
-  static async reconnect(req, res, next){
-    // On regarde ici si l'user est défini et est correct
-    if ( req.session.user_id ) {
-      console.log("ID user à reconnecter : ", req.session.user_id)
-      var ret = await DB.get('icare_users.users', parseInt(req.session.user_id,10))
-      // Si l'id de session mémorisé est également à l'id de session de
-      // l'utilisateur, c'est que tout va bien. On définit l'utilisateur courant
-      if ( ret.session_id == req.session.session_id ) {
-        User.current = new User(ret)
-      }
-    } else {
-      // console.log("Aucun user n'est défini par req.session.user_id")
-    }
-    next()
-  }
-
-
-  /**
     |
     |
     | private
@@ -362,13 +346,6 @@ User.REDIRECTIONS_AFTER_LOGIN = {
 /**
   Distribut toutes les méthodes de User.controller (UserController) dans User
 **/
-// for ( var meth in User.controller ) {
-//   if ( undefined === User[meth] ) {
-//     User[meth] = User.controller[meth].bind(User.controller)
-//   } else {
-//     new Error(`Erreur systématique : la méthode "${meth}" (contrôleur) est déjà connue du modèle User. Il faut lui donner un autre nom.`)
-//   }
-// }
 Object.assign(User, Sys.reqController('User'))
 
 
