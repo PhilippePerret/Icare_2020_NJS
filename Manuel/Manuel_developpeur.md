@@ -10,6 +10,7 @@
   * [Online ou Offline](#know_if_online_offline)
 * [Page et contenu](#page_et_contenu)
   * [Afficher des messages utilisateur](#show_user_messages)
+  * [Utiliser la requête dans les vues](#use_request_in_vue)
   * [Afficher dans des « grids »](#display_in_grids)
 * [Contenu textuel](#contenu_textuel)
   * [Insérer du code HTML dans la page](#insert_html_code_in_page)
@@ -149,6 +150,11 @@ Les méthodes utilisables sont les suivants :
 `Dialog.error("message d'erreur")`
 : Pour signaler une erreur.
 
+### Utiliser la requête dans les vues {#use_request_in_vue}
+
+Dans les vues, on peut utiliser la locale `req` qui est la requête courante.
+
+On s'en sert souvent, par exemple, pour tester ou gérer `req.user` qui est l'utilisateur courant.
 
 ### Afficher dans des « grids » {#display_in_grids}
 

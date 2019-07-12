@@ -8,12 +8,13 @@ class User {
 
   // Retourne true s'il y a un user courant et que c'est un administrateur
   static admin(){
-    throw Error("User.admin() ne doit pas être utilisé. Utiliser `req.user.isAdmin()` ou `User.currentIsAdmin(req.user)`")
+    throw Error("User.admin() ne doit pas être utilisé. Utiliser `req.user.isAdmin()` ou `User.currentIsAdmin(req)`")
   }
   // Retourne true si l'user courant est administrateur
-  // @usage: if ( User.currentIsAdmin(req.user) ) { ... }
-  static currentIsAdmin(u){
-    return u && u.isAdmin
+  // @usage: if ( User.currentIsAdmin(req) ) { ... }
+  static currentIsAdmin(req){
+    if ( undefined === req ) throw Error("Il faut envoyer la requête (`req`) à la méthode CurrentIsAdmin")
+    return req.user && req.user.isAdmin
   }
 
   // Retourne true si l'user identifié est icarien
@@ -21,8 +22,9 @@ class User {
   static icarien(){
     throw Error("User.admin() ne doit pas être utilisé. Utiliser `req.user.isIcarien` (ou User.currentIsIcarien(req.user))")
   }
-  static currentIsIcarien(u){
-    return u && u.isIcarien
+  static currentIsIcarien(req){
+    if ( undefined === req ) throw Error("Il faut envoyer la requête (`req`) à la méthode currentIsIcarien")
+    return req.user && req.user.isIcarien
   }
 
   /**
@@ -239,14 +241,14 @@ div.icare
 
   // ATTENTION = MÉTHODE DE CLASSE
   /**
-    Méthode appelée par la route /login in POST
+    Méthode appelée par la route /login en POST
   **/
   static async existsAndIsValid(req, res, data, done) {
     // console.log("-> existsAndIsValid", data)
     let user_data = await DB.query("SELECT * FROM icare_users.users WHERE mail = ?", [data.mail])
     if ( user_data.length ){
       let user = new User(user_data[0])
-      console.log("user = ", user)
+      // console.log("user = ", user)
       if ( user.authenticatePassword(data.password) ) {
         /**
           |
@@ -260,16 +262,13 @@ div.icare
         res.redirect(data.route_after || user.redirectionAfterLogin)
       } else {
         // LE MAIL A ÉTÉ TROUVÉ, MAIS LE MOT DE PASSE NE CORRESPOND PAS
-        // done("Inconnu au bataillon", null)
-        Dialog.error("Je ne connais aucun icarien avec ce mot de passe. Merci de ré-essayer.")
+        Dialog.error("Je ne connais aucun icarien avec ces données. Merci de ré-essayer.")
         res.redirect('/login')
       }
     } else {
-      // console.error("Je ne connais pas ce gugusse.")
       // LE MAIL N'A PAS ÉTÉ TROUVÉ
-      Dialog.error("Je ne connais aucun icarien avec ce mail. Merci de ré-essayer.")
+      Dialog.error("Aucun icarien ne porte ce mail, désolé. Merci de ré-essayer.")
       res.redirect('/login')
-      // done("Inconnu au bataillon", null)
     }
   }
 
@@ -338,9 +337,10 @@ User.REDIRECTIONS_AFTER_LOGIN = {
   2: {hname:'Profil',                  route:'/bureau/profil'},
   3: {hname:'Dernière page consultée', route:this.lastPage},
   // - ADMINISTRATEUR -
-  7: {hname:'Aperçu Icariens',   route:'admin/overview',  admin:true},
-  8: {hname:'Console',           route:'admin/console',   admin:true},
-  9: {hname:'Tableau de bord',   route:'admin/dashboard', admin:true}
+  6: {hname:'Accueil du site',   route:'/',               admin:true},
+  7: {hname:'Aperçu Icariens',   route:'/admin/overview', admin:true},
+  8: {hname:'Console',           route:'/admin/console',  admin:true},
+  9: {hname:'Tableau de bord',   route:'/admin/dashboard', admin:true}
 }
 
 /**

@@ -12,7 +12,7 @@ const UserCtrl = {
   async reconnect(req, res, next){
     // On regarde ici si l'user est défini et est correct
     if ( req.session.user_id ) {
-      console.log("ID user à reconnecter : ", req.session.user_id)
+      // console.log("ID user à reconnecter : ", req.session.user_id)
       var ret = await DB.get('icare_users.users', parseInt(req.session.user_id,10))
       // Si l'id de session mémorisé est également à l'id de session de
       // l'utilisateur, c'est que tout va bien. On définit l'utilisateur courant
@@ -37,7 +37,7 @@ const UserCtrl = {
     Barrière pour ne laisser passer que les administrateurs
   **/
 , checkIsAdmin(req, res, next) {
-    if ( User.currentIsAdmin(req.user) ) {
+    if ( User.currentIsAdmin(req) ) {
       next()
     } else {
       Dialog.action_required(`Désolé mais cette section est réservée à l'administration.`)

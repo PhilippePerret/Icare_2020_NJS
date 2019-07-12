@@ -22,9 +22,9 @@ Paypal.configure({
 // Méthode appelée par la route '/paiement' lorsque l'on clique sur son
 // bouton de paiement, souvent depuis son bureau
 router.get('/', async function(req,res){
-  if ( User.current ) {
-    var hasPaiement       = await User.current.hasPaiement()
-    var hasPaiementFutur  = await User.current.hasPaiementFutur()
+  if ( req.user ) {
+    var hasPaiement       = await req.user.hasPaiement()
+    var hasPaiementFutur  = await req.user.hasPaiementFutur()
     console.log("hasPaiement, hasPaiementFutur = ", hasPaiement, hasPaiementFutur)
     res.render('gabarit', {place: hasPaiement ? 'paiement' : 'paiement_none', futurPaiement:hasPaiementFutur})
   } else {

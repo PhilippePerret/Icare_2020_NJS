@@ -14,21 +14,25 @@ mixin mainLink(place_id)
     
 section#header
   nav#main-rubriques.places
+    
     +mainLink('home')
     +mainLink('aide')
-    if User.current && User.current.isIcarien
+
+    if User.currentIsIcarien(req)
       +mainLink('bureau')
-    if User.current && User.current.isAdmin
+
+    if User.currentIsAdmin(req)
       +mainLink('admin')
 
-    if User.current
-      a(href="/logout").log Se déconnecter
+    if req.user
+
+      a(href="/auth/logout").log Se déconnecter
+
     else
-      a(href="/login").log S’identifier
+      
+      a(href="/auth/login").log S’identifier
       a(href="/signup",id="btn-signup").log S’inscrire
-  //- //- On indique l'utilisateur de la session
-  //- if User.current
-  //-   div.session-owner= `Session de ${User.current.pseudo}`
+
   
   //- 
     |

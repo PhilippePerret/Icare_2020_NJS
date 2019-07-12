@@ -56,8 +56,6 @@ if ( WITH_CLUSTER && cluster.isMaster ) {
   global.App    = Sys.reqController('App')
   global.Icare  = Sys.require('controllers/Icare')
   global.User   = Sys.reqModel('User')
-  const Mail    = Sys.require('controllers/Mail')
-
 
   // Usings
   // Pour les sessions
@@ -68,6 +66,7 @@ if ( WITH_CLUSTER && cluster.isMaster ) {
     cookie: { secure: false }
   }))
 
+  // Gestion complète des messages
   global.Dialog = Sys.reqController('Dialog')// instance Dialog
   Dialog.session = session
 
@@ -101,6 +100,11 @@ if ( WITH_CLUSTER && cluster.isMaster ) {
     App.online  = !Icare.isLocalSite
     App.offline = Icare.isLocalSite
 
+    // On renseign `req` dans les locals ce qui permettra à toutes
+    // les vues de disposer de la requête, utile par exemple pour
+    // req.user
+    res.locals.req = req
+
     // On renseigne `route` qui pourra être utilisé n'importe où
     // dans les vues et templates
     res.locals.route = req.path
@@ -118,36 +122,17 @@ if ( WITH_CLUSTER && cluster.isMaster ) {
   app.use('/signup',    Sys.reqRouter('signup'))
   app.use('/admin',     Sys.reqRouter('admin'))
   app.use('/paiement',  Sys.reqRouter('paypal'))
+  app.use('/auth',      Sys.reqRouter('authentification'))
 
   // Router pour l'inscription
 
   app.get('/', function (req, res) {
-    if ( WITH_CLUSTER ) {
-      res.render('home', {worker: cluster.worker})
-    } else {
-      res.render('home')
-    }
+    res.render('home', {worker: WITH_CLUSTER ? cluster.worker : undefined})
   })
   .get('/tck/:ticket_id', function(req,res){
     let Ticket = System.require('controllers/Ticket')
     var place = Ticket.traite(req.params.ticket_id)
     res.render('gabarit', { place: place || 'home' })
-  })
-  .get('/login', function(req,res){
-    if ( ! Dialog.message ) Dialog.action_required("Merci de vous identifier.")
-    res.render('gabarit', {place: 'login', route_after:req.query.ra||''})
-  })
-  .post('/login', function(req, res){
-    User.existsAndIsValid(req, res, {mail:req.body._umail_, password:req.body._upassword_, route_after:req.body.route_after})
-  })
-  .get('/logout', function(req,res){
-    if ( User.current ) {
-      Dialog.annonce(`À bientôt, ${User.current.pseudo} !`)
-      delete req.session.user_id
-      delete req.session.session_id
-      delete User.current
-    }
-    res.redirect('/')
   })
   .get('/modules', async function(req, res){
     global.AbsModule = Sys.reqModel('AbsModule')

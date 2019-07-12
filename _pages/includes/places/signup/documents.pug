@@ -27,7 +27,7 @@ div#document_presentation
   p
     | Dans cette partie, vous pouvez également ajouter tout commentaire qu'il vous semblerait important de mentionner.
 
-  +signupLink(!User.current)
+  +signupLink(!req.user)
 
 div#lettre_motivation
 
@@ -47,7 +47,7 @@ div#lettre_motivation
   p
     | Vous pouvez enfin parler de ce que vous attendez et espérez, de façon très générale ou de façon très concrète, d'un atelier comme l'Atelier Icare.
   
-  +signupLink(!User.current)
+  +signupLink(!req.user)
 
 div#extraits 
 
@@ -55,7 +55,7 @@ div#extraits
   p
     | Dans le formulaire de dépôt de votre candidature, vous pouvez également joindre à votre dossier l’extrait d'un de vos travaux d’écriture (ou le projet complet s’il n’excède pas 5 pages).
 
-  +signupLink(!User.current)
+  +signupLink(!req.user)
 
 div
   

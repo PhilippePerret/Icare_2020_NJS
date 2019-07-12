@@ -3,12 +3,12 @@ h2 Section de paiement
 p
   | Il semble que vous n’ayez aucun paiement à honorer, 
   |
-  = User.current.pseudo
+  = req.user.pseudo
   |…
 
 if futurPaiement
   p
     | Votre prochain paiement sera à honorer
     |
-    = Date.formate('le F à T', new Date(User.current.nextPaiement.triggered * 1000))
+    = Date.formate('le F à T', new Date(req.user.nextPaiement.triggered * 1000))
     |.

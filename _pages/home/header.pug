@@ -2,11 +2,23 @@ section#header
   div.common-tools
     a(href="/overview") EN SAVOIR PLUS
 
-    if User.current
+    if req.user
 
-      a(href="/logout") SE DÉCONNECTER
+      a(href="/auth/logout") SE DÉCONNECTER
+      - console.log("req = ", req)
+      if User.currentIsAdmin(req)
+        
+        a(href="/admin/overview") ADMINISTRATION
+      
+      else if User.currentIsIcarien(req)
+        
+        a(href="/bureau") BUREAU
+          
+      else
+        
+        span Ni Icarien ni admin…
 
     else
 
-      a(href="/signup") S’INSCRIRE
-      a(href="/login") S’IDENTIFIER
+      a(href="/auth/signup") S’INSCRIRE
+      a(href="/auth/login") S’IDENTIFIER
