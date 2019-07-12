@@ -263,12 +263,12 @@ div.icare
       } else {
         // LE MAIL A ÉTÉ TROUVÉ, MAIS LE MOT DE PASSE NE CORRESPOND PAS
         Dialog.error("Je ne connais aucun icarien avec ces données. Merci de ré-essayer.")
-        res.redirect('/login')
+        res.redirect('/auth/login')
       }
     } else {
       // LE MAIL N'A PAS ÉTÉ TROUVÉ
       Dialog.error("Aucun icarien ne porte ce mail, désolé. Merci de ré-essayer.")
-      res.redirect('/login')
+      res.redirect('/auth/login')
     }
   }
 

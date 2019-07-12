@@ -16,9 +16,14 @@ const Frigo   = Sys.reqController('Frigo')
 
 // Le préfix à ajouter à toutes les routes est : '/bureau'
 router
+// Sections principales
 .get('/',             Bureau.homeSection)
-.get('/work',         Bureau.workSection)
 .get('/preferences',  Bureau.preferencesSection)
+.get('/historique',   Bureau.historiqueSection)
+.get('/documents',    Bureau.documentsSection)
+.get('/profil',       Bureau.profilSection)
+.get('/work',         Bureau.workSection)
+
 // .post('/send_work', Bureau.sendWork)
 // .get('/historique', Bureau.historiqueSection)
 // .get('/documents',  Bureau.documentsSection)

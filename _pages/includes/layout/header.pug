@@ -5,24 +5,23 @@
      bureau: ['votre bureau', '/bureau'],
      admin: ['administration', '/admin/overview']
   }
-mixin mainLink(place_id)
-  - [name, route] = DATA_PLACES[place_id]
-  if place == place_id
-    a(href=route).selected= name
-  else
-    a(href=route)= name
+mixin mainLink(href, name)
+  - if ( undefined === name ) name = href.toUpperCase()
+  - href = `/${href}`
+  - var css = href!='/' && route.startsWith(href) ? 'selected' : ''
+  a(href=`${href}` class=css)= name
     
 section#header
   nav#main-rubriques.places
     
-    +mainLink('home')
-    +mainLink('aide')
+    +mainLink('', 'accueil')
+    +mainLink('aide', 'aide')
 
     if User.currentIsIcarien(req)
-      +mainLink('bureau')
+      +mainLink('bureau', 'bureau')
 
     if User.currentIsAdmin(req)
-      +mainLink('admin')
+      +mainLink('admin', 'administration')
 
     if req.user
 

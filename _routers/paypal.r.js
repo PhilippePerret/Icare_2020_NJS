@@ -29,7 +29,7 @@ router.get('/', async function(req,res){
     res.render('gabarit', {place: hasPaiement ? 'paiement' : 'paiement_none', futurPaiement:hasPaiementFutur})
   } else {
     Dialog.action_required("Vous devez être reconnu du site, pour exécuter ce paiement.")
-    res.redirect('/login')
+    res.redirect('/auth/login')
   }
 })
 .post('/payer', async function(req,res){

@@ -30,7 +30,7 @@ const UserCtrl = {
       next()
     } else {
       Dialog.error("Désolé mais vous n'êtes pas autorisé à rejoindre cette section.")
-      res.redirect('/login')
+      res.redirect('/auth/login')
     }
   }
   /**

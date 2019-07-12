@@ -1,0 +1,52 @@
+doctype html
+html
+  include includes/layout/head
+  body
+
+    link(rel="stylesheet" href="/assets/css/bureau.css")
+    link(rel="stylesheet" href="/assets/css/watchers.css")
+
+    include includes/layout/header
+
+    //- Les messages flash à afficher (if any)
+    != Dialog.flashMessages()
+
+    section#content
+
+      h1 Bureau de travail
+
+      //- 
+        | 
+        | Liens pour rejoindre toutes les sections du bureau
+        |
+        |
+      nav#bureau_links
+        mixin bureauLink(href, name)
+          - 
+            if ( undefined === name ) name = href.toUpperCase()
+            if ( href != '' ) href = '/' + href
+            var r   = `/bureau${href}`
+            var css = req.originalUrl==r?'selected':''
+            //- console.log("route = '%s', r = '%s'", req.originalUrl, r)
+          a(href=r class=css)= name
+        
+        +bureauLink('', 'ACCUEIL / TRAVAIL')
+        +bureauLink('historique')
+        +bureauLink('preferences', 'PRÉFÉRENCES')
+        +bureauLink('profil')
+        +bureauLink('documents')
+        
+
+      case section
+        when 'home'
+          include bureau/sections/home
+        when 'historique'
+          include bureau/sections/historique
+        when 'documents'
+          include bureau/sections/documents
+        when 'preferences'
+          include bureau/sections/preferences
+        when 'profil'
+          include bureau/sections/profil
+        
+      include includes/layout/footer

@@ -1,0 +1,21 @@
+h2 Préférences
+
+div.explication.
+  Vous pouvez régler dans cette section toutes vos préférences concernant votre travail et l'atelier en général.
+
+div.flex2
+  div.col
+    form(id="preferences_form" method="POST" action="/bureau/preferences/save")
+      div.preference
+        input(type="checkbox")
+        label Me prévenir lorsque j'arrive à échéance de mon travail.
+      div.preference
+        | Après mon identification rejoindre
+        |
+        select(name="routeAfterLogin")
+          option(value="/bureau") mon bureau
+          option(value="/") l’accueil de l’atelier
+          option(value="last-page") ma dernière page visitée
+  
+  div.col
+    | La seconde colonne, pour voir comment ça va se passer

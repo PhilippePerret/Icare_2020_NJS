@@ -1,0 +1,14 @@
+div.explication
+  | Bienvenue dans votre bureau,
+  |
+  = req.user.pseudo
+  |.
+  |
+  if req.user.isActif
+    | Cette section vous présente votre travail courant, votre échéance, et vous permet de transmettre votre travail.
+  else
+    | Lorsque vous suivez un module, cette section présente le travail.
+p
+  | Je dois montrer le bureau de l'utilisateur
+  |
+  = `${req.user.pseudo} (#${req.user.id})`
