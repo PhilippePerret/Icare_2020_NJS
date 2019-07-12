@@ -30,16 +30,19 @@ html
             //- console.log("route = '%s', r = '%s'", req.originalUrl, r)
           a(href=r class=css)= name
         
-        +bureauLink('', 'ACCUEIL / TRAVAIL')
+        +bureauLink('', 'ACCUEIL')
         +bureauLink('historique')
         +bureauLink('preferences', 'PRÉFÉRENCES')
         +bureauLink('profil')
         +bureauLink('documents')
+        +bureauLink('travail')
         
 
       case section
         when 'home'
           include bureau/sections/home
+        when 'travail'
+          include bureau/sections/travail
         when 'historique'
           include bureau/sections/historique
         when 'documents'

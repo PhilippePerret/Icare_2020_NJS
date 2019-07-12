@@ -1,0 +1,54 @@
+h2 Travail
+
+div.explication.
+  Cette section présente le travail à exécuter, en détail.
+
+link(rel="stylesheet" href="/assets/css/etape.css")
+
+div.etape.current
+  div.module
+    div.titre
+      label Module
+      span= travail.absModule.name
+
+  div.etape
+    
+    div.titre
+      label Étape
+      span= travail.absEtape.titre
+      
+    div.objectif
+      label Objectif
+      span= travail.absEtape.objectif
+    
+    div.dates
+      div
+        label Démarrée le
+        span= travail.formatedStartAt() + travail.formatedIlya()
+      div
+        label Fin attendue
+        span= travail.formatedExpectedAt()
+        span !{travail.formatedEcheanceDans()}
+
+    //- Le travail proprement dit
+    div.travail
+      label.plain Travail à exécuter
+      div.description= travail.formatedTravail()
+      
+    div.method
+      label.plain Éléments de méthode
+      div.description= travail.formatedMethode()
+    
+    div.links
+      label.plain Liens utiles
+      div.description= travail.formatedLinks()
+      
+    div.minifaq
+      label.plain Mini-faq
+      div.description= travail.minifaq()
+      //- NOTE : Il faudrait plutôt un template
+    
+    div.qdd
+      label.plain Le Quai des docs
+      div.description= travail.formatedQDD()
+      //- NOTE : Il faudrait plutôt un template

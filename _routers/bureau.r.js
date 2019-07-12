@@ -22,11 +22,9 @@ router
 .get('/historique',   Bureau.historiqueSection)
 .get('/documents',    Bureau.documentsSection)
 .get('/profil',       Bureau.profilSection)
-.get('/work',         Bureau.workSection)
+.get('/travail',      Bureau.workSection)
 
 // .post('/send_work', Bureau.sendWork)
-// .get('/historique', Bureau.historiqueSection)
-// .get('/documents',  Bureau.documentsSection)
 // .get('/frigo',      Bureau.frigoSection)
 // .post('/frigo',     Frigo.sendMessage)
 // .delete('/frigo',   Frigo.deleteMessage)

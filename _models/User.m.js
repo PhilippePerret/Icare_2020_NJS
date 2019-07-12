@@ -128,6 +128,7 @@ class User {
   get pseudo(){return this.data.pseudo}
   get options(){return this.data.options}
   get sexe(){return this.data.sexe}
+  get icmodule_id(){ return this.data.icmodule_id}
   get sessionId(){ return this.data.session_id}
   set sessionId(v){ this.data.session_id = v}
   get cpassword(){return this.data.cpassword}

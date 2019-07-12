@@ -3,8 +3,19 @@
   Contrôleur du Bureau
 **/
 const Bureau = {
-  homeSection(req,res){
-    res.render('bureau', {section:'home'})
+  /**
+    L'accueil et la section du travail
+  **/
+  async homeSection(req,res){
+    const Travail   = Sys.reqModel('Travail')
+    const IcModule  = Sys.reqModel('IcModule')
+    const IcEtape   = Sys.reqModel('IcEtape')
+    let icmodule = new IcModule(req.user.icmodule_id)
+    await icmodule.getData()
+    let icetape  = new IcEtape(icmodule.currentEtapeId)
+    await icetape.getData()
+    let travail = new Travail(icmodule, icetape)
+    res.render('bureau', {section:'home', travail: travail})
   }
 , preferencesSection(req,res){
     res.render('bureau', {section:'preferences'})
@@ -18,8 +29,16 @@ const Bureau = {
 , profilSection(req,res){
     res.render('bureau', {section:'profil'})
   }
-, workSection(req,res){
-    res.send("Je dois afficher la section de travail du bureau")
+, async workSection(req,res){
+    const Travail   = Sys.reqModel('Travail')
+    const IcModule  = Sys.reqModel('IcModule')
+    const IcEtape   = Sys.reqModel('IcEtape')
+    let icmodule = new IcModule(req.user.icmodule_id)
+    await icmodule.getData()
+    let icetape  = new IcEtape(icmodule.currentEtapeId)
+    await icetape.getData()
+    let travail = new Travail(icmodule, icetape)
+    res.render('bureau', {section:'travail', travail: travail})
   }
 }
 module.exports = Bureau
