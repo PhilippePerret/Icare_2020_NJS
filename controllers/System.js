@@ -30,6 +30,10 @@ const System = {
 , reqModel(which){
   return this.require(`_models/${which}.m.js`)
   }
+, reqTemplate(relpath){
+    relpath = `./_pages/templates/${relpath}`
+    return fs.readFileSync(this.pathFor(relpath), 'utf-8')
+  }
 , reqSecret(which){
     // Noter que contrairement aux autres méthodes, ici, il faut donner le
     // nom du fichier exact, pour que le `require` transforme les fichiers

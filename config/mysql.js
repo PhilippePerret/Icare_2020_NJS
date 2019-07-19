@@ -34,19 +34,19 @@ class MyMySql {
     return retour[0]
   }
 
-  static async getWhere(table, wheres, columns) {
-    columns = columns || ['*']
-    columns = columns.join(', ')
-    var whereClause = []
-    var valueClause = []
-    for (var col in wheres) {
-      whereClause.push(`${col} = ?`)
-      valueClause.push(wheres[col])
-    }
-    whereClause = whereClause.join(' AND ')
-    var request = `SELECT ${columns} FROM ${table} WHERE ${whereClause}`
-    return await this.processQuery(request, valueClause)
-  }
+  // static async getWhere(table, wheres, columns, options) {
+  //   columns = columns || ['*']
+  //   columns = columns.join(', ')
+  //   var whereClause = []
+  //   var valueClause = []
+  //   for (var col in wheres) {
+  //     whereClause.push(`${col} = ?`)
+  //     valueClause.push(wheres[col])
+  //   }
+  //   whereClause = whereClause.join(' AND ')
+  //   var request = `SELECT ${columns} FROM ${table} WHERE ${whereClause}`
+  //   return await this.processQuery(request, valueClause)
+  // }
 
   /**
     Retourne tous les éléments de la table, correspondant au filtre s'il

@@ -44,7 +44,7 @@ const UserCtrl = {
       if ( req.user ) {
         res.redirect('/')
       } else {
-        res.redirect(`/login?ra=${req.originalUrl}`)
+        res.redirect(`/auth/login?ra=${req.originalUrl}`)
       }
     }
   }

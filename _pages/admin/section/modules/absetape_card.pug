@@ -1,0 +1,11 @@
+//- 
+  Pour l'affichage d'une étape en particulier
+  `etape` est la variable passée, contenant toutes les données,
+  c'est une instance AbsEtape
+
+//- Il faut construire l'étape avant, pour savoir si on pourra appliquer
+- var etapeFormated = etape.formatedDisplay()
+section.visualisation(class=etape.classSectionVisualisation)
+  | !{etapeFormated}
+section.edition(class=etape.classSectionEdition)
+  | !{etape.formatedEdition()}

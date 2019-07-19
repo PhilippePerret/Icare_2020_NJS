@@ -1,5 +1,14 @@
 # Todo list
 
+* Pour corriger les étapes de travail, travailler sur l'éditeur d'étape de la partie administration :
+  * on doit pouvoir voir la liste de toutes les étapes d'un module, avec l'affichage intégral des données, **telles qu'elles apparaitront sur le bureau de l'icarien**
+  * on doit pouvoir éditer l'étape, c'est-à-dire remplacer l'affichage normal au formulaire
+  * on doit pouvoir enregistrer les modifications
+  * lorsque le module de formatage n'arrive pas à formater un travail ou une méthode, il bascule directement édition et présente le code brut dans le textarea du formulaire, avec l'erreur obtenue (qui est certainement une erreur EJS)
+  * peut-être une partie pour éditer une seule étape
+  * des boutons pour ajouter ou supprimer des étapes
+  * Note : un module doit être créé dans une autre partie.
+
 * Rationnaliser, dans le code et dans la documentation, l'utilisation de Dialog.
 En fait, il faudrait passer tout par là, sans avoir à utiliser flash
 

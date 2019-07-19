@@ -10,6 +10,7 @@
 **/
 
 const IcModule = Sys.reqModel('IcModule') // modèle et contrôleur
+const Texte = Sys.reqController('Texte')
 
 class Travail {
   constructor(icmodule, icetape){
@@ -29,14 +30,27 @@ class Travail {
   **/
 
   /**
+    Méthode générale qui met en forme le travail, la minifaq, le quai des
+    docs avant d'afficher la vue
+    @asynchrone
+  **/
+  async formate(){
+    await this.formateTravail()
+    await this.formateMethode()
+    await this.formateMinifaq()
+    await this.formateQDD()
+  }
+
+  formatedTravail(){return this._fwork}
+  /**
     @return {HTMLString} Le travail, entièrement formaté
   **/
-  formatedTravail(){
+  async formateTravail(){
     if ( undefined === this._fwork ) {
-      // TODO Il y aura plein de choses à faire
-      this._fwork = this.absEtape.travail
+      // Mettre en forme le travail
+      var w = this.absEtape.travail
+      this._fwork = await (new Texte(w).formate())
     }
-    return this._fwork
   }
 
   /**
@@ -44,11 +58,15 @@ class Travail {
     @return {HTMLString} La méthode ou les éléments de méthode proposés
 
   **/
-  formatedMethode(){
-    if (undefined === this._fmethod) {
-      this._fmethod = this.absEtape.methode
+  formatedMethode(){ return this._fmethod }
+
+  async formateMethode(){
+    if (this.absEtape.methode) {
+      this._fmethod = '[méthode à mettre en forme]'
+    } else {
+      this._fmethod = 'Aucun élément de méthode n’est proposé pour cette étape.'
     }
-    return this._fmethod || 'Aucun élément de méthode n’est proposé pour cette étape.'
+
   }
 
   /**
@@ -72,11 +90,9 @@ class Travail {
     @return {HTMLString} Les liens pour télécharger les documents du QDD
                           propres à l'étape
   **/
-  formatedQDD(){
-    if (undefined === this.fqdd){
-      this.fqdd = "[Ici, bientôt, les documents de l'étape dans le QDD]"
-    }
-    return this.fqdd
+  formatedQDD(){return this._fqdd}
+  async formateQDD(){
+    this._fqdd = "[Ici, bientôt, les documents de l'étape dans le QDD]"
   }
 
   /**
@@ -84,8 +100,9 @@ class Travail {
     @return {HTMLString} La minifaq de l'étape
 
   **/
-  minifaq(){
-    return "Bientôt ici la minifaq de l'étape"
+  minifaq(){ return this._minifaq }
+  async formateMinifaq(){
+    this._minifaq = "[Bientôt ici la minifaq de l'étape]"
   }
 
   /**

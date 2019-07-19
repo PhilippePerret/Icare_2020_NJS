@@ -1,12 +1,14 @@
 // Une "carte" d'étape, quel que soit le type voulu
 // C'est la classe suivante qui va déterminer l'affichage exacte
-div.etape
+.etape
+
+  max-width: 680px
 
   // Tous les labels
   label
+    float: left
     font-style: italic
     color: #999999
-    margin-right: 2em
     &:not(.plain)
       display: inline-block
       width: 100px
@@ -14,43 +16,55 @@ div.etape
       display: block
       width: 100%
 
-  // Pour l'affichage de l'étape courante dans le bureau
-  &.current
-    padding: 2em
-    border: 1px solid
-    border-radius: 1em
+  // Le span qui suit le label
+  label + span
+    display: block
+    margin-left: 120px
 
-  > div
-    margin-top: 0.5em
+  div.titre
+    > span
+      font-weight: bold
 
-  div.dates
-    font-size: 0.9em
-
-  div.module
-    // border: 1px solid green
-    margin-bottom: 0.5em
-    div.titre
-      span
-        font-size: 1.4em
-        font-weight: normal
-
-  div.etape
-    div.titre
-      span
-        font-size: 1.3em
-
-    div.objectif
-      span
-        font-weight: bold
-
-    div.travail
-      margin-bottom: 2em
-      margin-top: 2em
-
-      //
-      //
-      // CONTENEUR DU TRAVAIL PROPREMENT DIT
-      //
-      //
-      div.description
-        margin-top: 1em
+  // // Pour l'affichage de l'étape courante dans le bureau
+  // &.current
+  //   padding: 2em
+  //   border: 1px solid
+  //   border-radius: 1em
+  //
+  // > div
+  //   margin-top: 0.5em
+  //
+  // div.dates
+  //   font-size: 0.9em
+  //
+  // div.module
+  //   // border: 1px solid green
+  //   margin-bottom: 0.5em
+  //   div.titre
+  //     span
+  //       font-size: 1.4em
+  //       font-weight: normal
+  //
+  // //
+  // //
+  // //  L'ÉTAPE PROPREMENT DITE
+  // .etape
+  //   div.titre
+  //     span
+  //       font-size: 1.3em
+  //
+  //   div.objectif
+  //     span
+  //       font-weight: bold
+  //
+  //   div.travail
+  //     margin-bottom: 2em
+  //     margin-top: 2em
+  //
+  //     //
+  //     //
+  //     // CONTENEUR DU TRAVAIL PROPREMENT DIT
+  //     //
+  //     //
+  //     div.description
+  //       margin-top: 1em

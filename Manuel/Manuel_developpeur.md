@@ -4,6 +4,7 @@
   * [Tester si l'user courant est admin](#test_if_user_current_admin)
   * [Tester si l'user courant est icarien](#tests_if_current_icarien)
 * [Programmation générale](#general_programmation)
+  * [Tester du code rapidement](#tester_rapidement_du_code)
   * [Requérir des modules](#require_modules)
   * [Organisation des routers, contrôleurs et modèles](#organisation_routers_ctrl_et_models)
   * [Fonctionnement des modèles et contrôleurs](#fonctionnement_models_et_controllers)
@@ -66,6 +67,12 @@ else
 ---------------------------------------------------------------------
 
 ## Programmation générale {#general_programmation}
+
+### Tester du code rapidement {#tester_rapidement_du_code}
+
+Parfois on veut tester du code rapidement, sans avoir à faire beaucoup d'opérations interactives. C'est le cas par exemple pour tester la mise en forme des étapes de travail d'un icarien actif. Dans cette situation, il faudrait identifier cet icarien actif, et se rendre dans son bureau, dans l'onglet "travail" pour voir ce que ça donne.
+
+Au lieu de ça, on peut utiliser le contrôleur `controllers/HomeTestCode.c.js` qui est automatiquement appelé quand on est en offline (et en offline seulement) et permet d'imprimer le résultat dans la page d'accueil directement, tout en haut (la vraie page d'accueil est repoussée en dessous).
 
 ### Requérir des modules {#require_modules}
 

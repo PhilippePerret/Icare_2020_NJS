@@ -103,7 +103,7 @@ if ( WITH_CLUSTER && cluster.isMaster ) {
     // On renseign `req` dans les locals ce qui permettra à toutes
     // les vues de disposer de la requête, utile par exemple pour
     // req.user
-    res.locals.req = req
+    res.locals.req = res.locals.request = req
 
     // On renseigne `route` qui pourra être utilisé n'importe où
     // dans les vues et templates
@@ -118,16 +118,24 @@ if ( WITH_CLUSTER && cluster.isMaster ) {
   app.get('/fttajax', FrontTests.ajax.bind(FrontTests))
 
   // === ROUTERS ===
-  app.use('/bureau',    Sys.reqRouter('bureau'))
-  app.use('/signup',    Sys.reqRouter('signup'))
-  app.use('/admin',     Sys.reqRouter('admin'))
-  app.use('/paiement',  Sys.reqRouter('paypal'))
-  app.use('/auth',      Sys.reqRouter('authentification'))
+  app.use('/bureau',        Sys.reqRouter('bureau'))
+  app.use('/signup',        Sys.reqRouter('signup'))
+  app.use('/admin/modules', Sys.reqRouter('admin/modules'))
+  app.use('/admin',         Sys.reqRouter('admin'))
+  app.use('/paiement',      Sys.reqRouter('paypal'))
+  app.use('/auth',          Sys.reqRouter('authentification'))
 
   // Router pour l'inscription
 
-  app.get('/', function (req, res) {
-    res.render('home', {worker: WITH_CLUSTER ? cluster.worker : undefined})
+  app.get('/', async function (req, res) {
+    // Si on est en offline, on peut tester du code et imprimer le
+    // résultat sur la page d'accueil
+    let HTC = {resultat:''}
+    if ( App.offline ) {
+      HTC = Sys.reqController('HomeTestCode')
+      await HTC.test()
+    }
+    res.render('home', {worker: WITH_CLUSTER ? cluster.worker : undefined, htc_resulat:HTC.resultat})
   })
   .get('/tck/:ticket_id', function(req,res){
     let Ticket = System.require('controllers/Ticket')
@@ -159,7 +167,7 @@ if ( WITH_CLUSTER && cluster.isMaster ) {
   // })
 
   var server = app.listen(process.env.ALWAYSDATA_HTTPD_PORT||3000, process.env.ALWAYSDATA_HTTPD_IP, function () {
-    console.log('Example app started!')
+    console.log('Site Icare démarré !')
     // server.close(function() { console.log('Doh :('); });
   })
   .on('close', () => {

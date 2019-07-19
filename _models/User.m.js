@@ -333,15 +333,16 @@ User.HUMAN_STATUTS = {
 }
 
 User.REDIRECTIONS_AFTER_LOGIN = {
-  0: {hname:'Accueil du site',         route:'/'},
-  1: {hname:'Bureau de travail',       route:'/bureau'},
-  2: {hname:'Profil',                  route:'/bureau/profil'},
-  3: {hname:'Dernière page consultée', route:this.lastPage},
+  0: {hname:'L’accueil du site',            route:'/'},
+  1: {hname:'Mon bureau de travail',        route:'/bureau'},
+  3: {hname:'Mon travail courant',          route:'/bureau/travail'},
+  4: {hname:'Ma dernière page',             route:this.lastPage},
+  5: {hname:'Mon profil',                   route:'/bureau/profil'},
   // - ADMINISTRATEUR -
-  6: {hname:'Accueil du site',   route:'/',               admin:true},
-  7: {hname:'Aperçu Icariens',   route:'/admin/overview', admin:true},
-  8: {hname:'Console',           route:'/admin/console',  admin:true},
-  9: {hname:'Tableau de bord',   route:'/admin/dashboard', admin:true}
+  7: {hname:'Aperçu général',     route:'/admin/overview',   admin:true},
+  8: {hname:'Tableau de bord',    route:'/admin/dashboard',  admin:true},
+  9: {hname:'Console',            route:'/admin/console',    admin:true},
+ 10: {hname:'Bases de données',   route:'/admin/database',   admin:true}
 }
 
 /**

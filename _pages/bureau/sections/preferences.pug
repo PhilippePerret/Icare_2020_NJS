@@ -12,10 +12,15 @@ div.flex2
       div.preference
         | Après mon identification rejoindre
         |
+        //- 
+          TODO
+          Utiliser REDIRECTIONS_AFTER_LOGIN pour définir les possibilités
+        
         select(name="routeAfterLogin")
-          option(value="/bureau") mon bureau
-          option(value="/") l’accueil de l’atelier
-          option(value="last-page") ma dernière page visitée
+          - console.log("User.REDIRECTIONS_AFTER_LOGIN = ", User.REDIRECTIONS_AFTER_LOGIN) 
+          for pref, prefid in User.REDIRECTIONS_AFTER_LOGIN
+            if pref.admin != true || User.isAdmin
+              option(value=prefid)= pref.hname
   
   div.col
     | La seconde colonne, pour voir comment ça va se passer

@@ -1,0 +1,33 @@
+//- 
+  Affichage pour l'édition et la visualisation des étapes 
+  de travail des modules d'apprentissage.
+h3 Édition des étapes de modules d'apprentissage
+
+//- console.log("modules: ", modules)
+form(method="POST" action="/admin/modules/absetapes")
+  select(name="module_id")
+    each module in modules
+      - var selected = module.id == locals.module_id ? 'SELECTED' : null
+      option(value=module.id selected=selected)= module.name
+  |
+  |
+  input(type="submit" value="Voir" class="main btn small")
+
+if request.body && request.body.module_id
+  //- <= Un module a été choisi
+  //- => Il faut afficher toutes ces étapes
+  //- 
+    Fonctionnement :
+      On affiche toutes les étapes du module, dans l'order, en deux
+      versions, une version étant l'affichage tel qu'il apparait sur le
+      bureau de l'user et une version cachée qui est le formulaire d'édition
+      de l'étape.
+      
+      Dans le cas où une étape ne peut pas être affichée (erreur levée), c'est
+      le formulaire qui est affiché, avec un message d'erreur.
+
+  //- la feuille de style pour les étapes
+  link(rel="stylesheet" href="/assets/css/etape.css")
+
+  each etape in etapes
+    include absetape_card

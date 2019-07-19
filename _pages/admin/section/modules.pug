@@ -1,2 +1,16 @@
-div.explication
-  | Cette partie permet de gérer les modules d'apprentissage proposés à l'atelier
+
+//- Si une sous section est déjà choisie
+if locals.sous_section
+  //- div= `Sous-section "${sous_section}"`
+  case sous_section
+    when 'absetapes'
+      include modules/absetapes
+else
+  //- Si aucune sous section n'est choisie
+
+  div.explication
+    | Cette partie permet de gérer les modules d'apprentissage proposés à l'atelier
+
+  div.blocklink
+    div= JSON.stringify(locals.request.query)
+    a(href="/admin/modules/absetapes") Édition des étapes absolues

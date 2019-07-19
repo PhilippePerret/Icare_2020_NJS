@@ -38,6 +38,10 @@ const Bureau = {
     let icetape  = new IcEtape(icmodule.currentEtapeId)
     await icetape.getData()
     let travail = new Travail(icmodule, icetape)
+    // Il faut formater le travail maintenant, parce qu'il doit peut-être
+    // récupérer des travaux-type dans la base de données, idem pour la
+    // minifaq et le quai des docs
+    await travail.formate()
     res.render('bureau', {section:'travail', travail: travail})
   }
 }
