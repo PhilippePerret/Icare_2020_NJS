@@ -44,7 +44,7 @@
   "devDependencies": {
     "browserify-fs": "^1.0.0",
     "fs": "0.0.1-security",
-    "mocha": "^6.1.4",
+    "mocha": "^10.2.0",
     "should": "^13.2.3",
     "supertest": "^4.0.2"
   }
